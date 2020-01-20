@@ -34,6 +34,7 @@ if (process.env.NODE_ENV !== 'production') {
     )
   }
 
+  // 是否存在Proxy原生对象
   const hasProxy =
     typeof Proxy !== 'undefined' && isNative(Proxy)
 

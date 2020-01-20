@@ -1,12 +1,12 @@
 /* @flow */
 
 export default class VNode {
-  tag: string | void;
-  data: VNodeData | void;
-  children: ?Array<VNode>;
-  text: string | void;
-  elm: Node | void;
-  ns: string | void;
+  tag: string | void; // 标签
+  data: VNodeData | void; //
+  children: ?Array<VNode>; // 子vnode
+  text: string | void; //文本
+  elm: Node | void; // vnode的真实dom node
+  ns: string | void; //
   context: Component | void; // rendered in this component's scope
   key: string | number | void;
   componentOptions: VNodeComponentOptions | void;
@@ -29,6 +29,17 @@ export default class VNode {
   devtoolsMeta: ?Object; // used to store functional render context for devtools
   fnScopeId: ?string; // functional scope id support
 
+  /**
+   * 
+   * @param {*} tag 标签
+   * @param {*} data 标签数据（属性
+   * @param {*} children 节点的子虚拟节点
+   * @param {*} text 虚拟节点中的文本
+   * @param {*} elm 
+   * @param {*} context 虚拟节点的
+   * @param {*} componentOptions 虚拟节点的配置对象
+   * @param {*} asyncFactory 
+   */
   constructor (
     tag?: string,
     data?: VNodeData,
@@ -71,6 +82,7 @@ export default class VNode {
   }
 }
 
+// 创建一个注释虚拟节点
 export const createEmptyVNode = (text: string = '') => {
   const node = new VNode()
   node.text = text
@@ -78,6 +90,7 @@ export const createEmptyVNode = (text: string = '') => {
   return node
 }
 
+// 创建一个文本虚拟节点
 export function createTextVNode (val: string | number) {
   return new VNode(undefined, undefined, undefined, String(val))
 }

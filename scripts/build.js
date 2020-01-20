@@ -4,7 +4,9 @@ const zlib = require('zlib')
 const rollup = require('rollup')
 const terser = require('terser')
 
+// 是否存在dist文件夹
 if (!fs.existsSync('dist')) {
+  // 不存在创建
   fs.mkdirSync('dist')
 }
 

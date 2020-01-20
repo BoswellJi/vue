@@ -18,8 +18,8 @@ export function initExtend (Vue: GlobalAPI) {
    */
   Vue.extend = function (extendOptions: Object): Function {
     extendOptions = extendOptions || {}
-    const Super = this
-    const SuperId = Super.cid
+    const Super = this //Vue构造函数对象
+    const SuperId = Super.cid //
     const cachedCtors = extendOptions._Ctor || (extendOptions._Ctor = {})
     if (cachedCtors[SuperId]) {
       return cachedCtors[SuperId]
@@ -33,14 +33,17 @@ export function initExtend (Vue: GlobalAPI) {
     const Sub = function VueComponent (options) {
       this._init(options)
     }
-    Sub.prototype = Object.create(Super.prototype)
+    Sub.prototype = Object.create(Super.prototype) // 原型继承，Vue.prototype
     Sub.prototype.constructor = Sub
     Sub.cid = cid++
+    // Vue子类的options
+    // 不是子类实例组件的options
+    // 实例组件的opions在 init.js中进行处理
     Sub.options = mergeOptions(
-      Super.options,
-      extendOptions
+      Super.options, // 父构造函数的静态属性options
+      extendOptions // 自身options
     )
-    Sub['super'] = Super
+    Sub['super'] = Super //子类指向父类的索引
 
     // For props and computed properties, we define the proxy getters on
     // the Vue instances at extension time, on the extended prototype. This
@@ -53,6 +56,7 @@ export function initExtend (Vue: GlobalAPI) {
     }
 
     // allow further extension/mixin/plugin usage
+    // 子类也具备继承，混合，插件
     Sub.extend = Super.extend
     Sub.mixin = Super.mixin
     Sub.use = Super.use
@@ -70,7 +74,9 @@ export function initExtend (Vue: GlobalAPI) {
     // keep a reference to the super options at extension time.
     // later at instantiation we can check if Super's options have
     // been updated.
+    // 将父类的options给子类的superOptions
     Sub.superOptions = Super.options
+    // 子类自身的options
     Sub.extendOptions = extendOptions
     Sub.sealedOptions = extend({}, Sub.options)
 

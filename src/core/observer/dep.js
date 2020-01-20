@@ -55,11 +55,13 @@ export default class Dep {
 Dep.target = null
 const targetStack = []
 
+// 监听器
 export function pushTarget (target: ?Watcher) {
   targetStack.push(target)
   Dep.target = target
 }
 
+// 后进先出
 export function popTarget () {
   targetStack.pop()
   Dep.target = targetStack[targetStack.length - 1]

@@ -21,6 +21,7 @@ export interface CreateElement {
 }
 
 export interface Vue {
+  // 实例属性,原型方法
   readonly $el: Element;
   readonly $options: ComponentOptions<Vue>;
   readonly $parent: Vue;
@@ -77,6 +78,9 @@ export interface VueConfiguration {
   async: boolean;
 }
 
+/**
+ * 构造函数的静态属性,方法
+ */
 export interface VueConstructor<V extends Vue = Vue> {
   new <Data = object, Methods = object, Computed = object, PropNames extends string = never>(options?: ThisTypedComponentOptionsWithArrayProps<V, Data, Methods, Computed, PropNames>): CombinedVueInstance<V, Data, Methods, Computed, Record<PropNames, any>>;
   // ideally, the return type should just contain Props, not Record<keyof Props, any>. But TS requires to have Base constructors with the same return type.

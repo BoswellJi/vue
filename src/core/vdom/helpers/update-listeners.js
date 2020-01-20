@@ -19,8 +19,10 @@ const normalizeEvent = cached((name: string): {
   handler?: Function,
   params?: Array<any>
 } => {
+  // name 首字母为&  ~ ! 去掉
   const passive = name.charAt(0) === '&'
   name = passive ? name.slice(1) : name
+  
   const once = name.charAt(0) === '~' // Prefixed last, checked first
   name = once ? name.slice(1) : name
   const capture = name.charAt(0) === '!'
@@ -59,6 +61,7 @@ export function updateListeners (
   vm: Component
 ) {
   let name, def, cur, old, event
+  // 事件监听
   for (name in on) {
     def = cur = on[name]
     old = oldOn[name]
@@ -68,6 +71,7 @@ export function updateListeners (
       cur = def.handler
       event.params = def.params
     }
+    // null, undefined
     if (isUndef(cur)) {
       process.env.NODE_ENV !== 'production' && warn(
         `Invalid handler for event "${event.name}": got ` + String(cur),

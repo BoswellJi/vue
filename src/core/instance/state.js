@@ -35,6 +35,12 @@ const sharedPropertyDefinition = {
   set: noop
 }
 
+/**
+ * 
+ * @param {*} target 组件实例
+ * @param {*} sourceKey _data,_prop,私有属性,保存正真的值,通过代理进行 返回
+ * @param {*} key 对象属性
+ */
 export function proxy (target: Object, sourceKey: string, key: string) {
   sharedPropertyDefinition.get = function proxyGetter () {
     return this[sourceKey][key]
@@ -46,10 +52,14 @@ export function proxy (target: Object, sourceKey: string, key: string) {
 }
 
 export function initState (vm: Component) {
+  // 给组件实例添加监听数组
   vm._watchers = []
   const opts = vm.$options
+  // 配置参数有输入属性
   if (opts.props) initProps(vm, opts.props)
+  // 配置参数有方法
   if (opts.methods) initMethods(vm, opts.methods)
+  // 配置参数有data
   if (opts.data) {
     initData(vm)
   } else {
@@ -72,7 +82,9 @@ function initProps (vm: Component, propsOptions: Object) {
   if (!isRoot) {
     toggleObserving(false)
   }
+  // 遍历每一个prop属性
   for (const key in propsOptions) {
+
     keys.push(key)
     const value = validateProp(key, propsOptions, propsData, vm)
     /* istanbul ignore else */
@@ -97,6 +109,7 @@ function initProps (vm: Component, propsOptions: Object) {
         }
       })
     } else {
+      // 定义响应式数据
       defineReactive(props, key, value)
     }
     // static props are already proxied on the component's prototype
@@ -109,12 +122,17 @@ function initProps (vm: Component, propsOptions: Object) {
   toggleObserving(true)
 }
 
+/**
+ * 初始化data方法
+ * @param {*} vm 
+ */
 function initData (vm: Component) {
+  // 组件的data返回对象
   let data = vm.$options.data
   data = vm._data = typeof data === 'function'
-    ? getData(data, vm)
+    ? getData(data, vm)  // 获取子组件的data
     : data || {}
-  if (!isPlainObject(data)) {
+  if (!isPlainObject(data)) { // 原生对象，是函数的
     data = {}
     process.env.NODE_ENV !== 'production' && warn(
       'data functions should return an object:\n' +
@@ -123,12 +141,14 @@ function initData (vm: Component) {
     )
   }
   // proxy data on instance
+  // 根组件
   const keys = Object.keys(data)
   const props = vm.$options.props
   const methods = vm.$options.methods
   let i = keys.length
   while (i--) {
     const key = keys[i]
+    // 开发阶段屏蔽定义data,字段与method一样
     if (process.env.NODE_ENV !== 'production') {
       if (methods && hasOwn(methods, key)) {
         warn(
@@ -137,17 +157,19 @@ function initData (vm: Component) {
         )
       }
     }
+    // 开发阶段屏蔽定义data,字段与props一样
     if (props && hasOwn(props, key)) {
       process.env.NODE_ENV !== 'production' && warn(
         `The data property "${key}" is already declared as a prop. ` +
         `Use prop default value instead.`,
         vm
       )
-    } else if (!isReserved(key)) {
+    } else if (!isReserved(key)) { //开头不是_ &的,_ &这些属于框架保留字符
+      // 将data属性代理到vm实例上
       proxy(vm, `_data`, key)
     }
   }
-  // observe data
+  // observe data 对data 数据进行观察
   observe(data, true /* asRootData */)
 }
 
@@ -174,6 +196,14 @@ function initComputed (vm: Component, computed: Object) {
 
   for (const key in computed) {
     const userDef = computed[key]
+    /**
+     * computed:{
+     *    attr1:{
+     *        get(){}
+     *    },
+     *    attr2:(){}
+     * }
+     */
     const getter = typeof userDef === 'function' ? userDef : userDef.get
     if (process.env.NODE_ENV !== 'production' && getter == null) {
       warn(
@@ -195,9 +225,11 @@ function initComputed (vm: Component, computed: Object) {
     // component-defined computed properties are already defined on the
     // component prototype. We only need to define computed properties defined
     // at instantiation here.
+    // 组件实例没有定义,在vm出现过,method,忽略不处理
     if (!(key in vm)) {
       defineComputed(vm, key, userDef)
     } else if (process.env.NODE_ENV !== 'production') {
+      // 判断是否被定义过
       if (key in vm.$data) {
         warn(`The computed property "${key}" is already defined in data.`, vm)
       } else if (vm.$options.props && key in vm.$options.props) {
@@ -207,6 +239,8 @@ function initComputed (vm: Component, computed: Object) {
   }
 }
 
+
+// 代理computed属性到组件实例上
 export function defineComputed (
   target: any,
   key: string,
@@ -260,7 +294,9 @@ function createGetterInvoker(fn) {
 }
 
 function initMethods (vm: Component, methods: Object) {
+  // 获取输入属性
   const props = vm.$options.props
+  // 遍历定义方法
   for (const key in methods) {
     if (process.env.NODE_ENV !== 'production') {
       if (typeof methods[key] !== 'function') {
@@ -283,12 +319,32 @@ function initMethods (vm: Component, methods: Object) {
         )
       }
     }
+    // 将定义的方法添加到组件实例上,绑定this指向
     vm[key] = typeof methods[key] !== 'function' ? noop : bind(methods[key], vm)
   }
 }
 
+/**
+ * 
+ * @param {*} vm  组件实例
+ * @param {*} watch 观察属性
+ */
 function initWatch (vm: Component, watch: Object) {
   for (const key in watch) {
+    /**
+     * watch:{
+     *  a(val,oldVal){
+     *     
+     *  },
+     *  b:[
+     *    ()=>{},
+     *  ],
+     *  c:{
+     *    handler:()=>{}
+     *  },
+     *  d:'b'
+     * }
+     */
     const handler = watch[key]
     if (Array.isArray(handler)) {
       for (let i = 0; i < handler.length; i++) {
@@ -300,17 +356,26 @@ function initWatch (vm: Component, watch: Object) {
   }
 }
 
+/**
+ * 
+ * @param {*} vm 组件实例
+ * @param {*} expOrFn key(观察的key)
+ * @param {*} handler (观察后的处理函数)
+ * @param {*} options 
+ */
 function createWatcher (
   vm: Component,
   expOrFn: string | Function,
   handler: any,
   options?: Object
 ) {
+  // 原生对象
   if (isPlainObject(handler)) {
     options = handler
     handler = handler.handler
   }
   if (typeof handler === 'string') {
+    //组件实例上的method
     handler = vm[handler]
   }
   return vm.$watch(expOrFn, handler, options)
@@ -320,6 +385,7 @@ export function stateMixin (Vue: Class<Component>) {
   // flow somehow has problems with directly declared definition object
   // when using Object.defineProperty, so we have to procedurally build up
   // the object here.
+  // 定义的是Vue实例的原型对象的get  set 方法
   const dataDef = {}
   dataDef.get = function () { return this._data }
   const propsDef = {}
@@ -336,12 +402,16 @@ export function stateMixin (Vue: Class<Component>) {
       warn(`$props is readonly.`, this)
     }
   }
+  // 给Vue实例的原型对象 添加 属性
   Object.defineProperty(Vue.prototype, '$data', dataDef)
   Object.defineProperty(Vue.prototype, '$props', propsDef)
 
   Vue.prototype.$set = set
   Vue.prototype.$delete = del
 
+  /**
+   * vm的观察方法
+   */
   Vue.prototype.$watch = function (
     expOrFn: string | Function,
     cb: any,

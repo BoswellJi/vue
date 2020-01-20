@@ -39,11 +39,15 @@ export class Observer {
   dep: Dep;
   vmCount: number; // number of vms that have this object as root $data
 
+  // 需要转变为响应式对象的对象
   constructor (value: any) {
     this.value = value
+    // 依赖
     this.dep = new Dep()
     this.vmCount = 0
+    // 将对象打上__ob__属性标记,defineProperty
     def(value, '__ob__', this)
+    // 这个对象是数组,非数组
     if (Array.isArray(value)) {
       if (hasProto) {
         protoAugment(value, arrayMethods)
@@ -60,10 +64,13 @@ export class Observer {
    * Walk through all properties and convert them into
    * getter/setters. This method should only be called when
    * value type is Object.
+   * 对每个
    */
   walk (obj: Object) {
     const keys = Object.keys(obj)
+    // 每个键， 响应式对象都会生成一个依赖数据对象
     for (let i = 0; i < keys.length; i++) {
+      //
       defineReactive(obj, keys[i])
     }
   }
@@ -107,11 +114,18 @@ function copyAugment (target: Object, src: Object, keys: Array<string>) {
  * returns the new observer if successfully observed,
  * or the existing observer if the value already has one.
  */
+/**
+ * 观察
+ * @param {*} value 组件实例的data属性的值
+ * @param {*} asRootData 
+ */
 export function observe (value: any, asRootData: ?boolean): Observer | void {
+  // typeof val !=='object'
   if (!isObject(value) || value instanceof VNode) {
     return
   }
   let ob: Observer | void
+  // 有__ob__属性,已经是响应式对象
   if (hasOwn(value, '__ob__') && value.__ob__ instanceof Observer) {
     ob = value.__ob__
   } else if (
@@ -121,6 +135,7 @@ export function observe (value: any, asRootData: ?boolean): Observer | void {
     Object.isExtensible(value) &&
     !value._isVue
   ) {
+    // 创建一个观察者
     ob = new Observer(value)
   }
   if (asRootData && ob) {
@@ -131,6 +146,7 @@ export function observe (value: any, asRootData: ?boolean): Observer | void {
 
 /**
  * Define a reactive property on an Object.
+ * 响应式对象, 对象属性,
  */
 export function defineReactive (
   obj: Object,
@@ -139,8 +155,10 @@ export function defineReactive (
   customSetter?: ?Function,
   shallow?: boolean
 ) {
+  // 给这个响应式对象属性,添加依赖对象,通过闭包缓存依赖
   const dep = new Dep()
 
+  // 获取当前这个属性描述
   const property = Object.getOwnPropertyDescriptor(obj, key)
   if (property && property.configurable === false) {
     return

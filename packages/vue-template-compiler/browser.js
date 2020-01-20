@@ -149,6 +149,7 @@
 
   /**
    * Check whether an object has the property.
+   * 实例属性
    */
   var hasOwnProperty = Object.prototype.hasOwnProperty;
   function hasOwn (obj, key) {
@@ -310,7 +311,7 @@
   var startTagClose = /^\s*(\/?)>/;
   var endTag = new RegExp(("^<\\/" + qnameCapture + "[^>]*>"));
   var doctype = /^<!DOCTYPE [^>]+>/i;
-  // #7298: escape - to avoid being pased as HTML comment when inlined in page
+  // #7298: escape - to avoid being passed as HTML comment when inlined in page
   var comment = /^<!\--/;
   var conditionalComment = /^<!\[/;
 
@@ -814,6 +815,7 @@
     }());
   }
 
+  // 资源类型
   var ASSET_TYPES = [
     'component',
     'directive',
@@ -1120,6 +1122,7 @@
   var arrayProto = Array.prototype;
   var arrayMethods = Object.create(arrayProto);
 
+  // 可以触发数组变更检测的方法
   var methodsToPatch = [
     'push',
     'pop',
@@ -1177,9 +1180,12 @@
    */
   var Observer = function Observer (value) {
     this.value = value;
+    // 依赖
     this.dep = new Dep();
     this.vmCount = 0;
+    // 将对象打上__ob__属性标记,defineProperty
     def(value, '__ob__', this);
+    // 这个对象是数组,非数组
     if (Array.isArray(value)) {
       if (hasProto) {
         protoAugment(value, arrayMethods);
@@ -1196,10 +1202,13 @@
    * Walk through all properties and convert them into
    * getter/setters. This method should only be called when
    * value type is Object.
+   * 对每个
    */
   Observer.prototype.walk = function walk (obj) {
     var keys = Object.keys(obj);
+    // 每个键， 响应式对象都会生成一个依赖数据对象
     for (var i = 0; i < keys.length; i++) {
+      //
       defineReactive$$1(obj, keys[i]);
     }
   };
@@ -1242,11 +1251,18 @@
    * returns the new observer if successfully observed,
    * or the existing observer if the value already has one.
    */
+  /**
+   * 观察
+   * @param {*} value 组件实例的data属性的值
+   * @param {*} asRootData 
+   */
   function observe (value, asRootData) {
+    // typeof val !=='object'
     if (!isObject(value) || value instanceof VNode) {
       return
     }
     var ob;
+    // 有__ob__属性,已经是响应式对象
     if (hasOwn(value, '__ob__') && value.__ob__ instanceof Observer) {
       ob = value.__ob__;
     } else if (
@@ -1256,6 +1272,7 @@
       Object.isExtensible(value) &&
       !value._isVue
     ) {
+      // 创建一个观察者
       ob = new Observer(value);
     }
     if (asRootData && ob) {
@@ -1266,6 +1283,7 @@
 
   /**
    * Define a reactive property on an Object.
+   * 响应式对象, 对象属性,
    */
   function defineReactive$$1 (
     obj,
@@ -1274,8 +1292,10 @@
     customSetter,
     shallow
   ) {
+    // 给这个响应式对象属性,添加依赖对象,通过闭包缓存依赖
     var dep = new Dep();
 
+    // 获取当前这个属性描述
     var property = Object.getOwnPropertyDescriptor(obj, key);
     if (property && property.configurable === false) {
       return
@@ -1402,6 +1422,13 @@
     };
   }
 
+
+  /**
+   * 合并options中的各项的策略，  (合并父类的静态options和自身实例的options)
+   * 
+   data,beforeCreate,created,beforeMount,mounted,beforeUpdate,updated,beforeDestroy,destroyed,activated,deactivated,errorCaptured,serverPrefetch,filter,directive,component,watch,props,methods,inject,computed,provide
+   */
+
   /**
    * Helper that recursively merges two data objects together.
    */
@@ -1411,20 +1438,22 @@
 
     var keys = hasSymbol
       ? Reflect.ownKeys(from)
-      : Object.keys(from);
+      : Object.keys(from);  // 获取对象那个key，返回数组 ['a','b']
 
     for (var i = 0; i < keys.length; i++) {
       key = keys[i];
       // in case the object is already observed...
       if (key === '__ob__') { continue }
+
       toVal = to[key];
       fromVal = from[key];
+      // to 对象没有此实例属性
       if (!hasOwn(to, key)) {
         set(to, key, fromVal);
       } else if (
         toVal !== fromVal &&
         isPlainObject(toVal) &&
-        isPlainObject(fromVal)
+        isPlainObject(fromVal)  // 
       ) {
         mergeData(toVal, fromVal);
       }
@@ -2729,7 +2758,7 @@
   /*  */
 
   var onRE = /^@|^v-on:/;
-  var dirRE = /^v-|^@|^:/;
+  var dirRE = /^v-|^@|^:|^#/;
   var forAliasRE = /([\s\S]*?)\s+(?:in|of)\s+([\s\S]*)/;
   var forIteratorRE = /,([^,\}\]]*)(?:,([^,\}\]]*))?$/;
   var stripParensRE = /^\(|\)$/g;
@@ -3353,7 +3382,7 @@
             if (el.parent && !maybeComponent(el.parent)) {
               warn$1(
                 "<template v-slot> can only appear at the root level inside " +
-                "the receiving the component",
+                "the receiving component",
                 el
               );
             }
@@ -4082,7 +4111,7 @@
 
   /*  */
 
-  var fnExpRE = /^([\w$_]+|\([^)]*?\))\s*=>|^function\s*(?:[\w$]+)?\s*\(/;
+  var fnExpRE = /^([\w$_]+|\([^)]*?\))\s*=>|^function(?:\s+[\w$]+)?\s*\(/;
   var fnInvokeRE = /\([^)]*?\);*$/;
   var simplePathRE = /^[A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*|\['[^']*?']|\["[^"]*?"]|\[\d+]|\[[A-Za-z_$][\w$]*])*$/;
 
@@ -4851,6 +4880,8 @@
             var range = node.rawAttrsMap[name];
             if (name === 'v-for') {
               checkFor(node, ("v-for=\"" + value + "\""), warn, range);
+            } else if (name === 'v-slot' || name[0] === '#') {
+              checkFunctionParameterExpression(value, (name + "=\"" + value + "\""), warn, range);
             } else if (onRE.test(name)) {
               checkEvent(value, (name + "=\"" + value + "\""), warn, range);
             } else {
@@ -4870,9 +4901,9 @@
   }
 
   function checkEvent (exp, text, warn, range) {
-    var stipped = exp.replace(stripStringRE, '');
-    var keywordMatch = stipped.match(unaryOperatorsRE);
-    if (keywordMatch && stipped.charAt(keywordMatch.index - 1) !== '$') {
+    var stripped = exp.replace(stripStringRE, '');
+    var keywordMatch = stripped.match(unaryOperatorsRE);
+    if (keywordMatch && stripped.charAt(keywordMatch.index - 1) !== '$') {
       warn(
         "avoid using JavaScript unary operator as property name: " +
         "\"" + (keywordMatch[0]) + "\" in expression " + (text.trim()),
@@ -4924,6 +4955,19 @@
           range
         );
       }
+    }
+  }
+
+  function checkFunctionParameterExpression (exp, text, warn, range) {
+    try {
+      new Function(exp, '');
+    } catch (e) {
+      warn(
+        "invalid function parameter expression: " + (e.message) + " in\n\n" +
+        "    " + exp + "\n\n" +
+        "  Raw expression: " + (text.trim()) + "\n",
+        range
+      );
     }
   }
 

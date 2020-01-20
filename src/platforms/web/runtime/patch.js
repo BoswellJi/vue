@@ -1,5 +1,6 @@
 /* @flow */
 
+// 封装操作dom的方法
 import * as nodeOps from 'web/runtime/node-ops'
 import { createPatchFunction } from 'core/vdom/patch'
 import baseModules from 'core/vdom/modules/index'

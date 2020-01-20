@@ -1,6 +1,6 @@
 /*!
  * Vue.js v2.6.10
- * (c) 2014-2019 Evan You
+ * (c) 2014-2020 Evan You
  * Released under the MIT License.
  */
 (function (global, factory) {
@@ -152,6 +152,7 @@
 
   /**
    * Check whether an object has the property.
+   * 实例属性
    */
   var hasOwnProperty = Object.prototype.hasOwnProperty;
   function hasOwn (obj, key) {
@@ -346,6 +347,7 @@
 
   var SSR_ATTR = 'data-server-rendered';
 
+  // 资源类型
   var ASSET_TYPES = [
     'component',
     'directive',
@@ -743,11 +745,13 @@
   Dep.target = null;
   var targetStack = [];
 
+  // 监听器
   function pushTarget (target) {
     targetStack.push(target);
     Dep.target = target;
   }
 
+  // 后进先出
   function popTarget () {
     targetStack.pop();
     Dep.target = targetStack[targetStack.length - 1];
@@ -851,6 +855,7 @@
   var arrayProto = Array.prototype;
   var arrayMethods = Object.create(arrayProto);
 
+  // 可以触发数组变更检测的方法
   var methodsToPatch = [
     'push',
     'pop',
@@ -912,9 +917,12 @@
    */
   var Observer = function Observer (value) {
     this.value = value;
+    // 依赖
     this.dep = new Dep();
     this.vmCount = 0;
+    // 将对象打上__ob__属性标记,defineProperty
     def(value, '__ob__', this);
+    // 这个对象是数组,非数组
     if (Array.isArray(value)) {
       if (hasProto) {
         protoAugment(value, arrayMethods);
@@ -931,10 +939,13 @@
    * Walk through all properties and convert them into
    * getter/setters. This method should only be called when
    * value type is Object.
+   * 对每个
    */
   Observer.prototype.walk = function walk (obj) {
     var keys = Object.keys(obj);
+    // 每个键， 响应式对象都会生成一个依赖数据对象
     for (var i = 0; i < keys.length; i++) {
+      //
       defineReactive$$1(obj, keys[i]);
     }
   };
@@ -977,11 +988,18 @@
    * returns the new observer if successfully observed,
    * or the existing observer if the value already has one.
    */
+  /**
+   * 观察
+   * @param {*} value 组件实例的data属性的值
+   * @param {*} asRootData 
+   */
   function observe (value, asRootData) {
+    // typeof val !=='object'
     if (!isObject(value) || value instanceof VNode) {
       return
     }
     var ob;
+    // 有__ob__属性,已经是响应式对象
     if (hasOwn(value, '__ob__') && value.__ob__ instanceof Observer) {
       ob = value.__ob__;
     } else if (
@@ -991,6 +1009,7 @@
       Object.isExtensible(value) &&
       !value._isVue
     ) {
+      // 创建一个观察者
       ob = new Observer(value);
     }
     if (asRootData && ob) {
@@ -1001,6 +1020,7 @@
 
   /**
    * Define a reactive property on an Object.
+   * 响应式对象, 对象属性,
    */
   function defineReactive$$1 (
     obj,
@@ -1009,8 +1029,10 @@
     customSetter,
     shallow
   ) {
+    // 给这个响应式对象属性,添加依赖对象,通过闭包缓存依赖
     var dep = new Dep();
 
+    // 获取当前这个属性描述
     var property = Object.getOwnPropertyDescriptor(obj, key);
     if (property && property.configurable === false) {
       return
@@ -1167,6 +1189,13 @@
     };
   }
 
+
+  /**
+   * 合并options中的各项的策略，  (合并父类的静态options和自身实例的options)
+   * 
+   data,beforeCreate,created,beforeMount,mounted,beforeUpdate,updated,beforeDestroy,destroyed,activated,deactivated,errorCaptured,serverPrefetch,filter,directive,component,watch,props,methods,inject,computed,provide
+   */
+
   /**
    * Helper that recursively merges two data objects together.
    */
@@ -1176,20 +1205,22 @@
 
     var keys = hasSymbol
       ? Reflect.ownKeys(from)
-      : Object.keys(from);
+      : Object.keys(from);  // 获取对象那个key，返回数组 ['a','b']
 
     for (var i = 0; i < keys.length; i++) {
       key = keys[i];
       // in case the object is already observed...
       if (key === '__ob__') { continue }
+
       toVal = to[key];
       fromVal = from[key];
+      // to 对象没有此实例属性
       if (!hasOwn(to, key)) {
         set(to, key, fromVal);
       } else if (
         toVal !== fromVal &&
         isPlainObject(toVal) &&
-        isPlainObject(fromVal)
+        isPlainObject(fromVal)  // 
       ) {
         mergeData(toVal, fromVal);
       }
@@ -1392,6 +1423,7 @@
   };
 
   /**
+   * 验证组件名称是否合法
    * Validate component names
    */
   function checkComponents (options) {
@@ -1400,6 +1432,10 @@
     }
   }
 
+  /**
+   * 组件名称规则
+   * @param {*} name 
+   */
   function validateComponentName (name) {
     if (!new RegExp(("^[a-zA-Z][\\-\\.0-9_" + (unicodeRegExp.source) + "]*$")).test(name)) {
       warn(
@@ -1420,10 +1456,13 @@
    * Object-based format.
    */
   function normalizeProps (options, vm) {
-    var props = options.props;
+    // 获取属性对象
+    var props = options.props; 
     if (!props) { return }
+
     var res = {};
     var i, val, name;
+    // 数组
     if (Array.isArray(props)) {
       i = props.length;
       while (i--) {
@@ -1435,6 +1474,7 @@
           warn('props must be strings when using array syntax.');
         }
       }
+      // 字典
     } else if (isPlainObject(props)) {
       for (var key in props) {
         val = props[key];
@@ -1509,6 +1549,12 @@
    * Merge two option objects into a new one.
    * Core utility used in both instantiation and inheritance.
    */
+  /**
+   * 
+   * @param {*} parent Vue构造函数的option
+   * @param {*} child 组件的option,子组件构造函数
+   * @param {*} vm Vue实例，子实例
+   */
   function mergeOptions (
     parent,
     child,
@@ -1521,7 +1567,8 @@
     if (typeof child === 'function') {
       child = child.options;
     }
-
+    
+    // 正规化 props inject directive
     normalizeProps(child, vm);
     normalizeInject(child, vm);
     normalizeDirectives(child);
@@ -1552,6 +1599,7 @@
       }
     }
     function mergeField (key) {
+      // 根据options的key进行获取合并策略，没在vue options中的key,使用默认的策略
       var strat = strats[key] || defaultStrat;
       options[key] = strat(parent[key], child[key], vm, key);
     }
@@ -1960,7 +2008,7 @@
     isUsingMicroTask = true;
   } else if (typeof setImmediate !== 'undefined' && isNative(setImmediate)) {
     // Fallback to setImmediate.
-    // Techinically it leverages the (macro) task queue,
+    // Technically it leverages the (macro) task queue,
     // but it is still a better choice than setTimeout.
     timerFunc = function () {
       setImmediate(flushCallbacks);
@@ -2026,12 +2074,13 @@
       warn(
         "Property \"" + key + "\" must be accessed with \"$data." + key + "\" because " +
         'properties starting with "$" or "_" are not proxied in the Vue instance to ' +
-        'prevent conflicts with Vue internals' +
+        'prevent conflicts with Vue internals. ' +
         'See: https://vuejs.org/v2/api/#data',
         target
       );
     };
 
+    // 是否存在Proxy原生对象
     var hasProxy =
       typeof Proxy !== 'undefined' && isNative(Proxy);
 
@@ -2150,8 +2199,10 @@
   /*  */
 
   var normalizeEvent = cached(function (name) {
+    // name 首字母为&  ~ ! 去掉
     var passive = name.charAt(0) === '&';
     name = passive ? name.slice(1) : name;
+    
     var once$$1 = name.charAt(0) === '~'; // Prefixed last, checked first
     name = once$$1 ? name.slice(1) : name;
     var capture = name.charAt(0) === '!';
@@ -2192,10 +2243,12 @@
     vm
   ) {
     var name, def$$1, cur, old, event;
+    // 事件监听
     for (name in on) {
       def$$1 = cur = on[name];
       old = oldOn[name];
       event = normalizeEvent(name);
+      // null, undefined
       if (isUndef(cur)) {
         warn(
           "Invalid handler for event \"" + (event.name) + "\": got " + String(cur),
@@ -2424,6 +2477,7 @@
   }
 
   function initInjections (vm) {
+    // 组件配置,注入
     var result = resolveInject(vm.$options.inject, vm);
     if (result) {
       toggleObserving(false);
@@ -2909,7 +2963,7 @@
       if (typeof key === 'string' && key) {
         baseObj[values[i]] = values[i + 1];
       } else if (key !== '' && key !== null) {
-        // null is a speical value for explicitly removing a binding
+        // null is a special value for explicitly removing a binding
         warn(
           ("Invalid value for dynamic directive argument (expected string or null): " + key),
           this
@@ -2928,6 +2982,10 @@
 
   /*  */
 
+  /**
+   * 安装渲染助手
+   * @param {*} target vm 原型对象
+   */
   function installRenderHelpers (target) {
     target._o = markOnce;
     target._n = toNumber;
@@ -3340,11 +3398,14 @@
     normalizationType,
     alwaysNormalize
   ) {
+    // 数组或者原始
     if (Array.isArray(data) || isPrimitive(data)) {
+
       normalizationType = children;
       children = data;
       data = undefined;
     }
+    // boolean类型
     if (isTrue(alwaysNormalize)) {
       normalizationType = ALWAYS_NORMALIZE;
     }
@@ -3404,6 +3465,12 @@
       ns = (context.$vnode && context.$vnode.ns) || config.getTagNamespace(tag);
       if (config.isReservedTag(tag)) {
         // platform built-in elements
+        if (isDef(data) && isDef(data.nativeOn)) {
+          warn(
+            ("The .native modifier for v-on is only valid on components but it was used on <" + tag + ">."),
+            context
+          );
+        }
         vnode = new VNode(
           config.parsePlatformTagName(tag), data, children,
           undefined, undefined, context
@@ -3424,9 +3491,10 @@
       // direct component options / constructor
       vnode = createComponent(tag, data, context, children);
     }
+    // 数组
     if (Array.isArray(vnode)) {
       return vnode
-    } else if (isDef(vnode)) {
+    } else if (isDef(vnode)) { 
       if (isDef(ns)) { applyNS(vnode, ns); }
       if (isDef(data)) { registerDeepBindings(data); }
       return vnode
@@ -3468,9 +3536,9 @@
   /*  */
 
   function initRender (vm) {
-    vm._vnode = null; // the root of the child tree
+    vm._vnode = null; // the root of the child tree 
     vm._staticTrees = null; // v-once cached trees
-    var options = vm.$options;
+    var options = vm.$options;  // 组件配置
     var parentVnode = vm.$vnode = options._parentVnode; // the placeholder node in parent tree
     var renderContext = parentVnode && parentVnode.context;
     vm.$slots = resolveSlots(options._renderChildren, renderContext);
@@ -3503,12 +3571,15 @@
 
   function renderMixin (Vue) {
     // install runtime convenience helpers
+    // 添加
     installRenderHelpers(Vue.prototype);
 
+    // 下周期执行前
     Vue.prototype.$nextTick = function (fn) {
       return nextTick(fn, this)
     };
 
+    // 渲染方法
     Vue.prototype._render = function () {
       var vm = this;
       var ref = vm.$options;
@@ -3529,7 +3600,7 @@
       // render self
       var vnode;
       try {
-        // There's no need to maintain a stack becaues all render fns are called
+        // There's no need to maintain a stack because all render fns are called
         // separately from one another. Nested component's render fns are called
         // when parent component is patched.
         currentRenderingInstance = vm;
@@ -3746,25 +3817,31 @@
   /*  */
 
   function initEvents (vm) {
+    // 创建事件容器
     vm._events = Object.create(null);
     vm._hasHookEvent = false;
     // init parent attached events
+    // 组件上的v-on:click等绑定事件
     var listeners = vm.$options._parentListeners;
     if (listeners) {
       updateComponentListeners(vm, listeners);
     }
   }
 
+  // 组件实例
   var target;
 
+  // 新增自定义事件
   function add (event, fn) {
     target.$on(event, fn);
   }
 
+  // 解绑事件
   function remove$1 (event, fn) {
     target.$off(event, fn);
   }
 
+  // 创建一次性的自定义事件
   function createOnceHandler (event, fn) {
     var _target = target;
     return function onceHandler () {
@@ -3789,11 +3866,14 @@
     var hookRE = /^hook:/;
     Vue.prototype.$on = function (event, fn) {
       var vm = this;
+
+      // 定义多个自定义事件
       if (Array.isArray(event)) {
         for (var i = 0, l = event.length; i < l; i++) {
           vm.$on(event[i], fn);
         }
       } else {
+        //给定义的事件，初始化为数组，因为可能一个事件，多个订阅
         (vm._events[event] || (vm._events[event] = [])).push(fn);
         // optimize hook:event cost by using a boolean flag marked at registration
         // instead of a hash lookup
@@ -3804,12 +3884,14 @@
       return vm
     };
 
+    // 只绑定一次
     Vue.prototype.$once = function (event, fn) {
       var vm = this;
       function on () {
         vm.$off(event, on);
         fn.apply(vm, arguments);
       }
+
       on.fn = fn;
       vm.$on(event, on);
       return vm
@@ -3817,12 +3899,13 @@
 
     Vue.prototype.$off = function (event, fn) {
       var vm = this;
-      // all
+      // all（所有的定义事件都取消
       if (!arguments.length) {
         vm._events = Object.create(null);
         return vm
       }
       // array of events
+      // 多个事件，遍历取消
       if (Array.isArray(event)) {
         for (var i$1 = 0, l = event.length; i$1 < l; i$1++) {
           vm.$off(event[i$1], fn);
@@ -3830,15 +3913,19 @@
         return vm
       }
       // specific event
+      // 指定的单个事件
       var cbs = vm._events[event];
+      // 不存在这个自定义事件
       if (!cbs) {
         return vm
       }
+      // 不能存在解绑后的回调，直接取消
       if (!fn) {
         vm._events[event] = null;
         return vm
       }
       // specific handler
+      // 指定的自定义事件，有多个订阅，指定解绑方法的取消
       var cb;
       var i = cbs.length;
       while (i--) {
@@ -3851,6 +3938,7 @@
       return vm
     };
 
+    // 触发事件
     Vue.prototype.$emit = function (event) {
       var vm = this;
       {
@@ -3865,12 +3953,15 @@
           );
         }
       }
+      // 获取自定义事件的订阅方法
       var cbs = vm._events[event];
+      // 存在
       if (cbs) {
         cbs = cbs.length > 1 ? toArray(cbs) : cbs;
         var args = toArray(arguments, 1);
         var info = "event handler for \"" + event + "\"";
         for (var i = 0, l = cbs.length; i < l; i++) {
+          // 触发定义的回调
           invokeWithErrorHandling(cbs[i], vm, args, vm, info);
         }
       }
@@ -3891,24 +3982,31 @@
     }
   }
 
+  // 初始化,生命周期
   function initLifecycle (vm) {
+    // 获取,实例配置参数
     var options = vm.$options;
 
     // locate first non-abstract parent
     var parent = options.parent;
     if (parent && !options.abstract) {
+      // 向上找符组件
       while (parent.$options.abstract && parent.$parent) {
         parent = parent.$parent;
       }
       parent.$children.push(vm);
     }
 
+    // 父组件,根组件
     vm.$parent = parent;
     vm.$root = parent ? parent.$root : vm;
 
+    // 定义子组件容器
     vm.$children = [];
+    // 定义节点的引用
     vm.$refs = {};
 
+    // 定义
     vm._watcher = null;
     vm._inactive = null;
     vm._directInactive = false;
@@ -3918,11 +4016,17 @@
   }
 
   function lifecycleMixin (Vue) {
+    // 更新组件
     Vue.prototype._update = function (vnode, hydrating) {
+      // 实例
       var vm = this;
+      // 实例元素
       var prevEl = vm.$el;
-      var prevVnode = vm._vnode;
+      // 上一个虚拟节点
+      var prevVnode = vm._vnode;//保存当前虚拟节点
+
       var restoreActiveInstance = setActiveInstance(vm);
+      // 重新添加新的虚拟节点
       vm._vnode = vnode;
       // Vue.prototype.__patch__ is injected in entry points
       // based on the rendering backend used.
@@ -3933,6 +4037,7 @@
         // updates
         vm.$el = vm.__patch__(prevVnode, vnode);
       }
+      // 存储的实例vm
       restoreActiveInstance();
       // update __vue__ reference
       if (prevEl) {
@@ -3949,6 +4054,7 @@
       // updated in a parent's updated hook.
     };
 
+    // 强迫组件更新
     Vue.prototype.$forceUpdate = function () {
       var vm = this;
       if (vm._watcher) {
@@ -3956,6 +4062,7 @@
       }
     };
 
+    // 销毁组件
     Vue.prototype.$destroy = function () {
       var vm = this;
       if (vm._isBeingDestroyed) {
@@ -4000,13 +4107,17 @@
     };
   }
 
+  // 组件安装,创建监听 Vue实例
   function mountComponent (
     vm,
     el,
     hydrating
   ) {
+    // 组件模板根元素的引用  vm.$el
+    // 组件模板的挂载点的引用 el
     vm.$el = el;
     if (!vm.$options.render) {
+      // 定义render函数
       vm.$options.render = createEmptyVNode;
       {
         /* istanbul ignore if */
@@ -4026,6 +4137,7 @@
         }
       }
     }
+    // 安装之前
     callHook(vm, 'beforeMount');
 
     var updateComponent;
@@ -4048,6 +4160,7 @@
         measure(("vue " + name + " patch"), startTag, endTag);
       };
     } else {
+      // 将渲染函数返回的vdom进行真实dom渲染
       updateComponent = function () {
         vm._update(vm._render(), hydrating);
       };
@@ -4056,7 +4169,9 @@
     // we set this to vm._watcher inside the watcher's constructor
     // since the watcher's initial patch may call $forceUpdate (e.g. inside child
     // component's mounted hook), which relies on vm._watcher being already defined
+    // 组件实例
     new Watcher(vm, updateComponent, noop, {
+      // watch的钩子函数，在渲染真实dom之前执行
       before: function before () {
         if (vm._isMounted && !vm._isDestroyed) {
           callHook(vm, 'beforeUpdate');
@@ -4067,6 +4182,7 @@
 
     // manually mounted instance, call mounted on self
     // mounted is called for render-created child components in its inserted hook
+    // null undefined
     if (vm.$vnode == null) {
       vm._isMounted = true;
       callHook(vm, 'mounted');
@@ -4198,6 +4314,7 @@
   function callHook (vm, hook) {
     // #7573 disable dep collection when invoking lifecycle hooks
     pushTarget();
+    // 获取钩子函数
     var handlers = vm.$options[hook];
     var info = hook + " hook";
     if (handlers) {
@@ -4205,6 +4322,7 @@
         invokeWithErrorHandling(handlers[i], vm, null, vm, info);
       }
     }
+    // 有hook自定义事件,自动触发
     if (vm._hasHookEvent) {
       vm.$emit('hook:' + hook);
     }
@@ -4408,10 +4526,12 @@
     options,
     isRenderWatcher
   ) {
+    // 初始化组件实例
     this.vm = vm;
     if (isRenderWatcher) {
       vm._watcher = this;
     }
+    // 当前组件中的监听
     vm._watchers.push(this);
     // options
     if (options) {
@@ -4456,10 +4576,12 @@
    * Evaluate the getter, and re-collect dependencies.
    */
   Watcher.prototype.get = function get () {
+    // 添加一个监听对像，new Watcher()，针对某个数据属性的监听
     pushTarget(this);
     var value;
     var vm = this.vm;
     try {
+      // 触发属性的get方法收集依赖
       value = this.getter.call(vm, vm);
     } catch (e) {
       if (this.user) {
@@ -4607,6 +4729,12 @@
     set: noop
   };
 
+  /**
+   * 
+   * @param {*} target 组件实例
+   * @param {*} sourceKey _data,_prop,私有属性,保存正真的值,通过代理进行 返回
+   * @param {*} key 对象属性
+   */
   function proxy (target, sourceKey, key) {
     sharedPropertyDefinition.get = function proxyGetter () {
       return this[sourceKey][key]
@@ -4618,10 +4746,14 @@
   }
 
   function initState (vm) {
+    // 给组件实例添加监听数组
     vm._watchers = [];
     var opts = vm.$options;
+    // 配置参数有输入属性
     if (opts.props) { initProps(vm, opts.props); }
+    // 配置参数有方法
     if (opts.methods) { initMethods(vm, opts.methods); }
+    // 配置参数有data
     if (opts.data) {
       initData(vm);
     } else {
@@ -4644,7 +4776,9 @@
     if (!isRoot) {
       toggleObserving(false);
     }
+    // 遍历每一个prop属性
     var loop = function ( key ) {
+
       keys.push(key);
       var value = validateProp(key, propsOptions, propsData, vm);
       /* istanbul ignore else */
@@ -4681,12 +4815,17 @@
     toggleObserving(true);
   }
 
+  /**
+   * 初始化data方法
+   * @param {*} vm 
+   */
   function initData (vm) {
+    // 组件的data返回对象
     var data = vm.$options.data;
     data = vm._data = typeof data === 'function'
-      ? getData(data, vm)
+      ? getData(data, vm)  // 获取子组件的data
       : data || {};
-    if (!isPlainObject(data)) {
+    if (!isPlainObject(data)) { // 原生对象，是函数的
       data = {};
       warn(
         'data functions should return an object:\n' +
@@ -4695,12 +4834,14 @@
       );
     }
     // proxy data on instance
+    // 根组件
     var keys = Object.keys(data);
     var props = vm.$options.props;
     var methods = vm.$options.methods;
     var i = keys.length;
     while (i--) {
       var key = keys[i];
+      // 开发阶段屏蔽定义data,字段与method一样
       {
         if (methods && hasOwn(methods, key)) {
           warn(
@@ -4709,17 +4850,19 @@
           );
         }
       }
+      // 开发阶段屏蔽定义data,字段与props一样
       if (props && hasOwn(props, key)) {
         warn(
           "The data property \"" + key + "\" is already declared as a prop. " +
           "Use prop default value instead.",
           vm
         );
-      } else if (!isReserved(key)) {
+      } else if (!isReserved(key)) { //开头不是_ &的,_ &这些属于框架保留字符
+        // 将data属性代理到vm实例上
         proxy(vm, "_data", key);
       }
     }
-    // observe data
+    // observe data 对data 数据进行观察
     observe(data, true /* asRootData */);
   }
 
@@ -4746,6 +4889,14 @@
 
     for (var key in computed) {
       var userDef = computed[key];
+      /**
+       * computed:{
+       *    attr1:{
+       *        get(){}
+       *    },
+       *    attr2:(){}
+       * }
+       */
       var getter = typeof userDef === 'function' ? userDef : userDef.get;
       if (getter == null) {
         warn(
@@ -4767,9 +4918,11 @@
       // component-defined computed properties are already defined on the
       // component prototype. We only need to define computed properties defined
       // at instantiation here.
+      // 组件实例没有定义,在vm出现过,method,忽略不处理
       if (!(key in vm)) {
         defineComputed(vm, key, userDef);
       } else {
+        // 判断是否被定义过
         if (key in vm.$data) {
           warn(("The computed property \"" + key + "\" is already defined in data."), vm);
         } else if (vm.$options.props && key in vm.$options.props) {
@@ -4779,6 +4932,8 @@
     }
   }
 
+
+  // 代理computed属性到组件实例上
   function defineComputed (
     target,
     key,
@@ -4831,7 +4986,9 @@
   }
 
   function initMethods (vm, methods) {
+    // 获取输入属性
     var props = vm.$options.props;
+    // 遍历定义方法
     for (var key in methods) {
       {
         if (typeof methods[key] !== 'function') {
@@ -4854,12 +5011,32 @@
           );
         }
       }
+      // 将定义的方法添加到组件实例上,绑定this指向
       vm[key] = typeof methods[key] !== 'function' ? noop : bind(methods[key], vm);
     }
   }
 
+  /**
+   * 
+   * @param {*} vm  组件实例
+   * @param {*} watch 观察属性
+   */
   function initWatch (vm, watch) {
     for (var key in watch) {
+      /**
+       * watch:{
+       *  a(val,oldVal){
+       *     
+       *  },
+       *  b:[
+       *    ()=>{},
+       *  ],
+       *  c:{
+       *    handler:()=>{}
+       *  },
+       *  d:'b'
+       * }
+       */
       var handler = watch[key];
       if (Array.isArray(handler)) {
         for (var i = 0; i < handler.length; i++) {
@@ -4871,17 +5048,26 @@
     }
   }
 
+  /**
+   * 
+   * @param {*} vm 组件实例
+   * @param {*} expOrFn key(观察的key)
+   * @param {*} handler (观察后的处理函数)
+   * @param {*} options 
+   */
   function createWatcher (
     vm,
     expOrFn,
     handler,
     options
   ) {
+    // 原生对象
     if (isPlainObject(handler)) {
       options = handler;
       handler = handler.handler;
     }
     if (typeof handler === 'string') {
+      //组件实例上的method
       handler = vm[handler];
     }
     return vm.$watch(expOrFn, handler, options)
@@ -4891,6 +5077,7 @@
     // flow somehow has problems with directly declared definition object
     // when using Object.defineProperty, so we have to procedurally build up
     // the object here.
+    // 定义的是Vue实例的原型对象的get  set 方法
     var dataDef = {};
     dataDef.get = function () { return this._data };
     var propsDef = {};
@@ -4907,12 +5094,16 @@
         warn("$props is readonly.", this);
       };
     }
+    // 给Vue实例的原型对象 添加 属性
     Object.defineProperty(Vue.prototype, '$data', dataDef);
     Object.defineProperty(Vue.prototype, '$props', propsDef);
 
     Vue.prototype.$set = set;
     Vue.prototype.$delete = del;
 
+    /**
+     * vm的观察方法
+     */
     Vue.prototype.$watch = function (
       expOrFn,
       cb,
@@ -4943,9 +5134,13 @@
   var uid$3 = 0;
 
   function initMixin (Vue) {
+    // Vue构造函数中的初始化
+    /**
+     * 配置参数
+     */
     Vue.prototype._init = function (options) {
       var vm = this;
-      // a uid
+      // a uid，给实例化的vm 添加一个唯一id
       vm._uid = uid$3++;
 
       var startTag, endTag;
@@ -4959,14 +5154,16 @@
       // a flag to avoid this being observed
       vm._isVue = true;
       // merge options
+      // 存在参数，并且是
       if (options && options._isComponent) {
         // optimize internal component instantiation
         // since dynamic options merging is pretty slow, and none of the
         // internal component options needs special treatment.
         initInternalComponent(vm, options);
       } else {
+        // 设置了,实例的配置参数
         vm.$options = mergeOptions(
-          resolveConstructorOptions(vm.constructor),
+          resolveConstructorOptions(vm.constructor),  //vm.constructor === Vue
           options || {},
           vm
         );
@@ -4977,11 +5174,17 @@
       }
       // expose real self
       vm._self = vm;
+      // 初始化生命周期
       initLifecycle(vm);
+      // 初始化事件
       initEvents(vm);
+      // 初始化渲染
       initRender(vm);
+      // 回调钩子函数
       callHook(vm, 'beforeCreate');
+      // 初始化注入
       initInjections(vm); // resolve injections before data/props
+      // 初始，开启响应式系统
       initState(vm);
       initProvide(vm); // resolve provide after data/props
       callHook(vm, 'created');
@@ -4993,6 +5196,8 @@
         measure(("vue " + (vm._name) + " init"), startTag, endTag);
       }
 
+      // 安装组件，
+      // 这个为了script脚本引入用的
       if (vm.$options.el) {
         vm.$mount(vm.$options.el);
       }
@@ -5018,11 +5223,15 @@
     }
   }
 
+
+  // 传入的参数为 Vue（以及子类  Vue.extend() 创建Vue子类
   function resolveConstructorOptions (Ctor) {
+    // options
     var options = Ctor.options;
+    // 有父类
     if (Ctor.super) {
-      var superOptions = resolveConstructorOptions(Ctor.super);
-      var cachedSuperOptions = Ctor.superOptions;
+      var superOptions = resolveConstructorOptions(Ctor.super); //Vue 父类
+      var cachedSuperOptions = Ctor.superOptions; //父类配置参数
       if (superOptions !== cachedSuperOptions) {
         // super option changed,
         // need to resolve new options.
@@ -5039,13 +5248,15 @@
         }
       }
     }
+    // 没有直接返回Vue.options
     return options
   }
 
   function resolveModifiedOptions (Ctor) {
     var modified;
+    // 组件配置参数
     var latest = Ctor.options;
-    var sealed = Ctor.sealedOptions;
+    var sealed = Ctor.sealedOptions; //密封参数，（不可修改
     for (var key in latest) {
       if (latest[key] !== sealed[key]) {
         if (!modified) { modified = {}; }
@@ -5055,7 +5266,12 @@
     return modified
   }
 
+  /**
+   * Vue构造函数
+   * @param {Object} options 构造函数参数
+   */
   function Vue (options) {
+    // 开发环境，this 不是Vue实例，抛异常
     if (!(this instanceof Vue)
     ) {
       warn('Vue is a constructor and should be called with the `new` keyword');
@@ -5063,10 +5279,28 @@
     this._init(options);
   }
 
+
+  // 给Vue添加原型方法
+
+  /**
+   * 定义_init 
+   */
   initMixin(Vue);
+  /**
+   * 给Vue.prototype 定义方法,属性  $data,$props,$set,$delete,$watch
+   */
   stateMixin(Vue);
+  /**
+   * 定义自定义事件系统, $on $once $off $emit
+   */
   eventsMixin(Vue);
+  /**
+   * 定义组件更新,强迫更新,销毁方法
+   */
   lifecycleMixin(Vue);
+  /**
+   * $nextTick _render
+   */
   renderMixin(Vue);
 
   /*  */
@@ -5116,8 +5350,8 @@
      */
     Vue.extend = function (extendOptions) {
       extendOptions = extendOptions || {};
-      var Super = this;
-      var SuperId = Super.cid;
+      var Super = this; //Vue构造函数对象
+      var SuperId = Super.cid; //
       var cachedCtors = extendOptions._Ctor || (extendOptions._Ctor = {});
       if (cachedCtors[SuperId]) {
         return cachedCtors[SuperId]
@@ -5131,14 +5365,15 @@
       var Sub = function VueComponent (options) {
         this._init(options);
       };
-      Sub.prototype = Object.create(Super.prototype);
+      Sub.prototype = Object.create(Super.prototype); // 原型继承，Vue.prototype
       Sub.prototype.constructor = Sub;
       Sub.cid = cid++;
+      // Vue子类的options
       Sub.options = mergeOptions(
-        Super.options,
-        extendOptions
+        Super.options, // 父构造函数的静态属性options
+        extendOptions // 自身options
       );
-      Sub['super'] = Super;
+      Sub['super'] = Super; //子类指向父类的索引
 
       // For props and computed properties, we define the proxy getters on
       // the Vue instances at extension time, on the extended prototype. This
@@ -5151,6 +5386,7 @@
       }
 
       // allow further extension/mixin/plugin usage
+      // 子类也具备继承，混合，插件
       Sub.extend = Super.extend;
       Sub.mixin = Super.mixin;
       Sub.use = Super.use;
@@ -5393,7 +5629,9 @@
       return obj
     };
 
+    // Vue的配置对象
     Vue.options = Object.create(null);
+    // 给options添加  components filters directive  组件，过滤器，指令
     ASSET_TYPES.forEach(function (type) {
       Vue.options[type + 's'] = Object.create(null);
     });
@@ -5402,6 +5640,7 @@
     // components with in Weex's multi-instance scenarios.
     Vue.options._base = Vue;
 
+    // {}  {}内置组件添加到到全局配置
     extend(Vue.options.components, builtInComponents);
 
     initUse(Vue);
@@ -5410,6 +5649,9 @@
     initAssetRegisters(Vue);
   }
 
+  /**
+   * 给Vue对象添加全局api
+   */
   initGlobalAPI(Vue);
 
   Object.defineProperty(Vue.prototype, '$isServer', {
@@ -6099,7 +6341,7 @@
       }
     }
 
-    function removeVnodes (parentElm, vnodes, startIdx, endIdx) {
+    function removeVnodes (vnodes, startIdx, endIdx) {
       for (; startIdx <= endIdx; ++startIdx) {
         var ch = vnodes[startIdx];
         if (isDef(ch)) {
@@ -6210,7 +6452,7 @@
         refElm = isUndef(newCh[newEndIdx + 1]) ? null : newCh[newEndIdx + 1].elm;
         addVnodes(parentElm, refElm, newCh, newStartIdx, newEndIdx, insertedVnodeQueue);
       } else if (newStartIdx > newEndIdx) {
-        removeVnodes(parentElm, oldCh, oldStartIdx, oldEndIdx);
+        removeVnodes(oldCh, oldStartIdx, oldEndIdx);
       }
     }
 
@@ -6302,7 +6544,7 @@
           if (isDef(oldVnode.text)) { nodeOps.setTextContent(elm, ''); }
           addVnodes(elm, null, ch, 0, ch.length - 1, insertedVnodeQueue);
         } else if (isDef(oldCh)) {
-          removeVnodes(elm, oldCh, 0, oldCh.length - 1);
+          removeVnodes(oldCh, 0, oldCh.length - 1);
         } else if (isDef(oldVnode.text)) {
           nodeOps.setTextContent(elm, '');
         }
@@ -6531,7 +6773,7 @@
 
           // destroy old node
           if (isDef(parentElm)) {
-            removeVnodes(parentElm, [oldVnode], 0, 0);
+            removeVnodes([oldVnode], 0, 0);
           } else if (isDef(oldVnode.tag)) {
             invokeDestroyHook(oldVnode);
           }

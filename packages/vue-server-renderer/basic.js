@@ -143,6 +143,7 @@
 
   /**
    * Check whether an object has the property.
+   * 实例属性
    */
   var hasOwnProperty = Object.prototype.hasOwnProperty;
   function hasOwn (obj, key) {
@@ -765,6 +766,7 @@
 
   var SSR_ATTR = 'data-server-rendered';
 
+  // 资源类型
   var ASSET_TYPES = [
     'component',
     'directive',
@@ -1017,11 +1019,13 @@
   Dep.target = null;
   var targetStack = [];
 
+  // 监听器
   function pushTarget (target) {
     targetStack.push(target);
     Dep.target = target;
   }
 
+  // 后进先出
   function popTarget () {
     targetStack.pop();
     Dep.target = targetStack[targetStack.length - 1];
@@ -1035,6 +1039,7 @@
   var arrayProto = Array.prototype;
   var arrayMethods = Object.create(arrayProto);
 
+  // 可以触发数组变更检测的方法
   var methodsToPatch = [
     'push',
     'pop',
@@ -1096,9 +1101,12 @@
    */
   var Observer = function Observer (value) {
     this.value = value;
+    // 依赖
     this.dep = new Dep();
     this.vmCount = 0;
+    // 将对象打上__ob__属性标记,defineProperty
     def(value, '__ob__', this);
+    // 这个对象是数组,非数组
     if (Array.isArray(value)) {
       if (hasProto) {
         protoAugment(value, arrayMethods);
@@ -1115,10 +1123,13 @@
    * Walk through all properties and convert them into
    * getter/setters. This method should only be called when
    * value type is Object.
+   * 对每个
    */
   Observer.prototype.walk = function walk (obj) {
     var keys = Object.keys(obj);
+    // 每个键， 响应式对象都会生成一个依赖数据对象
     for (var i = 0; i < keys.length; i++) {
+      //
       defineReactive$$1(obj, keys[i]);
     }
   };
@@ -1161,11 +1172,18 @@
    * returns the new observer if successfully observed,
    * or the existing observer if the value already has one.
    */
+  /**
+   * 观察
+   * @param {*} value 组件实例的data属性的值
+   * @param {*} asRootData 
+   */
   function observe (value, asRootData) {
+    // typeof val !=='object'
     if (!isObject(value) || value instanceof VNode) {
       return
     }
     var ob;
+    // 有__ob__属性,已经是响应式对象
     if (hasOwn(value, '__ob__') && value.__ob__ instanceof Observer) {
       ob = value.__ob__;
     } else if (
@@ -1175,6 +1193,7 @@
       Object.isExtensible(value) &&
       !value._isVue
     ) {
+      // 创建一个观察者
       ob = new Observer(value);
     }
     if (asRootData && ob) {
@@ -1185,6 +1204,7 @@
 
   /**
    * Define a reactive property on an Object.
+   * 响应式对象, 对象属性,
    */
   function defineReactive$$1 (
     obj,
@@ -1193,8 +1213,10 @@
     customSetter,
     shallow
   ) {
+    // 给这个响应式对象属性,添加依赖对象,通过闭包缓存依赖
     var dep = new Dep();
 
+    // 获取当前这个属性描述
     var property = Object.getOwnPropertyDescriptor(obj, key);
     if (property && property.configurable === false) {
       return
@@ -1321,6 +1343,13 @@
     };
   }
 
+
+  /**
+   * 合并options中的各项的策略，  (合并父类的静态options和自身实例的options)
+   * 
+   data,beforeCreate,created,beforeMount,mounted,beforeUpdate,updated,beforeDestroy,destroyed,activated,deactivated,errorCaptured,serverPrefetch,filter,directive,component,watch,props,methods,inject,computed,provide
+   */
+
   /**
    * Helper that recursively merges two data objects together.
    */
@@ -1330,20 +1359,22 @@
 
     var keys = hasSymbol
       ? Reflect.ownKeys(from)
-      : Object.keys(from);
+      : Object.keys(from);  // 获取对象那个key，返回数组 ['a','b']
 
     for (var i = 0; i < keys.length; i++) {
       key = keys[i];
       // in case the object is already observed...
       if (key === '__ob__') { continue }
+
       toVal = to[key];
       fromVal = from[key];
+      // to 对象没有此实例属性
       if (!hasOwn(to, key)) {
         set(to, key, fromVal);
       } else if (
         toVal !== fromVal &&
         isPlainObject(toVal) &&
-        isPlainObject(fromVal)
+        isPlainObject(fromVal)  // 
       ) {
         mergeData(toVal, fromVal);
       }
@@ -1546,6 +1577,7 @@
   };
 
   /**
+   * 验证组件名称是否合法
    * Validate component names
    */
   function checkComponents (options) {
@@ -1554,6 +1586,10 @@
     }
   }
 
+  /**
+   * 组件名称规则
+   * @param {*} name 
+   */
   function validateComponentName (name) {
     if (!new RegExp(("^[a-zA-Z][\\-\\.0-9_" + (unicodeRegExp.source) + "]*$")).test(name)) {
       warn(
@@ -1574,10 +1610,13 @@
    * Object-based format.
    */
   function normalizeProps (options, vm) {
-    var props = options.props;
+    // 获取属性对象
+    var props = options.props; 
     if (!props) { return }
+
     var res = {};
     var i, val, name;
+    // 数组
     if (Array.isArray(props)) {
       i = props.length;
       while (i--) {
@@ -1589,6 +1628,7 @@
           warn('props must be strings when using array syntax.');
         }
       }
+      // 字典
     } else if (isPlainObject(props)) {
       for (var key in props) {
         val = props[key];
@@ -1663,6 +1703,12 @@
    * Merge two option objects into a new one.
    * Core utility used in both instantiation and inheritance.
    */
+  /**
+   * 
+   * @param {*} parent Vue构造函数的option
+   * @param {*} child 组件的option,子组件构造函数
+   * @param {*} vm Vue实例，子实例
+   */
   function mergeOptions (
     parent,
     child,
@@ -1675,7 +1721,8 @@
     if (typeof child === 'function') {
       child = child.options;
     }
-
+    
+    // 正规化 props inject directive
     normalizeProps(child, vm);
     normalizeInject(child, vm);
     normalizeDirectives(child);
@@ -1706,6 +1753,7 @@
       }
     }
     function mergeField (key) {
+      // 根据options的key进行获取合并策略，没在vue options中的key,使用默认的策略
       var strat = strats[key] || defaultStrat;
       options[key] = strat(parent[key], child[key], vm, key);
     }
@@ -3373,7 +3421,7 @@
   var startTagClose = /^\s*(\/?)>/;
   var endTag = new RegExp(("^<\\/" + qnameCapture + "[^>]*>"));
   var doctype = /^<!DOCTYPE [^>]+>/i;
-  // #7298: escape - to avoid being pased as HTML comment when inlined in page
+  // #7298: escape - to avoid being passed as HTML comment when inlined in page
   var comment = /^<!\--/;
   var conditionalComment = /^<!\[/;
 
@@ -3806,7 +3854,7 @@
   /*  */
 
   var onRE = /^@|^v-on:/;
-  var dirRE = /^v-|^@|^:/;
+  var dirRE = /^v-|^@|^:|^#/;
   var forAliasRE = /([\s\S]*?)\s+(?:in|of)\s+([\s\S]*)/;
   var forIteratorRE = /,([^,\}\]]*)(?:,([^,\}\]]*))?$/;
   var stripParensRE = /^\(|\)$/g;
@@ -4430,7 +4478,7 @@
             if (el.parent && !maybeComponent(el.parent)) {
               warn$1(
                 "<template v-slot> can only appear at the root level inside " +
-                "the receiving the component",
+                "the receiving component",
                 el
               );
             }
@@ -5032,7 +5080,7 @@
 
   /*  */
 
-  var fnExpRE = /^([\w$_]+|\([^)]*?\))\s*=>|^function\s*(?:[\w$]+)?\s*\(/;
+  var fnExpRE = /^([\w$_]+|\([^)]*?\))\s*=>|^function(?:\s+[\w$]+)?\s*\(/;
   var fnInvokeRE = /\([^)]*?\);*$/;
   var simplePathRE = /^[A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*|\['[^']*?']|\["[^"]*?"]|\[\d+]|\[[A-Za-z_$][\w$]*])*$/;
 
@@ -6272,6 +6320,8 @@
             var range = node.rawAttrsMap[name];
             if (name === 'v-for') {
               checkFor(node, ("v-for=\"" + value + "\""), warn, range);
+            } else if (name === 'v-slot' || name[0] === '#') {
+              checkFunctionParameterExpression(value, (name + "=\"" + value + "\""), warn, range);
             } else if (onRE.test(name)) {
               checkEvent(value, (name + "=\"" + value + "\""), warn, range);
             } else {
@@ -6291,9 +6341,9 @@
   }
 
   function checkEvent (exp, text, warn, range) {
-    var stipped = exp.replace(stripStringRE, '');
-    var keywordMatch = stipped.match(unaryOperatorsRE);
-    if (keywordMatch && stipped.charAt(keywordMatch.index - 1) !== '$') {
+    var stripped = exp.replace(stripStringRE, '');
+    var keywordMatch = stripped.match(unaryOperatorsRE);
+    if (keywordMatch && stripped.charAt(keywordMatch.index - 1) !== '$') {
       warn(
         "avoid using JavaScript unary operator as property name: " +
         "\"" + (keywordMatch[0]) + "\" in expression " + (text.trim()),
@@ -6345,6 +6395,19 @@
           range
         );
       }
+    }
+  }
+
+  function checkFunctionParameterExpression (exp, text, warn, range) {
+    try {
+      new Function(exp, '');
+    } catch (e) {
+      warn(
+        "invalid function parameter expression: " + (e.message) + " in\n\n" +
+        "    " + exp + "\n\n" +
+        "  Raw expression: " + (text.trim()) + "\n",
+        range
+      );
     }
   }
 
@@ -6829,6 +6892,7 @@
       'require' // for Webpack/Browserify
     );
 
+    // 是否存在Proxy原生对象
     var hasProxy =
       typeof Proxy !== 'undefined' && isNative(Proxy);
 
@@ -6900,8 +6964,10 @@
   /*  */
 
   var normalizeEvent = cached(function (name) {
+    // name 首字母为&  ~ ! 去掉
     var passive = name.charAt(0) === '&';
     name = passive ? name.slice(1) : name;
+    
     var once$$1 = name.charAt(0) === '~'; // Prefixed last, checked first
     name = once$$1 ? name.slice(1) : name;
     var capture = name.charAt(0) === '!';
@@ -6942,10 +7008,12 @@
     vm
   ) {
     var name, def$$1, cur, old, event;
+    // 事件监听
     for (name in on) {
       def$$1 = cur = on[name];
       old = oldOn[name];
       event = normalizeEvent(name);
+      // null, undefined
       if (isUndef(cur)) {
         warn(
           "Invalid handler for event \"" + (event.name) + "\": got " + String(cur),
@@ -7057,11 +7125,14 @@
     normalizationType,
     alwaysNormalize
   ) {
+    // 数组或者原始
     if (Array.isArray(data) || isPrimitive(data)) {
+
       normalizationType = children;
       children = data;
       data = undefined;
     }
+    // boolean类型
     if (isTrue(alwaysNormalize)) {
       normalizationType = ALWAYS_NORMALIZE;
     }
@@ -7135,9 +7206,10 @@
       // direct component options / constructor
       vnode = createComponent(tag, data, context, children);
     }
+    // 数组
     if (Array.isArray(vnode)) {
       return vnode
-    } else if (isDef(vnode)) {
+    } else if (isDef(vnode)) { 
       if (isDef(ns)) { applyNS(vnode, ns); }
       if (isDef(data)) { registerDeepBindings(data); }
       return vnode
@@ -7473,7 +7545,7 @@
       if (typeof key === 'string' && key) {
         baseObj[values[i]] = values[i + 1];
       } else if (key !== '' && key !== null) {
-        // null is a speical value for explicitly removing a binding
+        // null is a special value for explicitly removing a binding
         warn(
           ("Invalid value for dynamic directive argument (expected string or null): " + key),
           this
@@ -7492,6 +7564,10 @@
 
   /*  */
 
+  /**
+   * 安装渲染助手
+   * @param {*} target vm 原型对象
+   */
   function installRenderHelpers (target) {
     target._o = markOnce;
     target._n = toNumber;
@@ -7805,16 +7881,20 @@
 
   /*  */
 
+  // 组件实例
   var target;
 
+  // 新增自定义事件
   function add (event, fn) {
     target.$on(event, fn);
   }
 
+  // 解绑事件
   function remove$1 (event, fn) {
     target.$off(event, fn);
   }
 
+  // 创建一次性的自定义事件
   function createOnceHandler (event, fn) {
     var _target = target;
     return function onceHandler () {
@@ -7956,6 +8036,7 @@
   function callHook (vm, hook) {
     // #7573 disable dep collection when invoking lifecycle hooks
     pushTarget();
+    // 获取钩子函数
     var handlers = vm.$options[hook];
     var info = hook + " hook";
     if (handlers) {
@@ -7963,6 +8044,7 @@
         invokeWithErrorHandling(handlers[i], vm, null, vm, info);
       }
     }
+    // 有hook自定义事件,自动触发
     if (vm._hasHookEvent) {
       vm.$emit('hook:' + hook);
     }
@@ -8049,11 +8131,15 @@
 
   /*  */
 
+
+  // 传入的参数为 Vue（以及子类  Vue.extend() 创建Vue子类
   function resolveConstructorOptions (Ctor) {
+    // options
     var options = Ctor.options;
+    // 有父类
     if (Ctor.super) {
-      var superOptions = resolveConstructorOptions(Ctor.super);
-      var cachedSuperOptions = Ctor.superOptions;
+      var superOptions = resolveConstructorOptions(Ctor.super); //Vue 父类
+      var cachedSuperOptions = Ctor.superOptions; //父类配置参数
       if (superOptions !== cachedSuperOptions) {
         // super option changed,
         // need to resolve new options.
@@ -8070,13 +8156,15 @@
         }
       }
     }
+    // 没有直接返回Vue.options
     return options
   }
 
   function resolveModifiedOptions (Ctor) {
     var modified;
+    // 组件配置参数
     var latest = Ctor.options;
-    var sealed = Ctor.sealedOptions;
+    var sealed = Ctor.sealedOptions; //密封参数，（不可修改
     for (var key in latest) {
       if (latest[key] !== sealed[key]) {
         if (!modified) { modified = {}; }
