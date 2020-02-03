@@ -64,6 +64,7 @@ type DefaultData<V> =  object | ((this: V) => object);
 type DefaultProps = Record<string, any>;
 type DefaultMethods<V> =  { [key: string]: (this: V, ...args: any[]) => any };
 type DefaultComputed = { [key: string]: any };
+// 组件配置参数类型定义
 export interface ComponentOptions<
   V extends Vue,
   Data=DefaultData<V>,

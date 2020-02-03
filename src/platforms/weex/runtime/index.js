@@ -28,6 +28,10 @@ Vue.options.components = platformComponents
 Vue.prototype.__patch__ = patch
 
 // wrap mount
+/**
+ * new Vue() 
+ * $mount开始安装组件，掉用mountComponent
+ */
 Vue.prototype.$mount = function (
   el?: any,
   hydrating?: boolean

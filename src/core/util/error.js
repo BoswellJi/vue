@@ -42,7 +42,10 @@ export function invokeWithErrorHandling (
 ) {
   let res
   try {
+    // context 组件实例
+    // args 调用函数参数
     res = args ? handler.apply(context, args) : handler.call(context)
+    // 返回的不是vue是promise
     if (res && !res._isVue && isPromise(res) && !res._handled) {
       res.catch(e => handleError(e, vm, info + ` (Promise/async)`))
       // issue #9511

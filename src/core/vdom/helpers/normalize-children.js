@@ -28,10 +28,15 @@ export function simpleNormalizeChildren (children: any) {
 // e.g. <template>, <slot>, v-for, or when the children is provided by user
 // with hand-written render functions / JSX. In such cases a full normalization
 // is needed to cater to all possible types of children values.
+// vnode的子vnode数组
 export function normalizeChildren (children: any): ?Array<VNode> {
+  // 单个的原始数据类型值
   return isPrimitive(children)
+  // 创建一个文本节点
     ? [createTextVNode(children)]
+    // 数组类型vnode
     : Array.isArray(children)
+    // 规范化子数组vnode
       ? normalizeArrayChildren(children)
       : undefined
 }
@@ -40,26 +45,41 @@ function isTextNode (node): boolean {
   return isDef(node) && isDef(node.text) && isFalse(node.isComment)
 }
 
+/**
+ * 
+ * @param {*} children 子vnode 数组
+ * @param {*} nestedIndex 
+ */
 function normalizeArrayChildren (children: any, nestedIndex?: string): Array<VNode> {
   const res = []
   let i, c, lastIndex, last
   for (i = 0; i < children.length; i++) {
+    // 获取子vnode中第一个vnode
     c = children[i]
+    // 为undefined,null,或者是boolean类型值时，跳过
     if (isUndef(c) || typeof c === 'boolean') continue
+    // 计算res中最后一个元素
     lastIndex = res.length - 1
     last = res[lastIndex]
     //  nested
+    // 子vnode还是一个数组
     if (Array.isArray(c)) {
+      // 进行递归
       if (c.length > 0) {
         c = normalizeArrayChildren(c, `${nestedIndex || ''}_${i}`)
         // merge adjacent text nodes
+        // 文本节点
         if (isTextNode(c[0]) && isTextNode(last)) {
+          // 创建文本vnode节点
           res[lastIndex] = createTextVNode(last.text + (c[0]: any).text)
+          // 
           c.shift()
         }
         res.push.apply(res, c)
       }
+      // 原始数据类型
     } else if (isPrimitive(c)) {
+      // 文本节点
       if (isTextNode(last)) {
         // merge adjacent text nodes
         // this is necessary for SSR hydration because text nodes are

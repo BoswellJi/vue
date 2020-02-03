@@ -49,10 +49,12 @@ export default class Watcher {
     options?: ?Object,
     isRenderWatcher?: boolean
   ) {
+    // 初始化组件实例
     this.vm = vm
     if (isRenderWatcher) {
       vm._watcher = this
     }
+    // 当前组件中的监听
     vm._watchers.push(this)
     // options
     if (options) {
@@ -99,10 +101,12 @@ export default class Watcher {
    * Evaluate the getter, and re-collect dependencies.
    */
   get () {
+    // 添加一个监听对像，new Watcher()，针对某个数据属性的监听
     pushTarget(this)
     let value
     const vm = this.vm
     try {
+      // 触发属性的get方法收集依赖
       value = this.getter.call(vm, vm)
     } catch (e) {
       if (this.user) {

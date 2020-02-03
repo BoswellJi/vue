@@ -18,35 +18,52 @@ import {
   invokeWithErrorHandling
 } from '../util/index'
 
+// 保持当前上下文的Vue实例
 export let activeInstance: any = null
 export let isUpdatingChildComponent: boolean = false
 
+/**
+ * activeInstance 与 preActiveInstance是父子关系
+ * @param {*} vm 组件实例
+ */
 export function setActiveInstance(vm: Component) {
+  // 上一个活跃的组件实例
   const prevActiveInstance = activeInstance
+  // 新的组件实例
   activeInstance = vm
   return () => {
     activeInstance = prevActiveInstance
   }
 }
 
+// 初始化,生命周期
 export function initLifecycle (vm: Component) {
+  // 获取,实例配置参数
   const options = vm.$options
 
   // locate first non-abstract parent
+  // 向上找组件的非抽象的父组件实例
+  // 将组件添加到父组件的$children中
   let parent = options.parent
   if (parent && !options.abstract) {
     while (parent.$options.abstract && parent.$parent) {
       parent = parent.$parent
     }
+    // 这里是从父组件查找子组件的地方
     parent.$children.push(vm)
   }
 
+  // 父组件，这里就是组件中的 this.$parents属性，返回的是组件的父组件
   vm.$parent = parent
+  // 根组件
   vm.$root = parent ? parent.$root : vm
 
+  // 定义子组件容器，为组件之后为父组件时添加子组件初始化
   vm.$children = []
+  // 定义节点的引用， this.$refs.xx找到组件实例
   vm.$refs = {}
 
+  // 定义
   vm._watcher = null
   vm._inactive = null
   vm._directInactive = false
@@ -56,12 +73,23 @@ export function initLifecycle (vm: Component) {
 }
 
 export function lifecycleMixin (Vue: Class<Component>) {
+ /**
+  * 更新组件
+  * @param {} vnode 组件的vnode vm._render生成
+  * @param {} 
+  */
   Vue.prototype._update = function (vnode: VNode, hydrating?: boolean) {
+    // 实例,Vue实例或者Vue子类
     const vm: Component = this
+    // 挂载的到dom元素
     const prevEl = vm.$el
+    // 保存当前虚拟节点
     const prevVnode = vm._vnode
+    // 设置当前活跃的组件实例
     const restoreActiveInstance = setActiveInstance(vm)
-    vm._vnode = vnode
+    // 重新添加新的虚拟节点 vm._vnode 与vm.$vnode 是父子级关系
+    // vm._vnode.parent === vm.$vnode
+    vm._vnode = vnode 
     // Vue.prototype.__patch__ is injected in entry points
     // based on the rendering backend used.
     if (!prevVnode) {
@@ -71,6 +99,7 @@ export function lifecycleMixin (Vue: Class<Component>) {
       // updates
       vm.$el = vm.__patch__(prevVnode, vnode)
     }
+    // 将上一个组件实例赋值到当前活跃实例
     restoreActiveInstance()
     // update __vue__ reference
     if (prevEl) {
@@ -87,6 +116,7 @@ export function lifecycleMixin (Vue: Class<Component>) {
     // updated in a parent's updated hook.
   }
 
+  // 强迫组件更新
   Vue.prototype.$forceUpdate = function () {
     const vm: Component = this
     if (vm._watcher) {
@@ -94,12 +124,18 @@ export function lifecycleMixin (Vue: Class<Component>) {
     }
   }
 
+  // 销毁组件
   Vue.prototype.$destroy = function () {
     const vm: Component = this
     if (vm._isBeingDestroyed) {
       return
     }
+    // 组件销毁之前
     callHook(vm, 'beforeDestroy')
+
+    /**
+     * 卸载watchers,child components listeners
+     */
     vm._isBeingDestroyed = true
     // remove self from parent
     const parent = vm.$parent
@@ -124,6 +160,7 @@ export function lifecycleMixin (Vue: Class<Component>) {
     // invoke destroy hooks on current rendered tree
     vm.__patch__(vm._vnode, null)
     // fire destroyed hook
+    // 组件销毁完成
     callHook(vm, 'destroyed')
     // turn off all instance listeners.
     vm.$off()
@@ -138,13 +175,23 @@ export function lifecycleMixin (Vue: Class<Component>) {
   }
 }
 
+/**
+ * 组件安装,创建监听 Vue实例
+ * @param {*} vm Vue构造函数实例
+ * @param {*} el 挂在元素（这里时必须为dom节点
+ * @param {*} hydrating 
+ */
 export function mountComponent (
   vm: Component,
   el: ?Element,
   hydrating?: boolean
 ): Component {
+  // 组件模板根元素的引用  vm.$el
+  // 组件模板的挂载点的引用 el
   vm.$el = el
+  // 首先找到Vue实例上的render(框架初始化时为Vue构造函数实例，安装子组件为Vue构造函数子类的实例)
   if (!vm.$options.render) {
+    // 没有render函数的，初始化为创建一个空的vnode函数
     vm.$options.render = createEmptyVNode
     if (process.env.NODE_ENV !== 'production') {
       /* istanbul ignore if */
@@ -164,6 +211,8 @@ export function mountComponent (
       }
     }
   }
+  // 安装之前，调用生命周期
+  // 执行_render函数之前
   callHook(vm, 'beforeMount')
 
   let updateComponent
@@ -176,16 +225,19 @@ export function mountComponent (
       const endTag = `vue-perf-end:${id}`
 
       mark(startTag)
+      // 生成vnode
       const vnode = vm._render()
       mark(endTag)
       measure(`vue ${name} render`, startTag, endTag)
 
       mark(startTag)
+      // 将vnode渲染为真实dom
       vm._update(vnode, hydrating)
       mark(endTag)
       measure(`vue ${name} patch`, startTag, endTag)
     }
   } else {
+    // 将渲染函数返回的vdom进行真实dom渲染
     updateComponent = () => {
       vm._update(vm._render(), hydrating)
     }
@@ -194,9 +246,15 @@ export function mountComponent (
   // we set this to vm._watcher inside the watcher's constructor
   // since the watcher's initial patch may call $forceUpdate (e.g. inside child
   // component's mounted hook), which relies on vm._watcher being already defined
+  // 组件实例
+  // 更新组件函数
+  // 钩子函数
+  // 检测vm实例中数据发生改变的时候，进行更新操作
   new Watcher(vm, updateComponent, noop, {
+    // watch的钩子函数，在渲染真实dom之前执行
     before () {
       if (vm._isMounted && !vm._isDestroyed) {
+        // 更新之前的钩子函数
         callHook(vm, 'beforeUpdate')
       }
     }
@@ -205,8 +263,11 @@ export function mountComponent (
 
   // manually mounted instance, call mounted on self
   // mounted is called for render-created child components in its inserted hook
+  // null undefined
+  // 初始化安装，vm.$vnode标识父vnode
   if (vm.$vnode == null) {
     vm._isMounted = true
+    // vnode patch到真实dom
     callHook(vm, 'mounted')
   }
   return vm
@@ -336,13 +397,19 @@ export function deactivateChildComponent (vm: Component, direct?: boolean) {
 export function callHook (vm: Component, hook: string) {
   // #7573 disable dep collection when invoking lifecycle hooks
   pushTarget()
+  // 获取组件的$options的钩子函数
   const handlers = vm.$options[hook]
+  // 生命周期信息
   const info = `${hook} hook`
+  // 将hook函数数组遍历执行
+  // 根据options的合并策略，得到的是数组
   if (handlers) {
     for (let i = 0, j = handlers.length; i < j; i++) {
+      // 调用使用异常处理
       invokeWithErrorHandling(handlers[i], vm, null, vm, info)
     }
   }
+  // 有hook自定义事件,自动触发
   if (vm._hasHookEvent) {
     vm.$emit('hook:' + hook)
   }

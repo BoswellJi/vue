@@ -34,11 +34,14 @@ extend(Vue.options.components, platformComponents)
 Vue.prototype.__patch__ = inBrowser ? patch : noop
 
 // public mount method
+// 这里是runtime版本的$mount,因为模板编译阶段被预编译了成为render函数，可以直接安装
 Vue.prototype.$mount = function (
-  el?: string | Element,
+  el?: string | Element, // 组件的挂载点，可以时选择器，和 dom元素
   hydrating?: boolean
 ): Component {
+  // 这里需要再次转换挂载元素
   el = el && inBrowser ? query(el) : undefined
+  // 直接安装
   return mountComponent(this, el, hydrating)
 }
 

@@ -8,6 +8,7 @@ import { def } from '../util/index'
 const arrayProto = Array.prototype
 export const arrayMethods = Object.create(arrayProto)
 
+// 可以触发数组变更检测的方法
 const methodsToPatch = [
   'push',
   'pop',

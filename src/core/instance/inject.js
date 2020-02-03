@@ -14,6 +14,7 @@ export function initProvide (vm: Component) {
 }
 
 export function initInjections (vm: Component) {
+  // 组件配置,注入
   const result = resolveInject(vm.$options.inject, vm)
   if (result) {
     toggleObserving(false)

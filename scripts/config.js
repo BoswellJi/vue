@@ -27,10 +27,13 @@ const weexFactoryPlugin = {
 
 const aliases = require('./alias')
 const resolve = p => {
+  // 获取第一个文件夹
   const base = p.split('/')[0]
+  // 别名中有的，自定义拼接
   if (aliases[base]) {
     return path.resolve(aliases[base], p.slice(base.length + 1))
   } else {
+    // 没有的直接放到根目录下
     return path.resolve(__dirname, '../', p)
   }
 }
