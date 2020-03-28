@@ -10,8 +10,9 @@ import {
 import { updateListeners } from '../vdom/helpers/index'
 
 export function initEvents (vm: Component) {
-  // 创建事件容器
+  // 创建组件的事件容器
   vm._events = Object.create(null)
+  // 组件没有钩子事件函数
   vm._hasHookEvent = false
   // init parent attached events
   // 组件上的v-on:click等绑定事件

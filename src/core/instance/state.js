@@ -54,6 +54,7 @@ export function proxy (target: Object, sourceKey: string, key: string) {
 export function initState (vm: Component) {
   // 给组件实例添加监听数组
   vm._watchers = []
+  // 组件的配置参数
   const opts = vm.$options
   // 配置参数有输入属性
   if (opts.props) initProps(vm, opts.props)
@@ -65,7 +66,9 @@ export function initState (vm: Component) {
   } else {
     observe(vm._data = {}, true /* asRootData */)
   }
+  // 计算属性
   if (opts.computed) initComputed(vm, opts.computed)
+  // 监听属性
   if (opts.watch && opts.watch !== nativeWatch) {
     initWatch(vm, opts.watch)
   }
@@ -170,6 +173,7 @@ function initData (vm: Component) {
     }
   }
   // observe data 对data 数据进行观察
+  // data 对象 
   observe(data, true /* asRootData */)
 }
 
@@ -177,6 +181,7 @@ export function getData (data: Function, vm: Component): any {
   // #7573 disable dep collection when invoking data getters
   pushTarget()
   try {
+    // data 为函数
     return data.call(vm, vm)
   } catch (e) {
     handleError(e, vm, `data()`)
@@ -195,6 +200,7 @@ function initComputed (vm: Component, computed: Object) {
   const isSSR = isServerRendering()
 
   for (const key in computed) {
+    // 获取计算对象的属性值 （getter）
     const userDef = computed[key]
     /**
      * computed:{
@@ -325,7 +331,7 @@ function initMethods (vm: Component, methods: Object) {
 }
 
 /**
- * 
+ * 初始化监听器（对像上的每个属性的监听器）
  * @param {*} vm  组件实例
  * @param {*} watch 观察属性
  */
@@ -359,8 +365,8 @@ function initWatch (vm: Component, watch: Object) {
 /**
  * 
  * @param {*} vm 组件实例
- * @param {*} expOrFn key(观察的key)
- * @param {*} handler (观察后的处理函数)
+ * @param {*} expOrFn key(观察的key
+ * @param {*} handler 观察后的处理函数
  * @param {*} options 
  */
 function createWatcher (
@@ -411,6 +417,7 @@ export function stateMixin (Vue: Class<Component>) {
 
   /**
    * vm的观察方法
+   * 手动添加监听器
    */
   Vue.prototype.$watch = function (
     expOrFn: string | Function,
@@ -423,7 +430,9 @@ export function stateMixin (Vue: Class<Component>) {
     }
     options = options || {}
     options.user = true
+    // 组件 
     const watcher = new Watcher(vm, expOrFn, cb, options)
+    // 这里是立即调用watch函数一次
     if (options.immediate) {
       try {
         cb.call(vm, watcher.value)
@@ -431,8 +440,18 @@ export function stateMixin (Vue: Class<Component>) {
         handleError(error, vm, `callback for immediate watcher "${watcher.expression}"`)
       }
     }
+    // 拆除监听器
     return function unwatchFn () {
       watcher.teardown()
     }
   }
 }
+
+
+/**
+ * Vue中添加监听器的几种情况：
+ * 
+ * 1. 组件实例化时候
+ * 2. 手动watch:{name(){}}
+ * 3. 组件原型方法$watch方法
+ */

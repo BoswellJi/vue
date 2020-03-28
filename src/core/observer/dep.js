@@ -30,6 +30,7 @@ export default class Dep {
 
   depend () {
     if (Dep.target) {
+      // 依赖的实例（对象属性中创建的依赖容器）
       Dep.target.addDep(this)
     }
   }

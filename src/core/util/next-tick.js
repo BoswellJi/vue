@@ -39,6 +39,7 @@ let timerFunc
 // completely stops working after triggering a few times... so, if native
 // Promise is available, we will use it:
 /* istanbul ignore next, $flow-disable-line */
+// 处理Promise的兼容性
 if (typeof Promise !== 'undefined' && isNative(Promise)) {
   const p = Promise.resolve()
   timerFunc = () => {
@@ -80,6 +81,7 @@ if (typeof Promise !== 'undefined' && isNative(Promise)) {
 } else {
   // Fallback to setTimeout.
   timerFunc = () => {
+    // 异步
     setTimeout(flushCallbacks, 0)
   }
 }
@@ -89,6 +91,7 @@ export function nextTick (cb?: Function, ctx?: Object) {
   callbacks.push(() => {
     if (cb) {
       try {
+        // nextTick的回调函数中可以拿到上下文对象
         cb.call(ctx)
       } catch (e) {
         handleError(e, ctx, 'nextTick')

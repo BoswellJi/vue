@@ -54,7 +54,7 @@ export default class Watcher {
     if (isRenderWatcher) {
       vm._watcher = this
     }
-    // 当前组件中的监听
+    // 当前组件中的监听器（vm.$watch,watch:{},）
     vm._watchers.push(this)
     // options
     if (options) {
@@ -98,6 +98,7 @@ export default class Watcher {
   }
 
   /**
+   * 执行getter,进行依赖收集
    * Evaluate the getter, and re-collect dependencies.
    */
   get () {
@@ -106,7 +107,7 @@ export default class Watcher {
     let value
     const vm = this.vm
     try {
-      // 触发属性的get方法收集依赖
+      // 触发属性的getter收集依赖( getter  )
       value = this.getter.call(vm, vm)
     } catch (e) {
       if (this.user) {
@@ -128,12 +129,18 @@ export default class Watcher {
 
   /**
    * Add a dependency to this directive.
+   * 依赖
    */
   addDep (dep: Dep) {
     const id = dep.id
+    // 依赖实例没有id,不重复添加依赖
+    // 每个对象上的属性的依赖实例都有唯一的id，防止不会重复添加依赖实例
     if (!this.newDepIds.has(id)) {
+      // 存储新的依赖id
       this.newDepIds.add(id)
+      // 存储新的依赖实例
       this.newDeps.push(dep)
+      // 依赖id中没有当前依赖实例
       if (!this.depIds.has(id)) {
         dep.addSub(this)
       }
@@ -141,6 +148,7 @@ export default class Watcher {
   }
 
   /**
+   * 清空监听器依赖
    * Clean up for dependency collection.
    */
   cleanupDeps () {
@@ -167,11 +175,15 @@ export default class Watcher {
    */
   update () {
     /* istanbul ignore else */
+    // 监测器的配置参数
+    // 
     if (this.lazy) {
       this.dirty = true
     } else if (this.sync) {
+      // 监听器同步运行
       this.run()
     } else {
+      // 监听器异步运行（nextTick）
       queueWatcher(this)
     }
   }
@@ -181,6 +193,7 @@ export default class Watcher {
    * Will be called by the scheduler.
    */
   run () {
+    // 当前监听器活跃
     if (this.active) {
       const value = this.get()
       if (
@@ -196,6 +209,7 @@ export default class Watcher {
         this.value = value
         if (this.user) {
           try {
+            // 这里就是监听器的callback(newVal,oldVal)
             this.cb.call(this.vm, value, oldValue)
           } catch (e) {
             handleError(e, this.vm, `callback for watcher "${this.expression}"`)
@@ -234,13 +248,16 @@ export default class Watcher {
       // remove self from vm's watcher list
       // this is a somewhat expensive operation so we skip it
       // if the vm is being destroyed.
+      // 组件被删除
       if (!this.vm._isBeingDestroyed) {
+        // 删除监听器
         remove(this.vm._watchers, this)
       }
       let i = this.deps.length
       while (i--) {
         this.deps[i].removeSub(this)
       }
+      // 设置这个监听器不活跃
       this.active = false
     }
   }

@@ -21,14 +21,19 @@ import { isUpdatingChildComponent } from './lifecycle'
  * @param {*} vm 组件实例
  */
 export function initRender (vm: Component) {
-  // 子树的根，也就是子组件的根节点 的vnode
+  // 组件添加虚拟节点属性
   vm._vnode = null // the root of the child tree 
+  // 组件添加静态树属性
   vm._staticTrees = null // v-once cached trees
-  const options = vm.$options  // 组件配置
-  // 父vnode节点
+  // 获取组件的配置
+  const options = vm.$options  
+  // 父虚拟节点
   const parentVnode = vm.$vnode = options._parentVnode // the placeholder node in parent tree
+  // 父节点上下文，即父组件
   const renderContext = parentVnode && parentVnode.context
+  // 组件的插槽
   vm.$slots = resolveSlots(options._renderChildren, renderContext)
+  // 组件的作用域插槽
   vm.$scopedSlots = emptyObject
   // bind the createElement fn to this instance
   // so that we get proper render context inside it.
@@ -37,6 +42,7 @@ export function initRender (vm: Component) {
   vm._c = (a, b, c, d) => createElement(vm, a, b, c, d, false)
   // normalization is always applied for the public version, used in
   // user-written render functions.
+  // 组件的渲染函数，将模板创建为虚拟dom
   vm.$createElement = (a, b, c, d) => createElement(vm, a, b, c, d, true)
 
   // $attrs & $listeners are exposed for easier HOC creation.
@@ -78,10 +84,12 @@ export function renderMixin (Vue: Class<Component>) {
   // 渲染方法，将组件的render函数生成vnode
   Vue.prototype._render = function (): VNode {
     const vm: Component = this
-    // 组件实例的render函数
+    // 组件实例的render函数和父虚拟节点
     const { render, _parentVnode } = vm.$options
 
+    // 父虚拟节点
     if (_parentVnode) {
+      // 作用域插槽
       vm.$scopedSlots = normalizeScopedSlots(
         _parentVnode.data.scopedSlots,
         vm.$slots,
@@ -99,7 +107,8 @@ export function renderMixin (Vue: Class<Component>) {
       // separately from one another. Nested component's render fns are called
       // when parent component is patched.
       currentRenderingInstance = vm
-      // 调用了组件的render函数，render函数的第一个参数为  vm.$createElement 
+      // 调用了组件的render函数，render函数的第一个参数为  vm.$createElement （将组件编译为虚拟节点）
+      // 组件的render 函数，组件的渲染代理对象，这里就是组件的创建虚拟节点函数
       vnode = render.call(vm._renderProxy, vm.$createElement)
     } catch (e) {
       handleError(e, vm, `render`)

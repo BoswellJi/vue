@@ -69,8 +69,8 @@ if (inBrowser && !isIE) {
  * Flush both queues and run the watchers.
  */
 function flushSchedulerQueue () {
-  currentFlushTimestamp = getNow()
-  flushing = true
+  currentFlushTimestamp = getNow() // 当前时间
+  flushing = true // 正在刷新队列
   let watcher, id
 
   // Sort queue before flush.
@@ -81,6 +81,7 @@ function flushSchedulerQueue () {
   //    user watchers are created before the render watcher)
   // 3. If a component is destroyed during a parent component's watcher run,
   //    its watchers can be skipped.
+  // 任务队列排序
   queue.sort((a, b) => a.id - b.id)
 
   // do not cache length because more watchers might be pushed
@@ -91,7 +92,9 @@ function flushSchedulerQueue () {
       watcher.before()
     }
     id = watcher.id
+    // 清空监听器
     has[id] = null
+    // 运行监听器
     watcher.run()
     // in dev build, check and stop circular updates.
     if (process.env.NODE_ENV !== 'production' && has[id] != null) {
@@ -161,12 +164,16 @@ function callActivatedHooks (queue) {
  * Push a watcher into the watcher queue.
  * Jobs with duplicate IDs will be skipped unless it's
  * pushed when the queue is being flushed.
+ * 
  */
 export function queueWatcher (watcher: Watcher) {
+  // 当前更新的组件的监听器
   const id = watcher.id
+  // null undefined
   if (has[id] == null) {
     has[id] = true
     if (!flushing) {
+      // 监听器添加到队列
       queue.push(watcher)
     } else {
       // if already flushing, splice the watcher based on its id

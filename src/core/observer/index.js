@@ -56,6 +56,7 @@ export class Observer {
       }
       this.observeArray(value)
     } else {
+      // 对象
       this.walk(value)
     }
   }
@@ -64,7 +65,7 @@ export class Observer {
    * Walk through all properties and convert them into
    * getter/setters. This method should only be called when
    * value type is Object.
-   * 对每个
+   * 对像的每个属性进行遍历
    */
   walk (obj: Object) {
     const keys = Object.keys(obj)
@@ -136,6 +137,7 @@ export function observe (value: any, asRootData: ?boolean): Observer | void {
     !value._isVue
   ) {
     // 创建一个观察者
+    // 组件的 data 对象
     ob = new Observer(value)
   }
   if (asRootData && ob) {
@@ -146,7 +148,8 @@ export function observe (value: any, asRootData: ?boolean): Observer | void {
 
 /**
  * Define a reactive property on an Object.
- * 响应式对象, 对象属性,
+ * 对象的响应式原理是：设置对象属性的 get set,对对象的属性进行监听
+ * 给对象的属性设置get set，这个是可观察者，会有依赖进行监听
  */
 export function defineReactive (
   obj: Object,
@@ -160,23 +163,32 @@ export function defineReactive (
 
   // 获取当前这个属性描述
   const property = Object.getOwnPropertyDescriptor(obj, key)
+  // 属性必须是可配置的，否则不可作为响应式属性
   if (property && property.configurable === false) {
     return
   }
 
+  // 保存当前属性的get set 访问器
   // cater for pre-defined getter/setters
   const getter = property && property.get
   const setter = property && property.set
+  // 没有getter 或者只有setter 当前函数参数只有2个，将对象属性值赋给val
   if ((!getter || setter) && arguments.length === 2) {
     val = obj[key]
   }
 
+  // 属性值为对象，进行观察
   let childOb = !shallow && observe(val)
+
+  // 重新定义对象属性的描述符  ，设置 getter setter访问器
+  // 在get获取的是否收集依赖（这个对象的属性的依赖）
   Object.defineProperty(obj, key, {
     enumerable: true,
     configurable: true,
     get: function reactiveGetter () {
+      // 获取之前访问器中的值
       const value = getter ? getter.call(obj) : val
+      // 有依赖目标，将进行依赖收集
       if (Dep.target) {
         dep.depend()
         if (childOb) {

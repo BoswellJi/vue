@@ -44,7 +44,8 @@ export function initLifecycle (vm: Component) {
   // locate first non-abstract parent
   // 向上找组件的非抽象的父组件实例
   // 将组件添加到父组件的$children中
-  let parent = options.parent
+  let parent = options.parent // 父类
+  // 父组件
   if (parent && !options.abstract) {
     while (parent.$options.abstract && parent.$parent) {
       parent = parent.$parent
@@ -53,14 +54,14 @@ export function initLifecycle (vm: Component) {
     parent.$children.push(vm)
   }
 
-  // 父组件，这里就是组件中的 this.$parents属性，返回的是组件的父组件
+  // 父组件
   vm.$parent = parent
   // 根组件
   vm.$root = parent ? parent.$root : vm
 
-  // 定义子组件容器，为组件之后为父组件时添加子组件初始化
+  // 定义子组件容器
   vm.$children = []
-  // 定义节点的引用， this.$refs.xx找到组件实例
+  // 定义节点的引用
   vm.$refs = {}
 
   // 定义
@@ -177,6 +178,7 @@ export function lifecycleMixin (Vue: Class<Component>) {
 
 /**
  * 组件安装,创建监听 Vue实例
+ * 只执行一次
  * @param {*} vm Vue构造函数实例
  * @param {*} el 挂在元素（这里时必须为dom节点
  * @param {*} hydrating 
@@ -239,6 +241,7 @@ export function mountComponent (
   } else {
     // 将渲染函数返回的vdom进行真实dom渲染
     updateComponent = () => {
+      // 相关依赖会获取主体的数据，触发getter
       vm._update(vm._render(), hydrating)
     }
   }

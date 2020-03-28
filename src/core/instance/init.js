@@ -40,13 +40,16 @@ export function initMixin (Vue: Class<Component>) {
       // internal component options needs special treatment.
       initInternalComponent(vm, options)
     } else {
-      // 设置了,实例的配置参数
+      // Vue实例的$options属性， 对构造函数配置进行策略合并
+      // 这里只会走一次 new Vue({...})
       vm.$options = mergeOptions(
-        resolveConstructorOptions(vm.constructor),  //vm.constructor === Vue
+        resolveConstructorOptions(vm.constructor),  //vm.constructor === Vue 
         options || {},
         vm
       )
     }
+
+    // 给Vue实例,子类实例添加_renderProxy属性
     /* istanbul ignore else */
     if (process.env.NODE_ENV !== 'production') {
       initProxy(vm)
@@ -63,6 +66,7 @@ export function initMixin (Vue: Class<Component>) {
      * created
      * 
      */
+    // 给Vue实例,子类实例添加_self属性: 自身
     vm._self = vm
     // 初始化生命周期
     initLifecycle(vm)

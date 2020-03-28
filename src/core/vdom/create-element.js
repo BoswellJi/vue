@@ -26,7 +26,7 @@ const ALWAYS_NORMALIZE = 2
 // wrapper function for providing a more flexible interface
 // without getting yelled at by flow
 /**
- * 
+ * Vue 组件的创建虚拟dom的函数，可以将组件模板编译为虚拟dom
  * @param {*} context vnode（组件）的上下文
  * @param {*} tag 标签
  * @param {*} data vnode的数据

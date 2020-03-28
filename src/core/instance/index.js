@@ -10,8 +10,7 @@ import { warn } from '../util/index'
  * @param {Object} options 构造函数参数
  */
 function Vue (options) {
-  console.log(options);
-  // 开发环境，this 不是Vue实例，抛异常
+  // 进程环境变量，this 不是Vue实例，抛异常
   if (process.env.NODE_ENV !== 'production' &&
     !(this instanceof Vue)
   ) {
