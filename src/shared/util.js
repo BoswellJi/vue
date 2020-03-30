@@ -112,11 +112,15 @@ export function makeMap (
   str: string,
   expectsLowerCase?: boolean
 ): (key: string) => true | void {
+  // 创建一个对象
   const map = Object.create(null)
+  // 将字符串分割为数组
   const list: Array<string> = str.split(',')
+  // 将数组元素添加到map的属性上
   for (let i = 0; i < list.length; i++) {
     map[list[i]] = true
   }
+  // 
   return expectsLowerCase
     ? val => map[val.toLowerCase()]
     : val => map[val]

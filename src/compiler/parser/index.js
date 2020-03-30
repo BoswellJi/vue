@@ -201,6 +201,9 @@ export function parse (
     }
   }
 
+  /**
+   * 返回dom tree
+   */
   parseHTML(template, {
     warn,
     expectHTML: options.expectHTML,
