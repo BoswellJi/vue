@@ -33,7 +33,7 @@ export function initRender (vm: Component) {
   const renderContext = parentVnode && parentVnode.context
   // 组件的插槽
   vm.$slots = resolveSlots(options._renderChildren, renderContext)
-  // 组件的作用域插槽
+  // 组件的作用域插槽（冻结对象，不再被改变
   vm.$scopedSlots = emptyObject
   // bind the createElement fn to this instance
   // so that we get proper render context inside it.
@@ -42,7 +42,7 @@ export function initRender (vm: Component) {
   vm._c = (a, b, c, d) => createElement(vm, a, b, c, d, false)
   // normalization is always applied for the public version, used in
   // user-written render functions.
-  // 组件的渲染函数，将模板创建为虚拟dom
+  // 将组件创建为虚拟节点（vdom == all vnode）
   vm.$createElement = (a, b, c, d) => createElement(vm, a, b, c, d, true)
 
   // $attrs & $listeners are exposed for easier HOC creation.
@@ -51,9 +51,11 @@ export function initRender (vm: Component) {
 
   /* istanbul ignore else */
   if (process.env.NODE_ENV !== 'production') {
+    // 将$attrs对象定义为响应式对象
     defineReactive(vm, '$attrs', parentData && parentData.attrs || emptyObject, () => {
       !isUpdatingChildComponent && warn(`$attrs is readonly.`, vm)
     }, true)
+    // 将$alisteners对象定义为响应式对象
     defineReactive(vm, '$listeners', options._parentListeners || emptyObject, () => {
       !isUpdatingChildComponent && warn(`$listeners is readonly.`, vm)
     }, true)
@@ -64,6 +66,7 @@ export function initRender (vm: Component) {
   }
 }
 
+// 当前渲染中的实例（组件实例
 export let currentRenderingInstance: Component | null = null
 
 // for testing only
@@ -76,13 +79,17 @@ export function renderMixin (Vue: Class<Component>) {
   // 添加
   installRenderHelpers(Vue.prototype)
 
-  // 下周期执行前
+  /**
+   * 下周期执行：
+   * 当前同步任务执行完成，但是不包括渲染也完成（虚拟节点添加进了真实节点）
+   */
   Vue.prototype.$nextTick = function (fn: Function) {
     return nextTick(fn, this)
   }
 
-  // 渲染方法，将组件的render函数生成vnode
+  // 渲染方法，将组件生成虚拟节点
   Vue.prototype._render = function (): VNode {
+    // 组件实例
     const vm: Component = this
     // 组件实例的render函数和父虚拟节点
     const { render, _parentVnode } = vm.$options
@@ -99,6 +106,7 @@ export function renderMixin (Vue: Class<Component>) {
 
     // set parent vnode. this allows render functions to have access
     // to the data on the placeholder node.
+    // 将父虚拟节点添加到组件的$vnode属性
     vm.$vnode = _parentVnode
     // render self
     let vnode
@@ -106,30 +114,41 @@ export function renderMixin (Vue: Class<Component>) {
       // There's no need to maintain a stack because all render fns are called
       // separately from one another. Nested component's render fns are called
       // when parent component is patched.
+      // 保存当前组件的引用
       currentRenderingInstance = vm
-      // 调用了组件的render函数，render函数的第一个参数为  vm.$createElement （将组件编译为虚拟节点）
-      // 组件的render 函数，组件的渲染代理对象，这里就是组件的创建虚拟节点函数
+      /**
+       * 调用了组件的render函数，render函数的第一个参数为  
+       * vm.$createElement 这个方法很重要 ，创建组件的虚拟节点
+       */
       vnode = render.call(vm._renderProxy, vm.$createElement)
     } catch (e) {
+      // 错误处理 错误实例，组件实例，错误信息
       handleError(e, vm, `render`)
       // return error render result,
       // or previous vnode to prevent render error causing blank component
       /* istanbul ignore else */
+      // 开发环境中，组件选项中有renderErrorf配置
       if (process.env.NODE_ENV !== 'production' && vm.$options.renderError) {
         try {
+          // 调用渲染错误方法
           vnode = vm.$options.renderError.call(vm._renderProxy, vm.$createElement, e)
         } catch (e) {
+          // 处理错误
           handleError(e, vm, `renderError`)
+          // 组件实例的_vnode属性
           vnode = vm._vnode
         }
       } else {
         vnode = vm._vnode
       }
     } finally {
+      // 清掉保存的组件引用
       currentRenderingInstance = null
     }
     // if the returned array contains only a single node, allow it
+    // vnode是数组
     if (Array.isArray(vnode) && vnode.length === 1) {
+      // 获取第一个虚拟节点
       vnode = vnode[0]
     }
     // return empty vnode in case the render function errored out

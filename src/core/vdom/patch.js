@@ -771,35 +771,39 @@ export function createPatchFunction(backend) {
   }
 
   /**
-   * oldVnode 老的vnode
+   * 组件新vnode与老vnode的对比，更新
+   * oldVnode 老的虚拟节点
    * vnode 新
    */
   return function patch(oldVnode, vnode, hydrating, removeOnly) {
-    // vnode没有定义
+    // 组件新的vnode没有定义 等于 null undefined
     if (isUndef(vnode)) {
-      //老节点定义了，调用组件销毁的方法
+      // 组件老的vnode，调用组件销毁的方法
       if (isDef(oldVnode)) invokeDestroyHook(oldVnode)
       return
     }
 
+    // 是否是初次补丁组件的vnode
     let isInitialPatch = false
+    // 本插入虚拟节点的队列
     const insertedVnodeQueue = []
 
     // 老vnode没有定义
     if (isUndef(oldVnode)) {
       // empty mount (likely as component), create new root element
+      // 没有老的vnode,所以是第一次进行补丁
       isInitialPatch = true
-      // 创建元素
+      // 创建虚拟节点
       createElm(vnode, insertedVnodeQueue)
     } else {
-      // 是否是真实dom
+      // 老的vnode的节点类型,是标签元素
       const isRealElement = isDef(oldVnode.nodeType)
-      // 非真实节点,并且vnode相同
+      // 不是元素,vnode相同
       if (!isRealElement && sameVnode(oldVnode, vnode)) {
         // patch existing root node
         patchVnode(oldVnode, vnode, insertedVnodeQueue, null, null, removeOnly)
       } else {
-        // 真实dom节点
+        // 是dom元素
         if (isRealElement) {
           // mounting to a real element
           // check if this is server-rendered content and if we can perform

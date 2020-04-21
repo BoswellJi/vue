@@ -44,6 +44,7 @@ export default class Watcher {
 
   constructor (
     vm: Component,
+    // 更新组件函数
     expOrFn: string | Function,
     cb: Function,
     options?: ?Object,
@@ -108,6 +109,7 @@ export default class Watcher {
     const vm = this.vm
     try {
       // 触发属性的getter收集依赖( getter  )
+      // 调用updateComponent方法，
       value = this.getter.call(vm, vm)
     } catch (e) {
       if (this.user) {
@@ -241,6 +243,7 @@ export default class Watcher {
   }
 
   /**
+   * 从所有依赖的订阅者列表中移除
    * Remove self from all dependencies' subscriber list.
    */
   teardown () {

@@ -3,18 +3,29 @@
 // can we use __proto__?
 export const hasProto = '__proto__' in {}
 
-// Browser environment sniffing
+// Browser environment sniffing（嗅探）
+// 是否在浏览器中
 export const inBrowser = typeof window !== 'undefined'
+// weex平台
 export const inWeex = typeof WXEnvironment !== 'undefined' && !!WXEnvironment.platform
 export const weexPlatform = inWeex && WXEnvironment.platform.toLowerCase()
+// 浏览器的用户代理
 export const UA = inBrowser && window.navigator.userAgent.toLowerCase()
+// ie
 export const isIE = UA && /msie|trident/.test(UA)
+// ie9
 export const isIE9 = UA && UA.indexOf('msie 9.0') > 0
+// edge
 export const isEdge = UA && UA.indexOf('edge/') > 0
+// android
 export const isAndroid = (UA && UA.indexOf('android') > 0) || (weexPlatform === 'android')
+// ios
 export const isIOS = (UA && /iphone|ipad|ipod|ios/.test(UA)) || (weexPlatform === 'ios')
+// chrome
 export const isChrome = UA && /chrome\/\d+/.test(UA) && !isEdge
+// phantomjs
 export const isPhantomJS = UA && /phantomjs/.test(UA)
+// firefox
 export const isFF = UA && UA.match(/firefox\/(\d+)/)
 
 // Firefox has a "watch" function on Object.prototype...

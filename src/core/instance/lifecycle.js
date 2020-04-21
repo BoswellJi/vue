@@ -75,38 +75,42 @@ export function initLifecycle (vm: Component) {
 
 export function lifecycleMixin (Vue: Class<Component>) {
  /**
-  * 更新组件
+  * 更新组件,将组件的虚拟节点安装到真实dom中
   * @param {} vnode 组件的vnode vm._render生成
   * @param {} 
   */
   Vue.prototype._update = function (vnode: VNode, hydrating?: boolean) {
-    // 实例,Vue实例或者Vue子类
+    // 组件实例
     const vm: Component = this
-    // 挂载的到dom元素
+    // 挂载的到dom对象
     const prevEl = vm.$el
     // 保存当前虚拟节点
     const prevVnode = vm._vnode
-    // 设置当前活跃的组件实例
+    // 设置组件实例为当前活跃状态
     const restoreActiveInstance = setActiveInstance(vm)
     // 重新添加新的虚拟节点 vm._vnode 与vm.$vnode 是父子级关系
     // vm._vnode.parent === vm.$vnode
     vm._vnode = vnode 
     // Vue.prototype.__patch__ is injected in entry points
     // based on the rendering backend used.
+    // 第一次创建虚拟节点（第一次被渲染
     if (!prevVnode) {
       // initial render
       vm.$el = vm.__patch__(vm.$el, vnode, hydrating, false /* removeOnly */)
     } else {
       // updates
+      // 更新虚拟节点
       vm.$el = vm.__patch__(prevVnode, vnode)
     }
-    // 将上一个组件实例赋值到当前活跃实例
+    // 更新完成将当前组件实例设置为前活跃组件实例
     restoreActiveInstance()
     // update __vue__ reference
     if (prevEl) {
       prevEl.__vue__ = null
     }
+    // 根组件
     if (vm.$el) {
+      // 给根dom对象添加__vue__属性
       vm.$el.__vue__ = vm
     }
     // if parent is an HOC, update its $el as well
@@ -125,33 +129,39 @@ export function lifecycleMixin (Vue: Class<Component>) {
     }
   }
 
-  // 销毁组件
+  // 销毁组件，清理内存
   Vue.prototype.$destroy = function () {
     const vm: Component = this
+    // 组件正在被销毁
     if (vm._isBeingDestroyed) {
       return
     }
-    // 组件销毁之前
+    // 组件销毁之前，调用组件的钩子函数
     callHook(vm, 'beforeDestroy')
 
-    /**
-     * 卸载watchers,child components listeners
-     */
+    // 标记组件当前正在卸载，不会重复执行
     vm._isBeingDestroyed = true
     // remove self from parent
+    // 获取父组件实例
     const parent = vm.$parent
+    // 父组件实例存在，父组件不是正在被销毁，组件的选项中没有abstract属性
     if (parent && !parent._isBeingDestroyed && !vm.$options.abstract) {
+      // 从父组件中删除，父组件下的所有子组件，vm,组件实例应用
       remove(parent.$children, vm)
     }
     // teardown watchers
+    // 卸载watchers,child components listeners
     if (vm._watcher) {
       vm._watcher.teardown()
     }
+    // 组件的观察者数量
     let i = vm._watchers.length
     while (i--) {
+      // 将没有给观察者卸载
       vm._watchers[i].teardown()
     }
     // remove reference from data ob
+    // 冻结对象，不能有观察者
     // frozen object may not have observer.
     if (vm._data.__ob__) {
       vm._data.__ob__.vmCount--
@@ -161,14 +171,17 @@ export function lifecycleMixin (Vue: Class<Component>) {
     // invoke destroy hooks on current rendered tree
     vm.__patch__(vm._vnode, null)
     // fire destroyed hook
-    // 组件销毁完成
+    // 触发组件销毁完成钩子函数
     callHook(vm, 'destroyed')
     // turn off all instance listeners.
+    // 组件关闭所有自定义监听函数
     vm.$off()
     // remove __vue__ reference
+    // 移除引用
     if (vm.$el) {
       vm.$el.__vue__ = null
     }
+    // 释放循环引用
     // release circular reference (#6759)
     if (vm.$vnode) {
       vm.$vnode.parent = null
@@ -219,23 +232,34 @@ export function mountComponent (
 
   let updateComponent
   /* istanbul ignore if */
+  // 开发环境中，配置开启性能，以及mark功能
   if (process.env.NODE_ENV !== 'production' && config.performance && mark) {
     updateComponent = () => {
+      // 获取组件名称
       const name = vm._name
+      // 获取组件唯一id
       const id = vm._uid
+      // 开始标签
       const startTag = `vue-perf-start:${id}`
+      // 结束标签
       const endTag = `vue-perf-end:${id}`
 
+      // 标记开始时间戳
       mark(startTag)
-      // 生成vnode
+      // 调用组件的render函数，生成虚拟节点
       const vnode = vm._render()
+      // 标记结束时间戳
       mark(endTag)
+      // 测量结果
       measure(`vue ${name} render`, startTag, endTag)
 
+      // 重新标记开始时间戳
       mark(startTag)
-      // 将vnode渲染为真实dom
+      // 将vnode渲染为真实dom（到这里组件被安装到真实dom中）
       vm._update(vnode, hydrating)
+      // 重新标记结束时间戳
       mark(endTag)
+      // 测量结果
       measure(`vue ${name} patch`, startTag, endTag)
     }
   } else {
@@ -266,13 +290,14 @@ export function mountComponent (
 
   // manually mounted instance, call mounted on self
   // mounted is called for render-created child components in its inserted hook
-  // null undefined
-  // 初始化安装，vm.$vnode标识父vnode
+  // 组件的虚拟节点为null
   if (vm.$vnode == null) {
+    // 组件被安装到真是dom中
     vm._isMounted = true
-    // vnode patch到真实dom
+    // 调用组件已被安装钩子函数
     callHook(vm, 'mounted')
   }
+  // 返回组件实例
   return vm
 }
 
@@ -397,6 +422,11 @@ export function deactivateChildComponent (vm: Component, direct?: boolean) {
   }
 }
 
+/**
+ * 钩子函数回调
+ * @param {*} vm 组件实例
+ * @param {*} hook 钩子函数名称
+ */
 export function callHook (vm: Component, hook: string) {
   // #7573 disable dep collection when invoking lifecycle hooks
   pushTarget()
@@ -404,9 +434,10 @@ export function callHook (vm: Component, hook: string) {
   const handlers = vm.$options[hook]
   // 生命周期信息
   const info = `${hook} hook`
-  // 将hook函数数组遍历执行
+
   // 根据options的合并策略，得到的是数组
   if (handlers) {
+    // 遍历执行钩子函数
     for (let i = 0, j = handlers.length; i < j; i++) {
       // 调用使用异常处理
       invokeWithErrorHandling(handlers[i], vm, null, vm, info)
@@ -416,5 +447,6 @@ export function callHook (vm: Component, hook: string) {
   if (vm._hasHookEvent) {
     vm.$emit('hook:' + hook)
   }
+  // 开启依赖追踪功能
   popTarget()
 }
