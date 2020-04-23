@@ -42,21 +42,22 @@ export function initLifecycle (vm: Component) {
   const options = vm.$options
 
   // locate first non-abstract parent
-  // 向上找组件的非抽象的父组件实例
-  // 将组件添加到父组件的$children中
+  // 获取组件选项的parent属性
   let parent = options.parent // 父类
-  // 父组件
+  // 存在父组件，不是abstract
   if (parent && !options.abstract) {
+    // 向上迭代父组件不是abstract的或者没有父组件实例
     while (parent.$options.abstract && parent.$parent) {
+      // 父组件实例的父组件
       parent = parent.$parent
     }
-    // 这里是从父组件查找子组件的地方
+    // 将组件放到父组件的$children数组中
     parent.$children.push(vm)
   }
 
   // 父组件
   vm.$parent = parent
-  // 根组件
+  // 设置组件的根组件
   vm.$root = parent ? parent.$root : vm
 
   // 定义子组件容器
@@ -64,12 +65,17 @@ export function initLifecycle (vm: Component) {
   // 定义节点的引用
   vm.$refs = {}
 
-  // 定义
+  // 组件的监听器
   vm._watcher = null
+  // 组件的活跃
   vm._inactive = null
+  // 组件的
   vm._directInactive = false
+  // 组件是否被安装
   vm._isMounted = false
+  // 组件的被销毁
   vm._isDestroyed = false
+  // 组件是否正在被销毁
   vm._isBeingDestroyed = false
 }
 
@@ -381,40 +387,64 @@ export function updateChildComponent (
   }
 }
 
+/**
+ * 是否不活跃的树
+ * @param {*} vm 
+ */
 function isInInactiveTree (vm) {
+  // 组件，组件的父组件，向上找，找到不活跃的组件
   while (vm && (vm = vm.$parent)) {
     if (vm._inactive) return true
   }
   return false
 }
-
+/**
+ * 使组件活跃 keep-alive中
+ * @param {*} vm  组件实例
+ * @param {*} direct 
+ */
 export function activateChildComponent (vm: Component, direct?: boolean) {
   if (direct) {
+    // 直接激活
     vm._directInactive = false
+    // 组件不活跃
     if (isInInactiveTree(vm)) {
       return
     }
   } else if (vm._directInactive) {
     return
   }
+  // 是不活跃组件
   if (vm._inactive || vm._inactive === null) {
+    // 改为false
     vm._inactive = false
+    // 获取子组件，对子组件进行激活
     for (let i = 0; i < vm.$children.length; i++) {
       activateChildComponent(vm.$children[i])
     }
+    // 已被激活
     callHook(vm, 'activated')
   }
 }
 
+/**
+ * 使组件失去活跃
+ * @param {*} vm 
+ * @param {*} direct 
+ */
 export function deactivateChildComponent (vm: Component, direct?: boolean) {
+  // 直接失活
   if (direct) {
     vm._directInactive = true
     if (isInInactiveTree(vm)) {
       return
     }
   }
+  // 非失活组件
   if (!vm._inactive) {
+    // 设置失活
     vm._inactive = true
+    
     for (let i = 0; i < vm.$children.length; i++) {
       deactivateChildComponent(vm.$children[i])
     }

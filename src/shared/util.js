@@ -281,8 +281,9 @@ export function toArray (list: any, start?: number): Array<any> {
  */
 // 混合式继承,潜复制
 export function extend (to: Object, _from: ?Object): Object {
-  // 将一个对象的属性都复制到另一个对象上
+  // 遍历对象
   for (const key in _from) {
+    // 将目标对象的属性复制给源对象上
     to[key] = _from[key]
   }
   return to
@@ -290,12 +291,15 @@ export function extend (to: Object, _from: ?Object): Object {
 
 /**
  * Merge an Array of Objects into a single Object.
- * 合并Object类型的数组,到一个对象中去
  */
+// 合并Object类型的数组,到一个对象中去
 export function toObject (arr: Array<any>): Object {
   const res = {}
+  // 遍历数组
   for (let i = 0; i < arr.length; i++) {
+    // 元素存在时
     if (arr[i]) {
+      // 将对象继承res
       extend(res, arr[i])
     }
   }
@@ -340,6 +344,7 @@ export function genStaticKeys (modules: Array<ModuleOptions>): string {
  * Check if two values are loosely equal - that is,
  * if they are plain objects, do they have the same shape?
  */
+// 宽松的变量比较，外形像，那就是了
 export function looseEqual (a: any, b: any): boolean {
   // 两个变量全等
   if (a === b) return true
@@ -392,8 +397,9 @@ export function looseEqual (a: any, b: any): boolean {
  * found in the array (if value is a plain object, the array must
  * contain an object of the same shape), or -1 if it is not present.
  */
+// 宽松的变量比较
 export function looseIndexOf (arr: Array<mixed>, val: mixed): number {
-  // 数组中是否存在这个数
+  // 数组中是否存在这个数（外形像那就是了
   for (let i = 0; i < arr.length; i++) {
     if (looseEqual(arr[i], val)) return i
   }
@@ -403,11 +409,16 @@ export function looseIndexOf (arr: Array<mixed>, val: mixed): number {
 /**
  * Ensure a function is called only once.
  */
+// 只执行一次
 export function once (fn: Function): Function {
+  // 初始化为false，意为可以执行
   let called = false
   return function () {
+    // 开始执行
     if (!called) {
+      // 设置为true
       called = true
+      // 调用函数（之后不会再执行这个函数，这个once方法
       fn.apply(this, arguments)
     }
   }

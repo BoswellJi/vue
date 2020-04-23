@@ -17,7 +17,7 @@ import VNode, { createEmptyVNode } from '../vdom/vnode'
 import { isUpdatingChildComponent } from './lifecycle'
 
 /**
- * 渲染初始化
+ * 初始化渲染
  * @param {*} vm 组件实例
  */
 export function initRender (vm: Component) {

@@ -1,16 +1,35 @@
 /* @flow */
 
+/**
+ * 进制转换
+ * 2进制小数,转换为10进制, 小数点开始,从左向右,第一位乘上 1/2, 第二位乘上 1/4 ...
+ * 每个数都计算下去,相加,就是小数部分的十进制的值;
+ * 
+ * 10进制的小数,转换为2进制,小数部分乘以2,每次取整数部分,一直乘下去,知道结果为1(每次取结果的小数继续乘
+ */
+
+/**vnode 种类
+ * html
+ * svg
+ * 普通有状态组件
+ * 需要被keepAlive的有状态组件
+ * 已经被keepAlive的有状态组件
+ * 函数式
+ * 纯文本
+ * Fragment
+ * Portal
+ */
 export default class VNode {
   tag: string | void; // 标签
-  data: VNodeData | void; //
+  data: VNodeData | void; // vnode的相关数据，标签属性，事件，样式等
   children: ?Array<VNode>; // 子vnode
-  text: string | void; //文本
-  elm: Node | void; // vnode的真实dom node
+  text: string | void; // 文本vnode
+  elm: Node | void; // vnode的真实dom对象的引用(根据这个属性，子vnode确定创建的真实dom插入到哪里)
   ns: string | void; //
   context: Component | void; // rendered in this component's scope
   key: string | number | void;
-  componentOptions: VNodeComponentOptions | void;
-  componentInstance: Component | void; // component instance
+  componentOptions: VNodeComponentOptions | void; //（组件的选项）
+  componentInstance: Component | void; // component instance 组件的实例
   parent: VNode | void; // component placeholder node
 
   // strictly internal
@@ -18,8 +37,8 @@ export default class VNode {
   isStatic: boolean; // hoisted static node
   isRootInsert: boolean; // necessary for enter transition check
   isComment: boolean; // empty comment placeholder?
-  isCloned: boolean; // is a cloned node?
-  isOnce: boolean; // is a v-once node?
+  isCloned: boolean; // is a cloned node?(是否被克隆的节点)
+  isOnce: boolean; // is a v-once node? 
   asyncFactory: Function | void; // async component factory function
   asyncMeta: Object | void;
   isAsyncPlaceholder: boolean;
@@ -85,7 +104,9 @@ export default class VNode {
 // 创建一个注释虚拟节点
 export const createEmptyVNode = (text: string = '') => {
   const node = new VNode()
+  // 给注释节点添加文本
   node.text = text
+  // 标记为注释节点
   node.isComment = true
   return node
 }
@@ -99,7 +120,9 @@ export function createTextVNode (val: string | number) {
 // used for static nodes and slot nodes because they may be reused across
 // multiple renders, cloning them avoids errors when DOM manipulations rely
 // on their elm reference.
+// 克隆vnode
 export function cloneVNode (vnode: VNode): VNode {
+  // 根据vnode重新实例化一个vnode
   const cloned = new VNode(
     vnode.tag,
     vnode.data,
@@ -113,6 +136,7 @@ export function cloneVNode (vnode: VNode): VNode {
     vnode.componentOptions,
     vnode.asyncFactory
   )
+  // 添加
   cloned.ns = vnode.ns
   cloned.isStatic = vnode.isStatic
   cloned.key = vnode.key

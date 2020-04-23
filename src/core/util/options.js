@@ -506,9 +506,10 @@ export function mergeOptions(
  * Resolve an asset.
  * This function is used because child instances need access
  * to assets defined in its ancestor chain.
- * 组件的配置项
- * type 类型 component 组件，初始化
- * id 组件标签名
+ * 
+ * @param {} options 组件的配置项
+ * @param {}  type 类型 component 
+ *  @param {} id 组件名
  */
 export function resolveAsset(
   options: Object,
@@ -520,10 +521,13 @@ export function resolveAsset(
   if (typeof id !== 'string') {
     return
   }
-  // components属性的值
+  // components属性
   const assets = options[type]
   // check local registration variations first
-  // id为tag，为components对象的key,如果组件的components对象有这个key，说明，他是一个组件
+  /**
+   * 1. id为tag，为components对象的key,如果组件的components对象有这个key，说明，他是一个组件
+   * 2. 调整组件名，再次查找，找到就返回这个组件实例
+   */
   if (hasOwn(assets, id)) return assets[id]
   // 小驼峰化tag名
   const camelizedId = camelize(id)

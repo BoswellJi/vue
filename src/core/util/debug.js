@@ -8,8 +8,11 @@ export let tip = noop
 export let generateComponentTrace = (noop: any) // work around flow check
 export let formatComponentName = (noop: any)
 
+// 开发中
 if (process.env.NODE_ENV !== 'production') {
+  // 全局对象console不为undefined
   const hasConsole = typeof console !== 'undefined'
+  // 
   const classifyRE = /(?:^|[-_])(\w)/g
   const classify = str => str
     .replace(classifyRE, c => c.toUpperCase())
@@ -33,15 +36,19 @@ if (process.env.NODE_ENV !== 'production') {
     }
   }
 
+  // 组件实例
   formatComponentName = (vm, includeFile) => {
+    // 组件的$root属性是本身
     if (vm.$root === vm) {
       return '<Root>'
     }
+    // vm是函数 cid属性不为null,返回组件选项
     const options = typeof vm === 'function' && vm.cid != null
       ? vm.options
       : vm._isVue
         ? vm.$options || vm.constructor.options
         : vm
+        // 获取组件的名称
     let name = options.name || options._componentTag
     const file = options.__file
     if (!name && file) {
@@ -58,8 +65,11 @@ if (process.env.NODE_ENV !== 'production') {
   const repeat = (str, n) => {
     let res = ''
     while (n) {
+      // n除以2余数为1的时候 res加一个str
       if (n % 2 === 1) res += str
+      // n>1 str+str
       if (n > 1) str += str
+      // n向右移动一个位（？
       n >>= 1
     }
     return res

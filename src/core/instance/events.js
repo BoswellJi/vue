@@ -15,7 +15,7 @@ export function initEvents (vm: Component) {
   // 组件没有钩子事件函数
   vm._hasHookEvent = false
   // init parent attached events
-  // 组件上的v-on:click等绑定事件
+  // 父组件中监听器
   const listeners = vm.$options._parentListeners
   if (listeners) {
     updateComponentListeners(vm, listeners)

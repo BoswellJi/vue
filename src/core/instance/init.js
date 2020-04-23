@@ -31,25 +31,35 @@ export function initMixin (Vue: Class<Component>) {
     }
 
     // a flag to avoid this being observed
+    // 标识对象是vue内部对象，避免被观察
     vm._isVue = true
     // merge options
-    // 子组件
+    // 选项，选项存在组件属性
     if (options && options._isComponent) {
+      // 优化组件内部实例化
       // optimize internal component instantiation
+      // 因为动态选项的合并非常慢，
       // since dynamic options merging is pretty slow, and none of the
+      // 内部组件没有选项需要特殊处理
       // internal component options needs special treatment.
+      // 初始化内部组件（Vue框架内置组件）
       initInternalComponent(vm, options)
     } else {
-      // Vue实例的$options属性， 对构造函数配置进行策略合并
-      // 这里只会走一次 new Vue({...})
+      /**
+       * Vue实例的$options属性， 对构造函数配置进行策略合并
+       * 这里只会走一次 new Vue({...})
+       */
       vm.$options = mergeOptions(
-        resolveConstructorOptions(vm.constructor),  //vm.constructor === Vue 
+        // 解析构造函数选项
+        resolveConstructorOptions(vm.constructor),  //vm.constructor === Vue
+        // 组件选项 
         options || {},
+        // 组件实例
         vm
       )
     }
 
-    // 给Vue实例,子类实例添加_renderProxy属性
+    // 给组件实例,子类实例添加_renderProxy属性
     /* istanbul ignore else */
     if (process.env.NODE_ENV !== 'production') {
       initProxy(vm)
@@ -74,7 +84,12 @@ export function initMixin (Vue: Class<Component>) {
     initEvents(vm)
     // 初始化渲染
     initRender(vm)
-    // 回调钩子函数
+    /**
+     * beforeCreate生命周期
+     * 初始化了生命周期
+     * 初始化了事件系统
+     * 初始化了渲染组件工作
+     */
     callHook(vm, 'beforeCreate')
     // 初始化注入
     initInjections(vm) // resolve injections before data/props
@@ -82,11 +97,16 @@ export function initMixin (Vue: Class<Component>) {
     initState(vm)
     // 初始化提供者
     initProvide(vm) // resolve provide after data/props
-    // 使用vm.$emit进行事件触发
+    /**
+     * created生命周期：
+     * 初始化了响应式系统 
+     */
     callHook(vm, 'created')
 
     /* istanbul ignore if */
+    // 开发中，开启配置了性能和标记
     if (process.env.NODE_ENV !== 'production' && config.performance && mark) {
+      // 格式化组件name
       vm._name = formatComponentName(vm, false)
       mark(endTag)
       measure(`vue ${vm._name} init`, startTag, endTag)
@@ -119,17 +139,13 @@ export function initInternalComponent (vm: Component, options: InternalComponent
   const opts = vm.$options = Object.create(vm.constructor.options)
   // doing this because it's faster than dynamic enumeration.
 
-  // 给组件的option上添加属性
-
   // 组件的父vnode（父组件
   const parentVnode = options._parentVnode
   // 组件的父Vue类
   opts.parent = options.parent
   // 父vnode实例
   opts._parentVnode = parentVnode
-  /**
-   * 父vnode实例的组件配置参数
-   */
+  // 父vnode实例的组件配置参数
   const vnodeComponentOptions = parentVnode.componentOptions
   // 父vnode中的propsData属性
   opts.propsData = vnodeComponentOptions.propsData
@@ -140,6 +156,7 @@ export function initInternalComponent (vm: Component, options: InternalComponent
   // 父vnode配置的标签
   opts._componentTag = vnodeComponentOptions.tag
 
+  // 组件有render函数
   if (options.render) {
     opts.render = options.render
     opts.staticRenderFns = options.staticRenderFns
@@ -147,26 +164,39 @@ export function initInternalComponent (vm: Component, options: InternalComponent
 }
 
 
-// 传入的参数为 Vue（以及子类  Vue.extend() 创建Vue子类
+/**
+ * 
+ * @param {*} Ctor 构造函数
+ */
 export function resolveConstructorOptions (Ctor: Class<Component>) {
-  // options
+  // 获取组件选项
   let options = Ctor.options
-  // 构造函数为Vue构造函数的子类
+  // 获取构造函数的父构造函数
   if (Ctor.super) {
-    const superOptions = resolveConstructorOptions(Ctor.super) //Vue 父类
-    const cachedSuperOptions = Ctor.superOptions //父类配置参数
+    // 获取父构造函数的选项
+    const superOptions = resolveConstructorOptions(Ctor.super) 
+    // 获取父构造函数的选项
+    const cachedSuperOptions = Ctor.superOptions 
+    // 获取的父构造函数的选项不等
     if (superOptions !== cachedSuperOptions) {
       // super option changed,
       // need to resolve new options.
+      // 将其进行修改
       Ctor.superOptions = superOptions
       // check if there are any late-modified/attached options (#4976)
+      // 获取新的options与原始的options对比的差异部分
       const modifiedOptions = resolveModifiedOptions(Ctor)
       // update base extend options
+      // 有差异的options
       if (modifiedOptions) {
+        // 添加到拓展options上
         extend(Ctor.extendOptions, modifiedOptions)
       }
+      // 合并选项
       options = Ctor.options = mergeOptions(superOptions, Ctor.extendOptions)
+      // 获取组件名称
       if (options.name) {
+        // 给组件选项中components属性值中的命名组件进行设置实例
         options.components[options.name] = Ctor
       }
     }
@@ -181,13 +211,15 @@ export function resolveConstructorOptions (Ctor: Class<Component>) {
  */
 function resolveModifiedOptions (Ctor: Class<Component>): ?Object {
   let modified
-  // 子类的options
+  // 本身的options
   const latest = Ctor.options
-  // 子类sealedOptions
+  // 本身的options
   const sealed = Ctor.sealedOptions 
+  // 使用最新的options与最原始的options对比
   for (const key in latest) {
     // 找出与之前options不同的部分
     if (latest[key] !== sealed[key]) {
+      // 将不同的属性保存到modified对象中
       if (!modified) modified = {}
       modified[key] = latest[key]
     }

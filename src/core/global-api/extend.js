@@ -86,6 +86,7 @@ export function initExtend (Vue: GlobalAPI) {
     Sub.superOptions = Super.options
     // 子类自身的options
     Sub.extendOptions = extendOptions
+    // 原始的options
     Sub.sealedOptions = extend({}, Sub.options)
 
     // cache constructor

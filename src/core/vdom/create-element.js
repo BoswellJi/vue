@@ -29,7 +29,7 @@ const ALWAYS_NORMALIZE = 2
  * Vue 组件的创建虚拟dom的函数，可以将组件模板编译为虚拟dom
  * @param {*} context vnode（组件）的上下文
  * @param {*} tag 标签
- * @param {*} data vnode的数据
+ * @param {*} data vnode的数据(编译后的vnode信息)
  * @param {*} children 当前vnode的子节点
  * @param {*} normalizationType 子节点规范的类型
  * @param {*} alwaysNormalize 是否总是规范化
@@ -44,7 +44,9 @@ export function createElement (
 ): VNode | Array<VNode> {
   // 数组或者原始,children本身就是规范化的类型
   if (Array.isArray(data) || isPrimitive(data)) {
-    normalizationType = children
+    // 子vnode
+    normalizationType = children 
+    // children本身就是数据
     children = data
     data = undefined
   }
@@ -55,6 +57,18 @@ export function createElement (
   return _createElement(context, tag, data, children, normalizationType)
 }
 
+
+/**
+ * 1. tag为空，创建一个空的 vnode
+ * 2. 创建一个标签vnode
+ * 3. 创建一个组件vnode
+ * 
+ * @param {*} context 组件实例
+ * @param {*} tag 1. 标签节点  2. 文本节点  3. 组件节点（组件实例
+ * @param {*} data vnode的信息
+ * @param {*} children vnode的子vnode
+ * @param {*} normalizationType 
+ */
 export function _createElement (
   context: Component,
   tag?: string | Class<Component> | Function | Object,
@@ -82,7 +96,7 @@ export function _createElement (
     return createEmptyVNode()
   }
   // warn against non-primitive key
-  // vnode的key不能是非原始类型的值
+  // 开发环境中。避免使用非原始值作为key
   if (process.env.NODE_ENV !== 'production' &&
     isDef(data) && isDef(data.key) && !isPrimitive(data.key)
   ) {
@@ -95,11 +109,15 @@ export function _createElement (
     }
   }
   // support single function children as default scoped slot
+  // 子vnode为数组，并且第一个元素是函数
   if (Array.isArray(children) &&
     typeof children[0] === 'function'
   ) {
+    // 设置节点的信息
     data = data || {}
+    // 设置节点的作用域插槽
     data.scopedSlots = { default: children[0] }
+    // 设置子vnode长度为0
     children.length = 0
   }
   // 规范化vnode的子vnode
@@ -109,7 +127,7 @@ export function _createElement (
     children = simpleNormalizeChildren(children)
   }
   let vnode, ns
-  // 字符串才会判断是否为组件
+  // 字符串为标签节点
   if (typeof tag === 'string') {
     let Ctor
     ns = (context.$vnode && context.$vnode.ns) || config.getTagNamespace(tag)
@@ -122,47 +140,46 @@ export function _createElement (
           context
         )
       }
+      // 创建vnode，节点信息，子vnode, 组件实例
       vnode = new VNode(
         config.parsePlatformTagName(tag), data, children,
         undefined, undefined, context
       )
 
-      // resolveAsset对tag进行判断，并进行组件tag名的正规化，再进行判断
       /**
-       * context.$options 组件的配置参数
-       * tag 组件的标签名
-       * 
+       * resolveAsset对tag进行判断，并进行组件tag名的正规化，再进行判断
+       * 组件节点没有data属性
        */
     } else if ((!data || !data.pre) && isDef(Ctor = resolveAsset(context.$options, 'components', tag))) {
       // component
-      /**
-       * 根据组件的optiions进行创建组件
-       * 
-       */
+      // 组件实例 
       vnode = createComponent(Ctor, data, context, children, tag)
     } else {
       // unknown or unlisted namespaced elements
       // check at runtime because it may get assigned a namespace when its
       // parent normalizes children
+      // 文本节点
       vnode = new VNode(
         tag, data, children,
         undefined, undefined, context
       )
     }
   } else {
-    // tag非字符串直接进行组件创建
     // direct component options / constructor
-    // 返回组件的vnode
+    // 创建组件的vnode
     vnode = createComponent(tag, data, context, children)
   }
-  // 数组
+  // vnode为数组
   if (Array.isArray(vnode)) {
+    // 直接返回
     return vnode
-  } else if (isDef(vnode)) { // 不是undefined 和 null
+  } else if (isDef(vnode)) { // 节点被定义
     if (isDef(ns)) applyNS(vnode, ns)
+    // vnode 信息被定义
     if (isDef(data)) registerDeepBindings(data)
     return vnode
   } else {
+    // 创建一个空的vnode
     return createEmptyVNode()
   }
 }

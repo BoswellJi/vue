@@ -17,11 +17,20 @@ export default {
   }
 }
 
+/**
+ * 注册引用
+ * @param {*} vnode 
+ * @param {*} isRemoval 
+ */
 export function registerRef (vnode: VNodeWithData, isRemoval: ?boolean) {
+  // 组件中ref属性
   const key = vnode.data.ref
+  // 属性中没有定义这个ref
   if (!isDef(key)) return
 
+  // 获取组件实例
   const vm = vnode.context
+  // 组件的
   const ref = vnode.componentInstance || vnode.elm
   const refs = vm.$refs
   if (isRemoval) {

@@ -174,6 +174,7 @@ export function createPatchFunction(backend) {
     ownerArray,
     index
   ) {
+    // vnode的真实dom节点
     if (isDef(vnode.elm) && isDef(ownerArray)) {
       // This vnode was used in a previous render!
       // now it's used as a new node, overwriting its elm would cause
@@ -191,15 +192,20 @@ export function createPatchFunction(backend) {
       return
     }
 
+    // vnode的节点信息
     const data = vnode.data
+    // vnode的子节点
     const children = vnode.children
+    // vnode的标签
     const tag = vnode.tag
-    // tag被定义,vnode是否有tag
+    // vnode标签为null, undefined，节点可能是注释，或者文本
     if (isDef(tag)) {
+      // 开发环境中
       if (process.env.NODE_ENV !== 'production') {
         if (data && data.pre) {
           creatingElmInVPre++
         }
+        // 是否是未知元素
         if (isUnknownElement(vnode, creatingElmInVPre)) {
           warn(
             'Unknown custom element: <' + tag + '> - did you ' +
@@ -210,7 +216,7 @@ export function createPatchFunction(backend) {
         }
       }
 
-      // vnode的dom节点占位符
+      // 创建真实的dom对象
       vnode.elm = vnode.ns
         ? nodeOps.createElementNS(vnode.ns, tag)
         : nodeOps.createElement(tag, vnode)
@@ -237,9 +243,10 @@ export function createPatchFunction(backend) {
         }
       } else {
         // 将组件父vnode下的所有子vnode进行createElm
-        // 递归构建一颗完整的组件数
         createChildren(vnode, children, insertedVnodeQueue)
+        // vnode的节点信息
         if (isDef(data)) {
+          // 
           invokeCreateHooks(vnode, insertedVnodeQueue)
         }
         // 将真实dom插入
@@ -249,11 +256,15 @@ export function createPatchFunction(backend) {
       if (process.env.NODE_ENV !== 'production' && data && data.pre) {
         creatingElmInVPre--
       }
-    } else if (isTrue(vnode.isComment)) { //注释节点
+    } else if (isTrue(vnode.isComment)) { 
+      //注释节点，创建注释节点
       vnode.elm = nodeOps.createComment(vnode.text)
+      // 插入到父节点中
       insert(parentElm, vnode.elm, refElm)
-    } else { //文本节点
+    } else { 
+      //文本节点，创建文本节点
       vnode.elm = nodeOps.createTextNode(vnode.text)
+      // 插入到父节点中
       insert(parentElm, vnode.elm, refElm)
     }
   }
@@ -345,17 +356,27 @@ export function createPatchFunction(backend) {
     }
   }
 
+  /**
+   * 
+   * @param {*} vnode 
+   * @param {*} children 子vnode
+   * @param {*} insertedVnodeQueue 
+   */
   function createChildren(vnode, children, insertedVnodeQueue) {
     // 子vnode为数组
     if (Array.isArray(children)) {
+      // 开发环境中
       if (process.env.NODE_ENV !== 'production') {
+        // 检查子vnode中，是否存在重复的key
         checkDuplicateKeys(children)
       }
       // 遍历每一个vnode进行创建,插入
       for (let i = 0; i < children.length; ++i) {
+        // 创建子vnode为真实dom
         createElm(children[i], insertedVnodeQueue, vnode.elm, null, true, children, i)
       }
     } else if (isPrimitive(vnode.text)) {
+      // 子vnode为文本，直接创建文本节点，添加到vnode中（这个vnode为父节点
       nodeOps.appendChild(vnode.elm, nodeOps.createTextNode(String(vnode.text)))
     }
   }
@@ -367,7 +388,13 @@ export function createPatchFunction(backend) {
     return isDef(vnode.tag)
   }
 
+  /**
+   * 
+   * @param {*} vnode 
+   * @param {*} insertedVnodeQueue 
+   */
   function invokeCreateHooks(vnode, insertedVnodeQueue) {
+    // 
     for (let i = 0; i < cbs.create.length; ++i) {
       cbs.create[i](emptyNode, vnode)
     }
@@ -378,12 +405,20 @@ export function createPatchFunction(backend) {
     }
   }
 
+
   // set scope id attribute for scoped CSS.
   // this is implemented as a special case to avoid the overhead
   // of going through the normal attribute patching process.
+  // 给作用域css设置id属性，这个实现作为一个指定的案例用来避免覆盖
+  /**
+   * 设置作用域
+   * @param {*} vnode 虚拟节点
+   */
   function setScope(vnode) {
     let i
+    // vnode的节点作用域id被定义（样式作用域
     if (isDef(i = vnode.fnScopeId)) {
+      // 设置样式作用域
       nodeOps.setStyleScope(vnode.elm, i)
     } else {
       let ancestor = vnode
@@ -539,12 +574,20 @@ export function createPatchFunction(backend) {
     }
   }
 
+  /**
+   * 检查子vnode中是否存在重复的key
+   * @param {*} children 子vnode
+   */
   function checkDuplicateKeys(children) {
     const seenKeys = {}
     for (let i = 0; i < children.length; i++) {
+      // 保存每个vnode
       const vnode = children[i]
+      // 获取vnode中的key
       const key = vnode.key
+      // key是否被定义
       if (isDef(key)) {
+        // 存在，提示存在重复key,可能导致更新失败
         if (seenKeys[key]) {
           warn(
             `Duplicate keys detected: '${key}'. This may cause an update error.`,

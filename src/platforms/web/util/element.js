@@ -38,16 +38,19 @@ export const isReservedTag = (tag: string): ?boolean => {
 }
 
 export function getTagNamespace (tag: string): ?string {
+  // 是svg标签
   if (isSVG(tag)) {
     return 'svg'
   }
   // basic support for MathML
   // note it doesn't support other MathML elements being component roots
+  // math数学公式
   if (tag === 'math') {
     return 'math'
   }
 }
 
+// 未知的元素缓存
 const unknownElementCache = Object.create(null)
 export function isUnknownElement (tag: string): boolean {
   /* istanbul ignore if */

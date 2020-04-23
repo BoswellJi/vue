@@ -14,6 +14,11 @@ export function createElement (tagName: string, vnode: VNode): Element {
   return elm
 }
 
+/**
+ * 创建一个具有指定命名空间的标签
+ * @param {*} namespace （指的是html xml 等范畴
+ * @param {*} tagName 
+ */
 export function createElementNS (namespace: string, tagName: string): Element {
   return document.createElementNS(namespaceMap[namespace], tagName)
 }
@@ -22,6 +27,10 @@ export function createTextNode (text: string): Text {
   return document.createTextNode(text)
 }
 
+/**
+ * 创建注释节点（真实的dom节点
+ * @param {*} text 文本
+ */
 export function createComment (text: string): Comment {
   return document.createComment(text)
 }

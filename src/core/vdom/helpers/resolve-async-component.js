@@ -34,11 +34,16 @@ export function createAsyncPlaceholder (
   children: ?Array<VNode>,
   tag: ?string
 ): VNode {
+  // 创建一个空的vnode
   const node = createEmptyVNode()
+  // 节点的异步工厂
   node.asyncFactory = factory
+  // 节点的异步元数据
   node.asyncMeta = { data, context, children, tag }
+  // 返回
   return node
 }
+
 
 export function resolveAsyncComponent (
   factory: Function,
