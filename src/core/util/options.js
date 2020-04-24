@@ -506,10 +506,11 @@ export function mergeOptions(
  * Resolve an asset.
  * This function is used because child instances need access
  * to assets defined in its ancestor chain.
- * 
+ * 解析资产（ component,directive,filter
  * @param {} options 组件的配置项
- * @param {}  type 类型 component 
- *  @param {} id 组件名
+ * @param {}  type 资产类型 
+ * @param {} id 资产名称
+ * @param {} warnMissing 警告缺失
  */
 export function resolveAsset(
   options: Object,
@@ -518,17 +519,22 @@ export function resolveAsset(
   warnMissing?: boolean
 ): any {
   /* istanbul ignore if */
+  // 资产名称不是字符串，直接返回
   if (typeof id !== 'string') {
     return
   }
-  // components属性
+  // 获取组件中的资产
   const assets = options[type]
   // check local registration variations first
   /**
    * 1. id为tag，为components对象的key,如果组件的components对象有这个key，说明，他是一个组件
    * 2. 调整组件名，再次查找，找到就返回这个组件实例
    */
+
+  //  判断资产中指定名称的属性是否存在，存在直接返回指令对象
   if (hasOwn(assets, id)) return assets[id]
+  // 不存在，整理资产名称，再次匹配，返回资产引用
+
   // 小驼峰化tag名
   const camelizedId = camelize(id)
   // 再次进行判断

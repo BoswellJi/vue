@@ -10,13 +10,20 @@ import { LIFECYCLE_HOOKS } from 'shared/constants'
 
 export type Config = {
   // user
+  // options的合并策略
   optionMergeStrategies: { [key: string]: Function };
   silent: boolean;
+  // 生产环境的提示
   productionTip: boolean;
+  // 是否开启性能日志
   performance: boolean;
+  // 是否开启开发者模式
   devtools: boolean;
+  // 是否处理错误
   errorHandler: ?(err: Error, vm: Component, info: string) => void;
+  // 是否警告处理
   warnHandler: ?(msg: string, vm: Component, trace: string) => void;
+  // 被忽略的元素
   ignoredElements: Array<string | RegExp>;
   keyCodes: { [key: string]: number | Array<number> };
 

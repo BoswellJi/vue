@@ -1,5 +1,6 @@
 /* @flow */
 
+// vue模板解析器
 import { parse } from './parser/index'
 import { optimize } from './optimizer'
 import { generate } from './codegen/index'
