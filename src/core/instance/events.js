@@ -15,7 +15,7 @@ export function initEvents (vm: Component) {
   // 组件没有钩子事件函数
   vm._hasHookEvent = false
   // init parent attached events
-  // 父组件中监听器
+  // 父组件中监听器（内部组件才有）
   const listeners = vm.$options._parentListeners
   if (listeners) {
     updateComponentListeners(vm, listeners)
@@ -51,8 +51,11 @@ export function updateComponentListeners (
   listeners: Object,
   oldListeners: ?Object
 ) {
+  // 当前组件
   target = vm
+  // 
   updateListeners(listeners, oldListeners || {}, add, remove, createOnceHandler, vm)
+  // 清空
   target = undefined
 }
 

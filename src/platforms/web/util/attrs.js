@@ -19,6 +19,7 @@ export const mustUseProp = (tag: string, type: ?string, attr: string): boolean =
   )
 }
 
+// 
 export const isEnumeratedAttr = makeMap('contenteditable,draggable,spellcheck')
 
 const isValidContentEditableValue = makeMap('events,caret,typing,plaintext-only')
@@ -32,6 +33,7 @@ export const convertEnumeratedValue = (key: string, value: any) => {
       : 'true'
 }
 
+// 值为boolean值得属性
 export const isBooleanAttr = makeMap(
   'allowfullscreen,async,autofocus,autoplay,checked,compact,controls,declare,' +
   'default,defaultchecked,defaultmuted,defaultselected,defer,disabled,' +

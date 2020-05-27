@@ -36,13 +36,16 @@ export function setActiveInstance(vm: Component) {
   }
 }
 
-// 初始化,生命周期
+/**
+ * 初始化,生命周期
+ * @param {} vm 组件实例
+ */ 
 export function initLifecycle (vm: Component) {
-  // 获取,实例配置参数
+  // 获取组件的选项数据
   const options = vm.$options
 
-  // locate first non-abstract parent
-  // 获取组件选项的parent属性
+  // locate first non-abstract parent 本地第一个非抽象的父组件
+  // 从选项数据中获取组件的父组件
   let parent = options.parent // 父类
   // 存在父组件，不是abstract
   if (parent && !options.abstract) {
@@ -207,8 +210,7 @@ export function mountComponent (
   el: ?Element,
   hydrating?: boolean
 ): Component {
-  // 组件模板根元素的引用  vm.$el
-  // 组件模板的挂载点的引用 el
+  // 组件模板将要挂载到的dom节点
   vm.$el = el
   // 首先找到Vue实例上的render(框架初始化时为Vue构造函数实例，安装子组件为Vue构造函数子类的实例)
   if (!vm.$options.render) {
@@ -232,8 +234,7 @@ export function mountComponent (
       }
     }
   }
-  // 安装之前，调用生命周期
-  // 执行_render函数之前
+  // 安装组件之前，调用生命周期： 安装之前时期
   callHook(vm, 'beforeMount')
 
   let updateComponent
@@ -258,7 +259,6 @@ export function mountComponent (
       mark(endTag)
       // 测量结果
       measure(`vue ${name} render`, startTag, endTag)
-
       // 重新标记开始时间戳
       mark(startTag)
       // 将vnode渲染为真实dom（到这里组件被安装到真实dom中）
@@ -286,6 +286,7 @@ export function mountComponent (
   new Watcher(vm, updateComponent, noop, {
     // watch的钩子函数，在渲染真实dom之前执行
     before () {
+      // 被安装了 && 没有比销毁
       if (vm._isMounted && !vm._isDestroyed) {
         // 更新之前的钩子函数
         callHook(vm, 'beforeUpdate')

@@ -2,13 +2,20 @@
 
 import { cached, extend, toObject } from 'shared/util'
 
+/**
+ * 解析样式文本
+ * @param {String} cssText css样式文本
+ */
 export const parseStyleText = cached(function (cssText) {
   const res = {}
   const listDelimiter = /;(?![^(]*\))/g
   const propertyDelimiter = /:(.+)/
+  // 根据规则分割样式文本
   cssText.split(listDelimiter).forEach(function (item) {
     if (item) {
+      // 
       const tmp = item.split(propertyDelimiter)
+      // 获取样式的值添加给 res对象，res对象以样式的key作为res对象的key
       tmp.length > 1 && (res[tmp[0].trim()] = tmp[1].trim())
     }
   })
@@ -44,6 +51,7 @@ export function normalizeStyleBinding (bindingStyle: any): ?Object {
 }
 
 /**
+ * 父组件样式应该在子组件样式之后应用，这样父组件的样式被覆盖
  * parent component style should be after child's
  * so that parent component's style could override it
  * 
@@ -53,10 +61,15 @@ export function getStyle (vnode: VNodeWithData, checkChild: boolean): Object {
   const res = {}
   let styleData
 
+  // 检查子节点
   if (checkChild) {
+    // 将节点赋值给子节点
     let childNode = vnode
+    // 获取子节点得组件实例
     while (childNode.componentInstance) {
+      // 
       childNode = childNode.componentInstance._vnode
+      // 子节点存在 && 子节点得data属性 && 
       if (
         childNode && childNode.data &&
         (styleData = normalizeStyleData(childNode.data))
@@ -72,11 +85,16 @@ export function getStyle (vnode: VNodeWithData, checkChild: boolean): Object {
     extend(res, styleData)
   }
 
+  // 将当前节点赋值给父节点变量
   let parentNode = vnode
+  // 获取父节点得父节点，到不存在为止
   while ((parentNode = parentNode.parent)) {
+    // 父节点得data属性存在 && 正规化父节点得data数据
     if (parentNode.data && (styleData = normalizeStyleData(parentNode.data))) {
+      // 让res 继承styleData对象
       extend(res, styleData)
     }
   }
+  // 返回继承后得res对象
   return res
 }

@@ -13,7 +13,6 @@ function getShouldDecode (href: boolean): boolean {
   div = div || document.createElement('div')
   // 给节点添加一个a节点, 或者带有a属性的div元素
   div.innerHTML = href ? `<a href="\n"/>` : `<div a="\n"/>`
-  // 
   return div.innerHTML.indexOf('&#10;') > 0
 }
 // 不同浏览器对于属性值中的\n编码问题

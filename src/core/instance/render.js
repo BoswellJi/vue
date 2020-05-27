@@ -38,6 +38,7 @@ export function initRender (vm: Component) {
   // bind the createElement fn to this instance
   // so that we get proper render context inside it.
   // args order: tag, data, children, normalizationType, alwaysNormalize
+  // 被用来从模板编译到渲染函数的内部版本
   // internal version is used by render functions compiled from templates
   vm._c = (a, b, c, d) => createElement(vm, a, b, c, d, false)
   // normalization is always applied for the public version, used in
@@ -87,7 +88,10 @@ export function renderMixin (Vue: Class<Component>) {
     return nextTick(fn, this)
   }
 
-  // 渲染方法，将组件生成虚拟节点
+  /**
+   * 渲染方法，将组件生成虚拟节点
+   * @return 组件的vnode
+   */
   Vue.prototype._render = function (): VNode {
     // 组件实例
     const vm: Component = this

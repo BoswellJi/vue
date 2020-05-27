@@ -213,6 +213,7 @@ export function defineReactive (
       // #7981: for accessor properties without setter
       if (getter && !setter) return
       if (setter) {
+        // watch
         setter.call(obj, newVal)
       } else {
         val = newVal

@@ -2,6 +2,10 @@
 
 import { isDef, isObject } from 'shared/util'
 
+/**
+ * 生成vnode的class
+ * @param {*} vnode 
+ */
 export function genClassForVnode(vnode: VNodeWithData): string {
   // vnode的信息
   let data = vnode.data
