@@ -270,14 +270,19 @@ function initComputed (vm: Component, computed: Object) {
   }
 }
 
-
-// 代理computed属性到组件实例上
+/**
+ * 代理computed属性到组件实例上
+ * @param {*} target 目标对象
+ * @param {*} key 键
+ * @param {*} userDef 属性的getter
+ */
 export function defineComputed (
   target: any,
   key: string,
   userDef: Object | Function
 ) {
   const shouldCache = !isServerRendering()
+  // 是函数
   if (typeof userDef === 'function') {
     sharedPropertyDefinition.get = shouldCache
       ? createComputedGetter(key)
@@ -388,7 +393,7 @@ function initWatch (vm: Component, watch: Object) {
 }
 
 /**
- * 
+ * 创建监听器
  * @param {*} vm 组件实例
  * @param {*} expOrFn key(观察的key
  * @param {*} handler 观察后的处理函数
