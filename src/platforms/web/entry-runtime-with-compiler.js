@@ -93,6 +93,8 @@ Vue.prototype.$mount = function (
       options.render = render
       options.staticRenderFns = staticRenderFns
 
+      console.log(render);
+
       /* istanbul ignore if */
       if (process.env.NODE_ENV !== 'production' && config.performance && mark) {
         mark('compile end')

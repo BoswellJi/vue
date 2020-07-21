@@ -218,6 +218,7 @@ export function mountComponent (
     vm.$options.render = createEmptyVNode
     if (process.env.NODE_ENV !== 'production') {
       /* istanbul ignore if */
+      // 有模板 && （模板第一个字符不是# || 有el属性 || dom节点
       if ((vm.$options.template && vm.$options.template.charAt(0) !== '#') ||
         vm.$options.el || el) {
         warn(
@@ -272,10 +273,13 @@ export function mountComponent (
     // 将渲染函数返回的vdom进行真实dom渲染
     updateComponent = () => {
       // 相关依赖会获取主体的数据，触发getter
-      vm._update(vm._render(), hydrating)
+      const vnode = vm._render();
+      console.log(vnode);
+      vm._update(vnode, hydrating)
     }
   }
 
+  // 我们设置this到 监听者的构造函数内部的vm._watcher
   // we set this to vm._watcher inside the watcher's constructor
   // since the watcher's initial patch may call $forceUpdate (e.g. inside child
   // component's mounted hook), which relies on vm._watcher being already defined
