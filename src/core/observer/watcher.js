@@ -93,6 +93,7 @@ export default class Watcher {
         )
       }
     }
+    // 懒
     this.value = this.lazy
       ? undefined
       : this.get()
@@ -118,6 +119,7 @@ export default class Watcher {
         throw e
       }
     } finally {
+      // 触达每一个属性所以他们都被追踪
       // "touch" every property so they are all tracked as
       // dependencies for deep watching
       if (this.deep) {

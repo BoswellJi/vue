@@ -18,7 +18,7 @@ import {
   invokeWithErrorHandling
 } from '../util/index'
 
-// 保持当前上下文的Vue实例
+// options.parent 的值
 export let activeInstance: any = null
 export let isUpdatingChildComponent: boolean = false
 
@@ -45,20 +45,20 @@ export function initLifecycle (vm: Component) {
   const options = vm.$options
 
   // locate first non-abstract parent 本地第一个非抽象的父组件
-  // 从选项数据中获取组件的父组件
+  // 引用当前实例的父实例 （vm.$options.parent 从哪里来
   let parent = options.parent // 父类
-  // 存在父组件，不是abstract
+  // 存在父组件，不是abstract（抽象组件一般不渲染真实dom,并且不出现在父子组件的路径上
   if (parent && !options.abstract) {
     // 向上迭代父组件不是abstract的或者没有父组件实例
     while (parent.$options.abstract && parent.$parent) {
       // 父组件实例的父组件
       parent = parent.$parent
     }
-    // 将组件放到父组件的$children数组中
+    // 将组件放到非抽象的父组件的$children数组中
     parent.$children.push(vm)
   }
 
-  // 父组件
+  // 设置实例的$parent属性指向父组件实例
   vm.$parent = parent
   // 设置组件的根组件
   vm.$root = parent ? parent.$root : vm

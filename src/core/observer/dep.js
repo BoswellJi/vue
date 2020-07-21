@@ -28,7 +28,11 @@ export default class Dep {
     remove(this.subs, sub)
   }
 
+  /**
+   * 添加依赖
+   */
   depend () {
+    // Dep的静态属性target存在，值为 Dep的实例
     if (Dep.target) {
       // 依赖的实例（对象属性中创建的依赖容器）
       Dep.target.addDep(this)
@@ -50,7 +54,9 @@ export default class Dep {
   }
 }
 
+// 正在被计算的当前目标观察者
 // The current target watcher being evaluated.
+// 这个是全局唯一的，因为一次只能有一个观察者能够被计算
 // This is globally unique because only one watcher
 // can be evaluated at a time.
 Dep.target = null

@@ -15,7 +15,7 @@ export function initEvents (vm: Component) {
   // 组件没有钩子事件函数
   vm._hasHookEvent = false
   // init parent attached events
-  // 父组件中监听器（内部组件才有）
+  // 父组件中监听器（内部组件才有） 创建子组件实例的时候才会用到 _parentListeners
   const listeners = vm.$options._parentListeners
   if (listeners) {
     updateComponentListeners(vm, listeners)

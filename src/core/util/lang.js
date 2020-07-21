@@ -23,7 +23,7 @@ export function isReserved (str: string): boolean {
  * Define a property.
  * 给对象定义一个属性,使用defineProperty
  * 对象, 属性, 值, 可枚举
- * 设置是否可枚举类型属性
+ * 设置是否可枚举类型属性（突出枚举
  */
 export function def (obj: Object, key: string, val: any, enumerable?: boolean) {
   Object.defineProperty(obj, key, {

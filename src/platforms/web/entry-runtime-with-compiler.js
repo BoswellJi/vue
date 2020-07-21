@@ -77,12 +77,15 @@ Vue.prototype.$mount = function (
       }
 
       /**
-       * 将模板编译到render函数
+       * 将 template 编译到 render 函数
        */
       const { render, staticRenderFns } = compileToFunctions(template, {
         outputSourceRange: process.env.NODE_ENV !== 'production',
+        // 为了兼容浏览器
         shouldDecodeNewlines,
         shouldDecodeNewlinesForHref,
+
+        // 这两个只会在完整版的Vue中会有
         delimiters: options.delimiters, //配置
         comments: options.comments //属性
       }, this)

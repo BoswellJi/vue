@@ -29,7 +29,9 @@ export function toggleObserving (value: boolean) {
 }
 
 /**
+ * 观察者类，被依附到每一个被观察者对象
  * Observer class that is attached to each observed
+ * 一旦依附，观察者转换目标对象的属性key到getter/setter收集依赖和触发更新
  * object. Once attached, the observer converts the target
  * object's property keys into getter/setters that
  * collect dependencies and dispatch updates.
@@ -41,19 +43,22 @@ export class Observer {
 
   // 需要转变为响应式对象的对象
   constructor (value: any) {
+    // 数组或者对象
     this.value = value
-    // 依赖
+    //对象或者数组的依赖
     this.dep = new Dep()
     this.vmCount = 0
-    // 将对象打上__ob__属性标记,defineProperty
+    // 将对象打上__ob__属性标记,defineProperty，值为 Observer 实例
     def(value, '__ob__', this)
     // 这个对象是数组,非数组
     if (Array.isArray(value)) {
+      // 有圆形
       if (hasProto) {
         protoAugment(value, arrayMethods)
       } else {
         copyAugment(value, arrayMethods, arrayKeys)
       }
+      // 观测数组
       this.observeArray(value)
     } else {
       // 对象
@@ -71,12 +76,13 @@ export class Observer {
     const keys = Object.keys(obj)
     // 每个键， 响应式对象都会生成一个依赖数据对象
     for (let i = 0; i < keys.length; i++) {
-      //
+      // 给对象的属性定义访问器属性
       defineReactive(obj, keys[i])
     }
   }
 
   /**
+   * 观察数组项目列表
    * Observe a list of Array items.
    */
   observeArray (items: Array<any>) {
@@ -116,33 +122,48 @@ function copyAugment (target: Object, src: Object, keys: Array<string>) {
  * or the existing observer if the value already has one.
  */
 /**
- * 观察
+ * 1. 依赖收集
+ * 2. 避免重复收集依赖
+ * 3. 特殊情况的处理， 数组变更怎么触发依赖更新
+ * 
+ * 1. $watch(观察者是知道正在观察的是哪个字段的)
+ * 
+ * 观察，在初始化vue的响应式数据系统
  * @param {*} value 组件实例的data属性的值
- * @param {*} asRootData 
+ * @param {*} asRootData 作为根数据
  */
 export function observe (value: any, asRootData: ?boolean): Observer | void {
-  // typeof val !=='object'
+  // 不是对象 || 是VNode
   if (!isObject(value) || value instanceof VNode) {
     return
   }
+  // 观察者实例
   let ob: Observer | void
-  // 有__ob__属性,已经是响应式对象
+  // 有__ob__属性,已经是响应式对象 && __ob__ 属性值为 Observer 实例
   if (hasOwn(value, '__ob__') && value.__ob__ instanceof Observer) {
+    // 获取观察者对象
     ob = value.__ob__
   } else if (
+    // 是否可观测的开关
     shouldObserve &&
+    // 非服务端渲染
     !isServerRendering() &&
+    // 数组 || 普通对象
     (Array.isArray(value) || isPlainObject(value)) &&
+    // 可扩展对象
     Object.isExtensible(value) &&
+    // _isVue属性为false
     !value._isVue
   ) {
     // 创建一个观察者
     // 组件的 data 对象
     ob = new Observer(value)
   }
+  // 根数据 && 观察者对象
   if (asRootData && ob) {
     ob.vmCount++
   }
+  // 观察者对象
   return ob
 }
 
@@ -155,10 +176,11 @@ export function defineReactive (
   obj: Object,
   key: string,
   val: any,
-  customSetter?: ?Function,
+  customSetter?: ?Function,  // 用户自定义的setter访问器
   shallow?: boolean
 ) {
   // 给这个响应式对象属性,添加依赖对象,通过闭包缓存依赖
+  // 每个数据字段都会有一个 依赖 的框
   const dep = new Dep()
 
   // 获取当前这个属性描述
@@ -172,12 +194,28 @@ export function defineReactive (
   // cater for pre-defined getter/setters
   const getter = property && property.get
   const setter = property && property.set
+  
+  /**
+   * 存在getter访问器属性，就不会获取 对象的属性
+   * 之后的val就会使undefined
+   * 
+   * 为什么属性拥有自己的getter时，就不会对其进行深度观测：
+   * 1.属性存在getter时，在深度观测之前不会取值，所以，在深度观测语句执行之前取不到属性值，无法深度观测；
+   * 2. 之所以在深度观测之前不取值，是因为属性原本的getter是用户定义，用户可能在getter中做任何想不到的事情；
+   * 
+   * 
+   * 1.当数据属性只有getter访问器时，在个属性不会被深度检测，但是defineReactive函数处理之后，该属性将拥有get,set，新值将会被观测，这时候就矛盾了
+   * 2.拥有setter的属性，即使拥有getter也要获取属性值并观测之
+   * 
+   */
   // 没有getter 或者只有setter 当前函数参数只有2个，将对象属性值赋给val
   if ((!getter || setter) && arguments.length === 2) {
+    // 没有直接传入val,所以需要从对象的属性上进行获取
     val = obj[key]
   }
 
-  // 属性值为对象，进行观察
+  // 属性值为对象，进行观察 shallow（浅的）表示对象是否是深度观测的
+  // 子集下的观察者对象
   let childOb = !shallow && observe(val)
 
   // 重新定义对象属性的描述符  ，设置 getter setter访问器
@@ -185,13 +223,20 @@ export function defineReactive (
   Object.defineProperty(obj, key, {
     enumerable: true,
     configurable: true,
+    /**
+     * 1. 正确的返回属性值
+     * 2. 收集这个数据字段下的依赖
+     */
     get: function reactiveGetter () {
-      // 获取之前访问器中的值
+      // 获取之前访问器中的值， 不能存在的，直接返回当前值
       const value = getter ? getter.call(obj) : val
-      // 有依赖目标，将进行依赖收集
+      // 响应式属性的观察者对像，监听函数
       if (Dep.target) {
+        // 收集依赖
         dep.depend()
+        // 子观察者
         if (childOb) {
+          // 子观察者中的依赖 dep属性
           childOb.dep.depend()
           if (Array.isArray(value)) {
             dependArray(value)
@@ -200,9 +245,16 @@ export function defineReactive (
       }
       return value
     },
+    /**
+     * 1. 正确给属性设置新值
+     * 2. 触发对应的依赖
+     * @param {*} newVal 
+     */
     set: function reactiveSetter (newVal) {
+      // 获取旧值
       const value = getter ? getter.call(obj) : val
       /* eslint-disable no-self-compare */
+      // 新值等于旧值 || 新值不等于新值 && 旧值不等于旧值
       if (newVal === value || (newVal !== newVal && value !== value)) {
         return
       }
@@ -210,21 +262,28 @@ export function defineReactive (
       if (process.env.NODE_ENV !== 'production' && customSetter) {
         customSetter()
       }
+      // 这个属性没有setter访问器，
       // #7981: for accessor properties without setter
       if (getter && !setter) return
+      // 存在setter
       if (setter) {
         // watch
+        // 调用
         setter.call(obj, newVal)
       } else {
+        // 不存在，直接赋值
         val = newVal
       }
+      // 新值是否需要深度观测
       childOb = !shallow && observe(newVal)
+      // 对应响应式属性的依赖容器
       dep.notify()
     }
   })
 }
 
 /**
+ * 设置一个属性给对象，如果这个属性已经不存在，添加新属性并且触发变更通知
  * Set a property on an object. Adds the new property and
  * triggers change notification if the property doesn't
  * already exist.
@@ -262,6 +321,7 @@ export function set (target: Array<any> | Object, key: any, val: any): any {
 }
 
 /**
+ * 删除一个属性并且在必要时触发变更
  * Delete a property and trigger change if necessary.
  */
 export function del (target: Array<any> | Object, key: any) {

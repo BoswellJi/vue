@@ -125,7 +125,7 @@ const builds = {
   // Runtime+compiler development build (Browser)
   'web-full-dev': {
     entry: resolve('web/entry-runtime-with-compiler.js'),
-    dest: resolve('dist/vue.js'),
+    dest: resolve('dist/vue.min.js'),
     format: 'umd',
     env: 'development',
     alias: { he: './entity-decoder' },
@@ -229,7 +229,8 @@ function genConfig (name) {
       file: opts.dest,
       format: opts.format,
       banner: opts.banner,
-      name: opts.moduleName || 'Vue'
+      name: opts.moduleName || 'Vue',
+      sourcemap:true
     },
     onwarn: (msg, warn) => {
       if (!/Circular/.test(msg)) {

@@ -59,12 +59,13 @@ export function invokeWithErrorHandling (
   info: string
 ) {
   let res
+  // 对用户代码进行try catch
   try {
-    // 调用函数获取返回值
+    // 调用函数获取返回值,返回值为Promise对象
     res = args ? handler.apply(context, args) : handler.call(context)
     // 返回的不是Vue对象是Promise对象，并且没有被处理过
     if (res && !res._isVue && isPromise(res) && !res._handled) {
-      // 添加异常捕获
+      // 给Promise添加异常捕获
       res.catch(e => handleError(e, vm, info + ` (Promise/async)`))
       // issue #9511
       // avoid catch triggering multiple times when nested calls
