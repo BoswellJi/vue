@@ -6,6 +6,7 @@ import { extend, mergeOptions, validateComponentName } from '../util/index'
 
 export function initExtend (Vue: GlobalAPI) {
   /**
+   * 每一个实例构造函数，包括Vue,有一个唯一的cid,这个能够让我们创建被包裹的子构造函数用于原型链继承并且缓存他们
    * Each instance constructor, including Vue, has a unique
    * cid. This enables us to create wrapped "child
    * constructors" for prototypal inheritance and cache them.
@@ -14,8 +15,8 @@ export function initExtend (Vue: GlobalAPI) {
   let cid = 1
 
   /**
-   * Class inheritance
-   * @param {Object} extendOptions 子类
+   * Class inheritance 类继承
+   * @param {Object} extendOptions 扩展（组件)选项
    */
   Vue.extend = function (extendOptions: Object): Function {
     extendOptions = extendOptions || {} // 子类属性

@@ -6,10 +6,21 @@ var apiURL = 'https://api.github.com/repos/vuejs/vue/commits?per_page=3&sha='
  * Actual demo
  */
 
+Vue.config.silent = true;
+
+const people = Vue.observable({ name: 'jmz' });
+people.name;
+
+
+const test = {
+  template:'<div>dfdf</div>'
+}
+
 new Vue({
-
   el: '#demo',
-
+  components:{
+    test
+  },
   data: {
     branches: ['master', 'dev'],
     currentBranch: 'master',
@@ -47,10 +58,16 @@ new Vue({
         xhr.open('GET', apiURL + self.currentBranch)
         xhr.onload = function () {
           self.commits = JSON.parse(xhr.responseText)
-          console.log(self.commits[0].html_url)
+          
+          Vue.nextTick(function(){
+            console.log('txt');
+          });
         }
         xhr.send()
       }
     }
   }
 })
+
+
+

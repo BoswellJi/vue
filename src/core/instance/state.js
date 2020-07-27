@@ -36,9 +36,9 @@ const sharedPropertyDefinition = {
 }
 
 /**
- * 
- * @param {*} target 组件实例
- * @param {*} sourceKey _data,_prop,私有属性,保存正真的值,通过代理进行 返回
+ * 对象代理函数
+ * @param {*} target 对象
+ * @param {*} sourceKey _data,_prop,私有属性,保存正真的值,通过代理进行（需要代理的选项对象
  * @param {*} key 对象属性
  */
 export function proxy (target: Object, sourceKey: string, key: string) {
@@ -48,6 +48,7 @@ export function proxy (target: Object, sourceKey: string, key: string) {
   sharedPropertyDefinition.set = function proxySetter (val) {
     this[sourceKey][key] = val
   }
+  // 在对象实例上，定义与_data对象相同的属性，但是值还是从_data对象上获取，所以target代理了_data对象
   Object.defineProperty(target, key, sharedPropertyDefinition)
 }
 
@@ -58,7 +59,7 @@ export function proxy (target: Object, sourceKey: string, key: string) {
 export function initState (vm: Component) {
   // 给组件添加_watchers属性（数组，watcher对象
   vm._watchers = []
-  // 组件的配置参数
+  // 组件的options
   const opts = vm.$options
   // 配置参数有输入属性 （props的初始化早于data，所以可以使用props来初始化data的值
   if (opts.props) initProps(vm, opts.props)
@@ -71,6 +72,12 @@ export function initState (vm: Component) {
     initData(vm)
   } else {
     // 没有data数据，给一个初始化的空对象
+    /**
+     * 重要：
+     * 1. vm.$data属性是一个访问器属性；
+     * 2.（getter,setter）其实可以说成是代理对象
+     * 3. $data访问器属性，代理的是_data属性
+     */
     observe(vm._data = {}, true /* asRootData */)
   }
   // 计算属性
@@ -141,9 +148,9 @@ function initData (vm: Component) {
   let data = vm.$options.data
   // 这个typeof data的检查是有必要的，因为在beforeCreated钩子函数中可以， this.$options.data = {} 修改data的值
   data = vm._data = typeof data === 'function'
-    ? getData(data, vm)  // 获取子组件的data
+    ? getData(data, vm)  // 调用获取函数返回data数据
     : data || {}
-    // 原生对象，是函数的 非普通对象
+    // 非普通对象
   if (!isPlainObject(data)) { 
     data = {}
     process.env.NODE_ENV !== 'production' && warn(
@@ -188,6 +195,7 @@ function initData (vm: Component) {
       proxy(vm, `_data`, key)
     }
   }
+  // vue响应式系统的开始
   // observe data 对data 数据进行观察
   // data 对象 
   observe(data, true /* asRootData */)
@@ -446,7 +454,6 @@ export function stateMixin (Vue: Class<Component>) {
   Vue.prototype.$delete = del
 
   /**
-   * vm的观察方法
    * 手动添加监听器
    */
   Vue.prototype.$watch = function (
@@ -460,7 +467,7 @@ export function stateMixin (Vue: Class<Component>) {
     }
     options = options || {}
     options.user = true
-    // 组件 
+    // 对对象的属性进行监听
     const watcher = new Watcher(vm, expOrFn, cb, options)
     // 这里是立即调用watch函数一次
     if (options.immediate) {

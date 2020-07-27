@@ -60,7 +60,7 @@ export function initLifecycle (vm: Component) {
 
   // 设置实例的$parent属性指向父组件实例
   vm.$parent = parent
-  // 设置组件的根组件
+  // 设置组件的根组件，没有父组件，那就是 Vue实例
   vm.$root = parent ? parent.$root : vm
 
   // 定义子组件容器
@@ -272,9 +272,9 @@ export function mountComponent (
   } else {
     // 将渲染函数返回的vdom进行真实dom渲染
     updateComponent = () => {
-      // 相关依赖会获取主体的数据，触发getter
+      // 创建组件的vnode
       const vnode = vm._render();
-      console.log(vnode);
+      // 进行更新dom(对比新老： vnode)
       vm._update(vnode, hydrating)
     }
   }

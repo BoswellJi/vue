@@ -22,6 +22,7 @@ import {
 } from 'shared/util'
 
 /**
+ * Option重写策略是处理如何合并一个父(构造函数的options)option值和一个子option值到最终值得函数
  * Option overwriting strategies are functions that handle
  * how to merge a parent option value and a child option
  * value into the final value.
@@ -29,6 +30,7 @@ import {
 const strats = config.optionMergeStrategies
 
 /**
+ * options的限制
  * Options with restrictions
  */
 if (process.env.NODE_ENV !== 'production') {
@@ -41,12 +43,15 @@ if (process.env.NODE_ENV !== 'production') {
    * })实例化的时候才能使用
    */
   strats.el = strats.propsData = function (parent, child, vm, key) {
+    // 没有vm实例
     if (!vm) {
+      // option的key只能被使用,在实例使用new关键字创建期间
       warn(
         `option "${key}" can only be used during instance ` +
         'creation with the `new` keyword.'
       )
     }
+    // 返回默认策略
     return defaultStrat(parent, child)
   }
 }
@@ -287,9 +292,13 @@ strats.props =
 strats.provide = mergeDataOrFn
 
 /**
+ * 默认策略
  * Default strategy.
+ * @param {} parentVal 组件构造函数的options的指定key的值
+ * @param {} childVal 组件的options的指定key的值
  */
 const defaultStrat = function (parentVal: any, childVal: any): any {
+  // 组件的option，值，不存在，返回父级的
   return childVal === undefined
     ? parentVal
     : childVal
@@ -298,9 +307,15 @@ const defaultStrat = function (parentVal: any, childVal: any): any {
 /**
  * 验证组件名称是否合法
  * Validate component names
+ * @param {} options
  */
 function checkComponents(options: Object) {
+  // 遍历选项中components属性（注册组件集合
+  /**
+   * 根组件中没有注册组件
+   */
   for (const key in options.components) {
+    // 验证组件名称
     validateComponentName(key)
   }
 }
@@ -426,8 +441,8 @@ function assertObjectType(name: string, value: any, vm: ?Component) {
  */
 /**
  * 对组件的各个option参数有这合并策略，将继承过来的，Vue构造函数的，都统统合并到当前组件实例下面 vm.$options = {...parent,...child}
- * @param {*} parent Vue构造函数的option, 在global-api/index.js
- * @param {*} child 组件的option,子组件构造函数
+ * @param {*} parent 组件的构造函数的option, 在global-api/index.js
+ * @param {*} child 组件的option
  * @param {*} vm Vue实例，子实例
  */
 export function mergeOptions(
@@ -435,8 +450,9 @@ export function mergeOptions(
   child: Object,
   vm?: Component
 ): Object {
-  // 检查组件
+  // 不是生产环境下
   if (process.env.NODE_ENV !== 'production') {
+    // 检查组件的options选项
     checkComponents(child)
   }
 
@@ -450,10 +466,14 @@ export function mergeOptions(
   normalizeInject(child, vm)
   normalizeDirectives(child)
 
+  // 在子options中使用继承和混合
   // Apply extends and mixins on the child options,
+  // 但是如果他只是一个原生的options对象不是另一个合并调用的结果
   // but only if it is a raw options object that isn't
   // the result of another mergeOptions call.
+  // 只合并options有_base属性的
   // Only merged options has the _base property.
+
   // 非Vue构造函数
   if (!child._base) {
     // 组件继承的父组件
@@ -470,12 +490,10 @@ export function mergeOptions(
 
   const options = {}
   let key
-  /**
-   * 1. Vue.options
-   * 2. 组件的extends的组件
-   * 3. 组件的minxs的元素
-   */
+
+  // 当前组件的构造函数对象的options
   for (key in parent) {
+    // 合并字段
     mergeField(key)
   }
   /**
@@ -483,12 +501,18 @@ export function mergeOptions(
    * parent 上没有的options配置参数
    */
   for (key in child) {
+    // 构造函数中没有
     if (!hasOwn(parent, key)) {
       mergeField(key)
     }
   }
+  /**
+   * 合并字段
+   * @param {*} key options中的key
+   */
   function mergeField(key) {
     // 根据options的key进行获取合并策略，没在vue options中的key,使用默认的策略
+    // 获取策略函数
     const strat = strats[key] || defaultStrat
     // 调用策略进行合并
     /**

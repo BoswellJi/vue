@@ -66,6 +66,7 @@ export function toRawType (value: any): string {
 }
 
 /**
+ * 严格的对象类型检查，对于普通的js对象，只返回true
  * Strict object type check. Only returns true
  * for plain JavaScript objects.
  */

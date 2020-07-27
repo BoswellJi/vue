@@ -31,21 +31,28 @@ export function initRender (vm: Component) {
   const parentVnode = vm.$vnode = options._parentVnode // the placeholder node in parent tree
   // 父节点上下文，即父组件
   const renderContext = parentVnode && parentVnode.context
-  // 组件的插槽
+  // 解析组件的插槽
   vm.$slots = resolveSlots(options._renderChildren, renderContext)
   // 组件的作用域插槽（冻结对象，不再被改变
   vm.$scopedSlots = emptyObject
+
+  // 绑定createElement 函数到这个组件实例，以至于我们在他的内部获取合适的渲染上下文
   // bind the createElement fn to this instance
   // so that we get proper render context inside it.
+  // 参数排序： 标签，数据，子元素，规范化类型，总是规范化
   // args order: tag, data, children, normalizationType, alwaysNormalize
   // 被用来从模板编译到渲染函数的内部版本
   // internal version is used by render functions compiled from templates
   vm._c = (a, b, c, d) => createElement(vm, a, b, c, d, false)
-  // normalization is always applied for the public version, used in
+
+  // 规范化一直被应用在公共版本，在用户写的渲染函数中使用
+  // normalization is always applied for the public version, used inComponent
   // user-written render functions.
   // 将组件创建为虚拟节点（vdom == all vnode）
   vm.$createElement = (a, b, c, d) => createElement(vm, a, b, c, d, true)
 
+  // $attrs & $listeners 被暴露来更容易创建 高阶组件 High Order Component
+  // 他们需要被响应，以至于hocs使用他们一直被更新
   // $attrs & $listeners are exposed for easier HOC creation.
   // they need to be reactive so that HOCs using them are always updated
   const parentData = parentVnode && parentVnode.data
@@ -56,7 +63,7 @@ export function initRender (vm: Component) {
     defineReactive(vm, '$attrs', parentData && parentData.attrs || emptyObject, () => {
       !isUpdatingChildComponent && warn(`$attrs is readonly.`, vm)
     }, true)
-    // 将$alisteners对象定义为响应式对象
+    // 将$listeners对象定义为响应式对象
     defineReactive(vm, '$listeners', options._parentListeners || emptyObject, () => {
       !isUpdatingChildComponent && warn(`$listeners is readonly.`, vm)
     }, true)

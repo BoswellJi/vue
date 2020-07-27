@@ -19,6 +19,7 @@ import type { SimpleSet } from '../util/index'
 let uid = 0
 
 /**
+ * 一个监听器解析一个表达式，收集依赖，并且当表达式值改变时触发回调，这个被用来在$watch api和指令
  * A watcher parses an expression, collects dependencies,
  * and fires callback when the expression value changes.
  * This is used for both the $watch() api and directives.
@@ -55,7 +56,8 @@ export default class Watcher {
     if (isRenderWatcher) {
       vm._watcher = this
     }
-    // 当前组件中的监听器（vm.$watch,watch:{},）
+    // 当前组件中的监听器容器（vm._watchers = [];
+    // this:监听器实例
     vm._watchers.push(this)
     // options
     if (options) {
@@ -78,11 +80,16 @@ export default class Watcher {
     this.expression = process.env.NODE_ENV !== 'production'
       ? expOrFn.toString()
       : ''
+    // 解析getter表达式
     // parse expression for getter
     if (typeof expOrFn === 'function') {
       this.getter = expOrFn
     } else {
+      // $watch('a',function(){
+      // 
+      //})
       this.getter = parsePath(expOrFn)
+      // 没有解析出来，提示报错
       if (!this.getter) {
         this.getter = noop
         process.env.NODE_ENV !== 'production' && warn(
@@ -93,15 +100,27 @@ export default class Watcher {
         )
       }
     }
-    // 懒
+    // 懒加载
     this.value = this.lazy
       ? undefined
       : this.get()
   }
 
   /**
-   * 执行getter,进行依赖收集
+   * 执行getter,进行依赖收集，读取对象属性的get
    * Evaluate the getter, and re-collect dependencies.
+   * 
+   * （手动情况下）
+   * 给属性定义的监听器
+   * 1. 所以，模板编译时，会将每个数据绑定变量，定义为属性监听器
+   * 2. 每一个绑定的属性，都会创建一个监听器
+   * 3. 想要收集绑定属性的依赖，就要先创建一个监听器，触发这个属性的getter，收集这个监听器
+   * 
+   * （自动情况下）
+   * 给每个组件定义一个监听器
+   * 1. 当前监听器就是当前组件的监听器
+   * 2. 调用getter,安装装组件，触发组件中依赖绑定数据的getter，进行依赖收集
+   * 3. 组件中的所有响应式属性的监听器都是，这个组件监听器
    */
   get () {
     // 添加一个监听对像，new Watcher()，针对某个数据属性的监听
@@ -109,8 +128,7 @@ export default class Watcher {
     let value
     const vm = this.vm
     try {
-      // 触发属性的getter收集依赖( getter  )
-      // 调用updateComponent方法，
+      // 调用updateComponent方法,更新组件，同步
       value = this.getter.call(vm, vm)
     } catch (e) {
       if (this.user) {
@@ -137,6 +155,7 @@ export default class Watcher {
    */
   addDep (dep: Dep) {
     const id = dep.id
+    // 因为当组件中，使用watch option，$watch来定义属性监听时，同一个属性多个监听器
     // 依赖实例没有id,不重复添加依赖
     // 每个对象上的属性的依赖实例都有唯一的id，防止不会重复添加依赖实例
     if (!this.newDepIds.has(id)) {
@@ -193,7 +212,9 @@ export default class Watcher {
   }
 
   /**
+   * 定时任务接口
    * Scheduler job interface.
+   * 将被通过定时器调用
    * Will be called by the scheduler.
    */
   run () {
@@ -211,6 +232,7 @@ export default class Watcher {
         // set new value
         const oldValue = this.value
         this.value = value
+        // 用户自定义的监听器
         if (this.user) {
           try {
             // 这里就是监听器的callback(newVal,oldVal)

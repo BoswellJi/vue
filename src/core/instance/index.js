@@ -14,6 +14,7 @@ function Vue (options) {
   if (process.env.NODE_ENV !== 'production' &&
     !(this instanceof Vue)
   ) {
+    // Vue是一个构造函数 并且 必须使用new关键字调用
     warn('Vue is a constructor and should be called with the `new` keyword')
   }
   this._init(options)

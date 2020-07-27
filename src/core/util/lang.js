@@ -44,7 +44,7 @@ export function parsePath (path: string): any {
   if (bailRE.test(path)) {
     return
   }
-  // 使用 . 分隔符将字符串进行分割
+  // 使用 . 分隔符将字符串进行分割,因为 $watch方法只能传， a,a.b,来监听对象的某个属性
   const segments = path.split('.')
   return function (obj) {
     for (let i = 0; i < segments.length; i++) {

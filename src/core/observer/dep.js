@@ -7,6 +7,7 @@ import config from '../config'
 let uid = 0
 
 /**
+ * 一个依赖是一个能够有多个指令订阅它的可观察对象
  * A dep is an observable that can have multiple
  * directives subscribing to it.
  */
@@ -20,6 +21,12 @@ export default class Dep {
     this.subs = []
   }
 
+  /**
+   * 给属性的依赖对象添加监听器
+   * 1. 组件的Watcher
+   * 2. 属性自身定义的Watch监听 ($watch,watch option)
+   * @param {*} sub 
+   */
   addSub (sub: Watcher) {
     this.subs.push(sub)
   }
@@ -35,6 +42,7 @@ export default class Dep {
     // Dep的静态属性target存在，值为 Dep的实例
     if (Dep.target) {
       // 依赖的实例（对象属性中创建的依赖容器）
+      // 把依赖对象添加到组件的Watcher中，（每个属性的依赖对象
       Dep.target.addDep(this)
     }
   }

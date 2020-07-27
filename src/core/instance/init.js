@@ -10,6 +10,7 @@ import { initLifecycle, callHook } from './lifecycle'
 import { initProvide, initInjections } from './inject'
 import { extend, mergeOptions, formatComponentName } from '../util/index'
 
+// 记录组件的数量
 let uid = 0
 
 export function initMixin(Vue: Class<Component>) {
@@ -48,13 +49,19 @@ export function initMixin(Vue: Class<Component>) {
       // 初始化内部组件（Vue框架内置组件）
       initInternalComponent(vm, options)
     } else {
-      // 合并选项
+      // 合并选项，当前组件实例的options和组件父类的options（变动的地方
       vm.$options = mergeOptions(
-        // 解析构造函数选项
+        // 解析组件实例的构造函数的选项参数（options
         resolveConstructorOptions(vm.constructor),  //vm.constructor === Vue
         // 组件选项 
         options || {},
         // 组件实例
+        /**
+         * {
+         *  _isVue: true,
+         *  _uid: n
+         * }
+         */
         vm
       )
     }
@@ -160,34 +167,38 @@ export function initInternalComponent(vm: Component, options: InternalComponentO
 
 
 /**
- * 
- * @param {*} Ctor 构造函数
+ * 解析构造函数options选项参数
+ * @param {*} Ctor 构造函数（组件类）
  */
 export function resolveConstructorOptions(Ctor: Class<Component>) {
-  // 获取组件选项
+  // 获取构造函数选项
   let options = Ctor.options
-  // 获取构造函数的父构造函数
+  // 组件类 的 父类
   if (Ctor.super) {
-    // 获取父构造函数的选项
+    // 解析父类的选项options
     const superOptions = resolveConstructorOptions(Ctor.super)
-    // 获取父构造函数的选项
+    // 获取父类的superOptions属性
     const cachedSuperOptions = Ctor.superOptions
-    // 获取的父构造函数的选项不等
+    // 父类的option !== 父类的superOptions属性
     if (superOptions !== cachedSuperOptions) {
+      // 父类options改变
       // super option changed,
+      // 需要解析新options
       // need to resolve new options.
       // 将其进行修改
       Ctor.superOptions = superOptions
+      // 检查是否有任何后期修改/附加的 options
       // check if there are any late-modified/attached options (#4976)
       // 获取新的options与原始的options对比的差异部分
       const modifiedOptions = resolveModifiedOptions(Ctor)
+      // 更新基础继承options
       // update base extend options
       // 有差异的options
       if (modifiedOptions) {
         // 添加到拓展options上
         extend(Ctor.extendOptions, modifiedOptions)
       }
-      // 合并选项
+      // 合并选项，将所有组件层级的options进行合并
       options = Ctor.options = mergeOptions(superOptions, Ctor.extendOptions)
       // 获取组件名称
       if (options.name) {
@@ -196,19 +207,19 @@ export function resolveConstructorOptions(Ctor: Class<Component>) {
       }
     }
   }
-  // 没有直接返回Vue.options
+  // 没有直接返回 组件类的 options
   return options
 }
 
 /**
  * 找出子类的options上与之前不同的配置参数
- * @param {*} Ctor 
+ * @param {*} Ctor 父类
  */
 function resolveModifiedOptions(Ctor: Class<Component>): ?Object {
   let modified
-  // 本身的options
+  // options
   const latest = Ctor.options
-  // 本身的options
+  // 密封 sealedOptions
   const sealed = Ctor.sealedOptions
   // 使用最新的options与最原始的options对比
   for (const key in latest) {
@@ -219,5 +230,6 @@ function resolveModifiedOptions(Ctor: Class<Component>): ?Object {
       modified[key] = latest[key]
     }
   }
+  // 找出options被修改的部分
   return modified
 }

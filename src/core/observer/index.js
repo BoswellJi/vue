@@ -39,6 +39,7 @@ export function toggleObserving (value: boolean) {
 export class Observer {
   value: any;
   dep: Dep;
+  // vms的数量，有这些对象作为根数据
   vmCount: number; // number of vms that have this object as root $data
 
   // 需要转变为响应式对象的对象
@@ -48,11 +49,11 @@ export class Observer {
     //对象或者数组的依赖
     this.dep = new Dep()
     this.vmCount = 0
-    // 将对象打上__ob__属性标记,defineProperty，值为 Observer 实例
+    // 给对象定义__ob__属性标记
     def(value, '__ob__', this)
     // 这个对象是数组,非数组
     if (Array.isArray(value)) {
-      // 有圆形
+      // 对象上有__proto__原型属性
       if (hasProto) {
         protoAugment(value, arrayMethods)
       } else {
@@ -67,10 +68,11 @@ export class Observer {
   }
 
   /**
+   * 遍历所有属性，并且转换他们到getter/setter
    * Walk through all properties and convert them into
+   * 只有当值是Object类型时，方法才应该被调用
    * getter/setters. This method should only be called when
    * value type is Object.
-   * 对像的每个属性进行遍历
    */
   walk (obj: Object) {
     const keys = Object.keys(obj)
@@ -95,6 +97,7 @@ export class Observer {
 // helpers
 
 /**
+ * 通过使用__proto__拦截原型链，来扩充目标对象或者数组
  * Augment a target Object or Array by intercepting
  * the prototype chain using __proto__
  */
@@ -105,20 +108,31 @@ function protoAugment (target, src: Object) {
 }
 
 /**
+ * 通过定义隐藏属性，来扩充目标对象或者数组
  * Augment a target Object or Array by defining
  * hidden properties.
  */
 /* istanbul ignore next */
+/**
+ * 拷贝参数
+ * @param {*} target 目标对象
+ * @param {*} src 源对象
+ * @param {*} keys key集合
+ */
 function copyAugment (target: Object, src: Object, keys: Array<string>) {
   for (let i = 0, l = keys.length; i < l; i++) {
     const key = keys[i]
+    // 给对象定义指定属性
     def(target, key, src[key])
   }
 }
 
 /**
+ * 尝试给一个值创建一个观察者实例
  * Attempt to create an observer instance for a value,
+ * 如果成功观察，返回新的观察者
  * returns the new observer if successfully observed,
+ * 或者如果一个值已经是的化，返回现存的观察者
  * or the existing observer if the value already has one.
  */
 /**
@@ -133,11 +147,10 @@ function copyAugment (target: Object, src: Object, keys: Array<string>) {
  * @param {*} asRootData 作为根数据
  */
 export function observe (value: any, asRootData: ?boolean): Observer | void {
-  // 不是对象 || 是VNode
+  // 不是(非null的对象) || 是VNode
   if (!isObject(value) || value instanceof VNode) {
     return
   }
-  // 观察者实例
   let ob: Observer | void
   // 有__ob__属性,已经是响应式对象 && __ob__ 属性值为 Observer 实例
   if (hasOwn(value, '__ob__') && value.__ob__ instanceof Observer) {
@@ -152,14 +165,14 @@ export function observe (value: any, asRootData: ?boolean): Observer | void {
     (Array.isArray(value) || isPlainObject(value)) &&
     // 可扩展对象
     Object.isExtensible(value) &&
-    // _isVue属性为false
+    // 不是Vue实例，_isVue为Vue实例属性
     !value._isVue
   ) {
     // 创建一个观察者
     // 组件的 data 对象
     ob = new Observer(value)
   }
-  // 根数据 && 观察者对象
+  // 观察者对象
   if (asRootData && ob) {
     ob.vmCount++
   }
@@ -230,9 +243,9 @@ export function defineReactive (
     get: function reactiveGetter () {
       // 获取之前访问器中的值， 不能存在的，直接返回当前值
       const value = getter ? getter.call(obj) : val
-      // 响应式属性的观察者对像，监听函数
+      // 依赖的目标，观察者对象（组件的监听器
       if (Dep.target) {
-        // 收集依赖
+        // 添加依赖，将观察者添加到依赖中
         dep.depend()
         // 子观察者
         if (childOb) {

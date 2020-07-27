@@ -66,6 +66,7 @@ if (inBrowser && !isIE) {
 }
 
 /**
+ * 刷新队列还运行观察者
  * Flush both queues and run the watchers.
  */
 function flushSchedulerQueue () {
@@ -73,12 +74,17 @@ function flushSchedulerQueue () {
   flushing = true // 正在刷新队列
   let watcher, id
 
+  // 刷新之前排序
   // Sort queue before flush.
+  // 这是为了确保
   // This ensures that:
+  // 1. 组件从父到子都被更新，因为父总是在子之前被创建
   // 1. Components are updated from parent to child. (because parent is always
   //    created before the child)
+  // 2. 在它的渲染观察者之前，一个组件的用户观者这被运行， 因为在渲染观察者之前，用户观察者被创建
   // 2. A component's user watchers are run before its render watcher (because
   //    user watchers are created before the render watcher)
+  // 3. 如果在一个父组件的观察者运行期间，一个组件被销毁，他的观察者会被跳过
   // 3. If a component is destroyed during a parent component's watcher run,
   //    its watchers can be skipped.
   // 任务队列排序
@@ -94,7 +100,7 @@ function flushSchedulerQueue () {
     id = watcher.id
     // 清空监听器
     has[id] = null
-    // 运行监听器
+    // 运行监听器，重新渲染
     watcher.run()
     // in dev build, check and stop circular updates.
     if (process.env.NODE_ENV !== 'production' && has[id] != null) {

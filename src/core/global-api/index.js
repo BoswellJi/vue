@@ -49,8 +49,10 @@ export function initGlobalAPI(Vue: GlobalAPI) {
   Vue.delete = del
   Vue.nextTick = nextTick
 
+  // 显式的可观察api
   // 2.6 explicit observable API
   /**
+   * 显式的
    * 将对象改变为响应式对象
    */
   Vue.observable = (obj) => {

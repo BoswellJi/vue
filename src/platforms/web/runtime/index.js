@@ -50,10 +50,12 @@ Vue.prototype.$mount = function (
 /* istanbul ignore next */
 if (inBrowser) {
   setTimeout(() => {
+    // devtools是否为true,其实：是否为开发环境
     if (config.devtools) {
       if (devtools) {
         devtools.emit('init', Vue)
       } else if (
+        // 否者提示下载开发者工具
         process.env.NODE_ENV !== 'production' &&
         process.env.NODE_ENV !== 'test'
       ) {
