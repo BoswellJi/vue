@@ -23,6 +23,7 @@ import {
 const SIMPLE_NORMALIZE = 1
 const ALWAYS_NORMALIZE = 2
 
+// 用于提供一个更灵活的接口的包裹函数
 // wrapper function for providing a more flexible interface
 // without getting yelled at by flow
 /**
@@ -130,6 +131,7 @@ export function _createElement (
   // 字符串为标签节点
   if (typeof tag === 'string') {
     let Ctor
+    // 获取标签元素的命名空间
     ns = (context.$vnode && context.$vnode.ns) || config.getTagNamespace(tag)
     //保留tag，平台内置(例如html tag)
     if (config.isReservedTag(tag)) {
@@ -184,7 +186,14 @@ export function _createElement (
   }
 }
 
+/**
+ * 应用命名空间
+ * @param {*} vnode 
+ * @param {*} ns 
+ * @param {*} force 
+ */
 function applyNS (vnode, ns, force) {
+  // 虚拟节点ns属性赋值
   vnode.ns = ns
   if (vnode.tag === 'foreignObject') {
     // use default namespace inside foreignObject

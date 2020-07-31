@@ -11,14 +11,20 @@ Vue.config.silent = true;
 const people = Vue.observable({ name: 'jmz' });
 people.name;
 
+const testChildren = {
+  template: '<div>children</div>'
+};
 
 const test = {
-  template:'<div>dfdf</div>'
+  components: {
+    testChildren
+  },
+  template: '<div>dfdf<test-children></test-children></div>'
 }
 
 new Vue({
   el: '#demo',
-  components:{
+  components: {
     test
   },
   data: {
@@ -58,8 +64,8 @@ new Vue({
         xhr.open('GET', apiURL + self.currentBranch)
         xhr.onload = function () {
           self.commits = JSON.parse(xhr.responseText)
-          
-          Vue.nextTick(function(){
+
+          Vue.nextTick(function () {
             console.log('txt');
           });
         }

@@ -129,6 +129,10 @@ export default class Watcher {
     const vm = this.vm
     try {
       // 调用updateComponent方法,更新组件，同步
+      /**
+       * 组件初始化安装时，
+       * 1. 调用的时lifecycle.js中的updateComponent，回调函数
+       */
       value = this.getter.call(vm, vm)
     } catch (e) {
       if (this.user) {

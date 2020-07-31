@@ -271,6 +271,7 @@ export function mountComponent (
     }
   } else {
     // 将渲染函数返回的vdom进行真实dom渲染
+    // 每个组件都将调用这个更新方法
     updateComponent = () => {
       // 创建组件的vnode
       const vnode = vm._render();

@@ -25,7 +25,7 @@ export default class VNode {
   children: ?Array<VNode>; // 子vnode
   text: string | void; // 文本vnode
   elm: Node | void; // vnode的真实dom对象的引用(根据这个属性，子vnode确定创建的真实dom插入到哪里)
-  ns: string | void; //
+  ns: string | void; // 元素的命名空间
   context: Component | void; // rendered in this component's scope
   key: string | number | void;
   componentOptions: VNodeComponentOptions | void; //（组件的选项）

@@ -12,10 +12,11 @@ export let formatComponentName = (noop: any)
 if (process.env.NODE_ENV !== 'production') {
   // 全局对象console不为undefined
   const hasConsole = typeof console !== 'undefined'
-  // 
+  // 正则: 3434 -3434 _3434
   const classifyRE = /(?:^|[-_])(\w)/g
   const classify = str => str
     .replace(classifyRE, c => c.toUpperCase())
+    // 正则: -_ 字符
     .replace(/[-_]/g, '')
 
   warn = (msg, vm) => {
@@ -52,6 +53,7 @@ if (process.env.NODE_ENV !== 'production') {
     let name = options.name || options._componentTag
     const file = options.__file
     if (!name && file) {
+      // 正则: 非/,\一个或者多个.vue  非/.vue \.vue
       const match = file.match(/([^/\\]+)\.vue$/)
       name = match && match[1]
     }

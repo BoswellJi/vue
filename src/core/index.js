@@ -9,7 +9,6 @@ import { FunctionalRenderContext } from 'core/vdom/create-functional-component'
 initGlobalAPI(Vue)
 
 // 给Vue构造函数添加原型属性
-// 只读
 Object.defineProperty(Vue.prototype, '$isServer', {
   get: isServerRendering
 })

@@ -14,16 +14,36 @@ import { isNonPhrasingTag } from 'web/compiler/util'
 import { unicodeRegExp } from 'core/util/lang'
 
 // Regular Expressions for parsing tags and attributes
+/**
+ * \s*: 0或多个空白格
+ * 
+ * ([^\s"'<>\/=]+): 非,\s,",',<,>,/,=一个或多个字符
+ * 
+ * (?:| |)): 
+ * 
+ * \s*(=)\s*"([^"]*)"+ : = 一个或多个"非零个或多个"字符"
+ * 
+ * '([^']*)'+ : 零个或多个'非'字符'
+ * 
+ * ([^\s"'=<>`]+)
+ */
 const attribute = /^\s*([^\s"'<>\/=]+)(?:\s*(=)\s*(?:"([^"]*)"+|'([^']*)'+|([^\s"'=<>`]+)))?/
+// 动态参数属性
 const dynamicArgAttribute = /^\s*((?:v-[\w-]+:|@|:|#)\[[^=]+\][^\s"'<>\/=]*)(?:\s*(=)\s*(?:"([^"]*)"+|'([^']*)'+|([^\s"'=<>`]+)))?/
 const ncname = `[a-zA-Z_][\\-\\.0-9_a-zA-Z${unicodeRegExp.source}]*`
 const qnameCapture = `((?:${ncname}\\:)?${ncname})`
 const startTagOpen = new RegExp(`^<${qnameCapture}`)
+
+// ' />' ' >'
 const startTagClose = /^\s*(\/?)>/
 const endTag = new RegExp(`^<\\/${qnameCapture}[^>]*>`)
+
+// <!DOCTYPE 134>
 const doctype = /^<!DOCTYPE [^>]+>/i
 // #7298: escape - to avoid being passed as HTML comment when inlined in page
+// <!--
 const comment = /^<!\--/
+// <![
 const conditionalComment = /^<!\[/
 
 // Special Elements (can contain anything)
@@ -39,7 +59,9 @@ const decodingMap = {
   '&#9;': '\t',
   '&#39;': "'"
 }
+// &it; &gt; &quot; 
 const encodedAttr = /&(?:lt|gt|quot|amp|#39);/g
+// 使用新行 编码属性
 const encodedAttrWithNewLines = /&(?:lt|gt|quot|amp|#39|#10|#9);/g
 
 // #5992 忽略换行的标签

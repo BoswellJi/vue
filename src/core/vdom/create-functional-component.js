@@ -18,7 +18,7 @@ import {
 } from '../util/index'
 
 /**
- * 
+ * 函数式渲染上下文
  * @param {*} data vnode的data
  * @param {*} props 
  * @param {*} children 子vnode
