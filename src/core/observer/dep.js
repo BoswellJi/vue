@@ -48,14 +48,18 @@ export default class Dep {
   }
 
   notify () {
+    // 首先,稳定订阅者列表
     // stabilize the subscriber list first
     const subs = this.subs.slice()
     if (process.env.NODE_ENV !== 'production' && !config.async) {
+      // 如果不运行异步订阅者在调度器中被排序
       // subs aren't sorted in scheduler if not running async
+      // 我们需要对他们进行排序,确保以正确的顺序对他们进行触发
       // we need to sort them now to make sure they fire in correct
       // order
       subs.sort((a, b) => a.id - b.id)
     }
+    // 调用订阅者更新函数
     for (let i = 0, l = subs.length; i < l; i++) {
       subs[i].update()
     }

@@ -16,9 +16,11 @@ import {
   isServerRendering
 } from '../util/index'
 
+// 获取对象自身的属性名称
 const arrayKeys = Object.getOwnPropertyNames(arrayMethods)
 
 /**
+ * 在一些案例中,我们可能想要禁用观察在组件的更新计算中
  * In some cases we may want to disable observation inside a component's
  * update computation.
  */
@@ -103,6 +105,7 @@ export class Observer {
  */
 function protoAugment (target, src: Object) {
   /* eslint-disable no-proto */
+  // 将对象的内部原型属性指向新对象(原型继承)
   target.__proto__ = src
   /* eslint-enable no-proto */
 }
@@ -122,7 +125,7 @@ function protoAugment (target, src: Object) {
 function copyAugment (target: Object, src: Object, keys: Array<string>) {
   for (let i = 0, l = keys.length; i < l; i++) {
     const key = keys[i]
-    // 给对象定义指定属性
+    // 给对象定义指定属性,将src上的属性定义到目标对象上(需要观察的对象)
     def(target, key, src[key])
   }
 }

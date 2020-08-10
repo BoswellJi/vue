@@ -69,10 +69,10 @@ export default class Watcher {
     } else {
       this.deep = this.user = this.lazy = this.sync = false
     }
-    this.cb = cb
+    this.cb = cb // 回调函数
     this.id = ++uid // uid for batching
     this.active = true
-    this.dirty = this.lazy // for lazy watchers
+    this.dirty = this.lazy // for lazy watchers 用于懒观察者
     this.deps = []
     this.newDeps = []
     this.depIds = new Set()
@@ -197,13 +197,15 @@ export default class Watcher {
   }
 
   /**
+   * 订阅者接口
    * Subscriber interface.
+   * 当依赖改变时，将被调用
    * Will be called when a dependency changes.
+   * 更新时，会创建一个任务队列
    */
   update () {
     /* istanbul ignore else */
     // 监测器的配置参数
-    // 
     if (this.lazy) {
       this.dirty = true
     } else if (this.sync) {
@@ -216,7 +218,7 @@ export default class Watcher {
   }
 
   /**
-   * 定时任务接口
+   * 调度器job接口
    * Scheduler job interface.
    * 将被通过定时器调用
    * Will be called by the scheduler.
@@ -226,15 +228,18 @@ export default class Watcher {
     if (this.active) {
       const value = this.get()
       if (
+        // 
         value !== this.value ||
+        // 深度观察者和在object/array上的监听器应该触发,甚至当值相同时，因为只可能突变
         // Deep watchers and watchers on Object/Arrays should fire even
         // when the value is the same, because the value may
         // have mutated.
         isObject(value) ||
         this.deep
       ) {
-        // set new value
+        // set new value 将之前的值保存为老值
         const oldValue = this.value
+        // 将当前生成的值,设置为新值
         this.value = value
         // 用户自定义的监听器
         if (this.user) {

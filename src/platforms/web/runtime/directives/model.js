@@ -9,9 +9,12 @@ import { mergeVNodeHook } from 'core/vdom/helpers/index'
 import { warn, isIE9, isIE, isEdge } from 'core/util/index'
 
 /* istanbul ignore if */
+// ie9
 if (isIE9) {
   // http://www.matts411.com/post/internet-explorer-9-oninput/
+  // 给文档绑定selectionchange事件
   document.addEventListener('selectionchange', () => {
+    // 当前文档活跃元素
     const el = document.activeElement
     if (el && el.vmodel) {
       trigger(el, 'input')
@@ -31,7 +34,9 @@ const directive = {
         setSelected(el, binding, vnode.context)
       }
       el._vOptions = [].map.call(el.options, getValue)
+      // textarea || input 元素
     } else if (vnode.tag === 'textarea' || isTextInputType(el.type)) {
+      // 指令的绑定描述
       el._vModifiers = binding.modifiers
       if (!binding.modifiers.lazy) {
         el.addEventListener('compositionstart', onCompositionStart)
@@ -127,11 +132,20 @@ function getValue (option) {
     : option.value
 }
 
+/**
+ * 开始组合,合成
+ * @param {*} e 
+ */
 function onCompositionStart (e) {
   e.target.composing = true
 }
 
+/**
+ * 合成结束
+ * @param {*} e 
+ */
 function onCompositionEnd (e) {
+  // 防止无故触发一个表单事件
   // prevent triggering an input event for no reason
   if (!e.target.composing) return
   e.target.composing = false
@@ -139,8 +153,11 @@ function onCompositionEnd (e) {
 }
 
 function trigger (el, type) {
+  // 创建一个指定类型的事件
   const e = document.createEvent('HTMLEvents')
+  // 初始化事件,(定义事件名称)
   e.initEvent(type, true, true)
+  // 将事件绑定给目标元素
   el.dispatchEvent(e)
 }
 

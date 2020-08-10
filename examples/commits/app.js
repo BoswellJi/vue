@@ -6,7 +6,7 @@ var apiURL = 'https://api.github.com/repos/vuejs/vue/commits?per_page=3&sha='
  * Actual demo
  */
 
-Vue.config.silent = true;
+// Vue.config.silent = true;
 
 const people = Vue.observable({ name: 'jmz' });
 people.name;
@@ -19,18 +19,26 @@ const test = {
   components: {
     testChildren
   },
+  data() {
+    return {
+      name: 'jmz'
+    }
+  },
   template: '<div>dfdf<test-children></test-children></div>'
 }
 
-new Vue({
+const vm = new Vue({
   el: '#demo',
   components: {
-    test
+    test,
+    testChildren
   },
   data: {
-    branches: ['master', 'dev'],
+    branches: ['master', 'dev', 'df', 'bb', 'dfdf'],
     currentBranch: 'master',
-    commits: null
+    commits: null,
+    ok:false,
+    text:''
   },
 
   created: function () {
@@ -52,6 +60,10 @@ new Vue({
   },
 
   methods: {
+    test() {
+      this.ok=!this.ok;
+      this.branches.splice(0, 1);
+    },
     fetchData: function () {
       var self = this
       if (navigator.userAgent.indexOf('PhantomJS') > -1) {
@@ -64,10 +76,6 @@ new Vue({
         xhr.open('GET', apiURL + self.currentBranch)
         xhr.onload = function () {
           self.commits = JSON.parse(xhr.responseText)
-
-          Vue.nextTick(function () {
-            console.log('txt');
-          });
         }
         xhr.send()
       }

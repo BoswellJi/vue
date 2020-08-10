@@ -1,49 +1,88 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>Vue.js github commits example</title>
-    <style>
-      #demo {
-        font-family: 'Helvetica', Arial, sans-serif;
-      }
-      a {
-        text-decoration: none;
-        color: #f66;
-      }
-      li {
-        line-height: 1.5em;
-        margin-bottom: 20px;
-      }
-      .author, .date {
-        font-weight: bold;
-      }
-    </style>
-    <!-- Delete ".min" for console warnings in development -->
-    <script src="../../dist/vue.min.js"></script>
-  </head>
-  <body>
-    <div id="demo">
-      <h1>Latest Vue.js Commits</h1>
-      <template v-for="branch in branches">
-        <input type="radio"
-          :id="branch"
-          :value="branch"
-          name="branch"
-          v-model="currentBranch">
-        <label :for="branch">{{ branch }}</label>
-      </template>
-      <p>vuejs/vue@{{ currentBranch }}</p>
-      <ul>
-        <li v-for="record in commits">
-          <a :href="record.html_url" target="_blank" class="commit">{{ record.sha.slice(0, 7) }}</a>
-          - <span class="message">{{ record.commit.message | truncate }}</span><br>
-          by <span class="author"><a :href="record.author.html_url" target="_blank">{{ record.commit.author.name }}</a></span>
-          at <span class="date">{{ record.commit.author.date | formatDate }}</span>
-        </li>
-      </ul>
+
+<head>
+  <title>Vue.js github commits example</title>
+  <style>
+    #demo {
+      font-family: 'Helvetica', Arial, sans-serif;
+    }
+
+    a {
+      text-decoration: none;
+      color: #f66;
+    }
+
+    li {
+      line-height: 1.5em;
+      margin-bottom: 20px;
+    }
+
+    .author,
+    .date {
+      font-weight: bold;
+    }
+  </style>
+  <!-- Delete ".min" for console warnings in development -->
+  <script src="../../dist/vue.min.js"></script>
+</head>
+
+<body>
+  <div id="demo">
+    <h1 @click="test">Latest Vue.js Commits</h1>
+    <!-- <template v-for="branch in branches">
+      <input type="radio" :id="branch" :value="branch" name="branch" v-model="currentBranch">
+      <label :for="branch">{{ branch }}</label>
+    </template> -->
+    <p>vuejs/vue@{{ currentBranch }}</p>
+    <ul>
+      <li v-for="record in commits">
+        <a :href="record.html_url" target="_blank" class="commit">{{ record.sha.slice(0, 7) }}</a>
+        - <span class="message">{{ record.commit.message | truncate }}</span><br>
+        by <span class="author"><a :href="record.author.html_url"
+            target="_blank">{{ record.commit.author.name }}</a></span>
+        at <span class="date">{{ record.commit.author.date | formatDate }}</span>
+      </li>
+    </ul>
+    <keep-alive>
+
+      556<test-children></test-children>
       <test></test>
-    </div>
-    <script src="mock.js"></script>
-    <script src="app.js"></script>
-  </body>
+
+    </keep-alive>
+    <transition name="fade" :mode="'out-in'" :appear="true" :css="true">
+      <div v-show="ok">toggled content</div>
+    </transition>
+    <input type="text" v-model="text" />
+  </div>
+  <script src="mock.js"></script>
+  <script src="app.js"></script>
+
+  <style>
+    /* 进入时过度,从没有到有 */
+    .fade-enter-active {
+      transition: all .8s cubic-bezier(1.0, 0.5, 0.8, 1.0);
+    }
+
+    /* 离开时过度,从有到没有 */
+    .fade-leave-active {
+      transition: opacity .5s;
+    }
+
+    /* 开始进入状态 */
+    .fade-enter,
+    /* 离开最终状态 */
+    .fade-leave-to {
+      opacity: 0;
+    }
+
+    /* 进入最终状态 */
+    .fade-enter-to,
+    /* 开始离开状态 */
+    .fade-leave {
+      transform: translateX(100px);
+    }
+  </style>
+</body>
+
 </html>
