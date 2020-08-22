@@ -11,6 +11,28 @@ var apiURL = 'https://api.github.com/repos/vuejs/vue/commits?per_page=3&sha='
 const people = Vue.observable({ name: 'jmz' });
 people.name;
 
+Vue.directive('test', {
+  /**
+   * 
+   * @param {*} el dom元素
+   * @param {*} bind 
+   * @param {*} vnode html元素的vnode对象
+   */
+  bind(...args){
+    console.log(args);
+  },
+  /**
+   * 1. dom元素
+   * 2. 指令信息
+   * 3. 绑定元素的new vnode
+   * 4. 绑定元素的old vnode
+   * @param  {...any} args 
+   */
+  inserted(...args){
+    console.log(args);
+  }
+});
+
 const testChildren = {
   template: '<div>children</div>'
 };
@@ -37,8 +59,8 @@ const vm = new Vue({
     branches: ['master', 'dev', 'df', 'bb', 'dfdf'],
     currentBranch: 'master',
     commits: null,
-    ok:false,
-    text:''
+    ok: false,
+    text: ''
   },
 
   created: function () {
@@ -61,7 +83,7 @@ const vm = new Vue({
 
   methods: {
     test() {
-      this.ok=!this.ok;
+      this.ok = !this.ok;
       this.branches.splice(0, 1);
     },
     fetchData: function () {

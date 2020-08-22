@@ -4,6 +4,10 @@ import { inBrowser, isIE9 } from 'core/util/index'
 import { addClass, removeClass } from './class-util'
 import { remove, extend, cached } from 'shared/util'
 
+/**
+ * 解析过渡
+ * @param {*} def 组件上定义的属性 
+ */
 export function resolveTransition (def?: string | Object): ?Object {
   if (!def) {
     return
@@ -11,9 +15,12 @@ export function resolveTransition (def?: string | Object): ?Object {
   /* istanbul ignore else */
   if (typeof def === 'object') {
     const res = {}
+    // 定义css样式
     if (def.css !== false) {
+      // 设置过渡样式
       extend(res, autoCssTransition(def.name || 'v'))
     }
+    // 合并组件的属性props
     extend(res, def)
     return res
   } else if (typeof def === 'string') {
@@ -21,7 +28,9 @@ export function resolveTransition (def?: string | Object): ?Object {
   }
 }
 
+// 自动样式过渡 
 const autoCssTransition: (name: string) => Object = cached(name => {
+  // 对应过程中的对应样式
   return {
     enterClass: `${name}-enter`,
     enterToClass: `${name}-enter-to`,
@@ -70,18 +79,35 @@ export function nextFrame (fn: Function) {
   })
 }
 
+/**
+ * 给dom元素添加过渡样式
+ * @param {*} el dom对象
+ * @param {*} cls 样式class
+ */
 export function addTransitionClass (el: any, cls: string) {
+  // 获取dom过渡样式class 
   const transitionClasses = el._transitionClasses || (el._transitionClasses = [])
+  // 没有过渡类
   if (transitionClasses.indexOf(cls) < 0) {
+    // 添加进来，添加到 _transitionClasses 数组属性中
     transitionClasses.push(cls)
+    // 添加到dom上
     addClass(el, cls)
   }
 }
 
+/**
+ * 移除样式class
+ * @param {*} el dom 
+ * @param {*} cls 样式class
+ */
 export function removeTransitionClass (el: any, cls: string) {
+  // 存在样式类
   if (el._transitionClasses) {
+    // 从中删除成员
     remove(el._transitionClasses, cls)
   }
+  // 删除样式class
   removeClass(el, cls)
 }
 

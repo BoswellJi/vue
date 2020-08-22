@@ -1,5 +1,6 @@
 /* @flow */
 
+// 空白字符： 空格，制表符，换页符，换行符
 const whitespaceRE = /\s+/
 
 /**
@@ -28,6 +29,7 @@ export function addClass (el: HTMLElement, cls: ?string) {
 }
 
 /**
+ * 因为classList在IE的svg元素中不被支持，所以移除类使用svg兼容的
  * Remove class with compatibility for SVG since classList is not supported on
  * SVG elements in IE
  */

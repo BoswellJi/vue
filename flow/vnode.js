@@ -16,6 +16,7 @@ declare type MountedComponentVNode = {
   data: VNodeData;
 };
 
+// 在更新模块中用于vnode的接口
 // interface for vnodes in update modules
 declare type VNodeWithData = {
   tag: string;
@@ -66,13 +67,20 @@ declare interface VNodeData {
 };
 
 declare type VNodeDirective = {
+  // 指令名 v-name => name
   name: string;
+  // 全名 v-name -> v-name
   rawName: string;
+  // 绑定的表达式的值
   value?: any;
+  // 老值
   oldValue?: any;
+  // 参数
   arg?: string;
   oldArg?: string;
+  // 修饰符
   modifiers?: ASTModifiers;
+  // 
   def?: Object;
 };
 

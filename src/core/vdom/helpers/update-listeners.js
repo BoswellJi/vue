@@ -11,6 +11,10 @@ import {
   isPlainObject
 } from 'shared/util'
 
+/**
+ * 规范化事件
+ * @param {} name 事件名称
+ */
 const normalizeEvent = cached((name: string): {
   name: string,
   once: boolean,
@@ -19,14 +23,16 @@ const normalizeEvent = cached((name: string): {
   handler?: Function,
   params?: Array<any>
 } => {
-  // name 首字母为&  ~ ! 去掉
+  // name 首字母为&  去掉
   const passive = name.charAt(0) === '&'
   name = passive ? name.slice(1) : name
-  
+  // name 首字母为  ~ 去掉
   const once = name.charAt(0) === '~' // Prefixed last, checked first
   name = once ? name.slice(1) : name
+  // name 首字母为  ! 去掉
   const capture = name.charAt(0) === '!'
   name = capture ? name.slice(1) : name
+  // 返回事件名称
   return {
     name,
     once,
@@ -35,8 +41,14 @@ const normalizeEvent = cached((name: string): {
   }
 })
 
+/**
+ * 创建函数调用者
+ * @param {*} fns 
+ * @param {*} vm 
+ */
 export function createFnInvoker (fns: Function | Array<Function>, vm: ?Component): Function {
   function invoker () {
+    // 获取函数
     const fns = invoker.fns
     if (Array.isArray(fns)) {
       const cloned = fns.slice()
@@ -48,10 +60,20 @@ export function createFnInvoker (fns: Function | Array<Function>, vm: ?Component
       return invokeWithErrorHandling(fns, null, arguments, vm, `v-on handler`)
     }
   }
+  // 添加fns属性
   invoker.fns = fns
   return invoker
 }
 
+/**
+ * 更新监听器
+ * @param {*} on 
+ * @param {*} oldOn 
+ * @param {*} add 
+ * @param {*} remove 
+ * @param {*} createOnceHandler 
+ * @param {*} vm 
+ */
 export function updateListeners (
   on: Object,
   oldOn: Object,

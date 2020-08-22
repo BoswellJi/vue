@@ -20,15 +20,22 @@ import {
   removeTransitionClass
 } from '../transition-util'
 
+/**
+ * 组件渐入
+ * @param {*} vnode 组件的data对象
+ * @param {*} toggleDisplay 回调函数
+ */
 export function enter (vnode: VNodeWithData, toggleDisplay: ?() => void) {
+  // 组件的dom
   const el: any = vnode.elm
 
-  // call leave callback now
+  // call leave callback now 现在调用离开回调函数
   if (isDef(el._leaveCb)) {
     el._leaveCb.cancelled = true
     el._leaveCb()
   }
 
+  // 解析过渡信息 
   const data = resolveTransition(vnode.data.transition)
   if (isUndef(data)) {
     return
@@ -163,6 +170,7 @@ export function enter (vnode: VNodeWithData, toggleDisplay: ?() => void) {
     })
   }
 
+  // 节点存在show指令
   if (vnode.data.show) {
     toggleDisplay && toggleDisplay()
     enterHook && enterHook(el, cb)
@@ -296,7 +304,9 @@ function checkDuration (val, name, vnode) {
   }
 }
 
+// 是否时有效的间期
 function isValidDuration (val) {
+  // 为数值，不是NaN
   return typeof val === 'number' && !isNaN(val)
 }
 
@@ -323,7 +333,13 @@ function getHookArgumentsLength (fn: Function): boolean {
   }
 }
 
+/**
+ * 进入
+ * @param {*} _ 
+ * @param {*} vnode 
+ */
 function _enter (_: any, vnode: VNodeWithData) {
+  // 节点
   if (vnode.data.show !== true) {
     enter(vnode)
   }

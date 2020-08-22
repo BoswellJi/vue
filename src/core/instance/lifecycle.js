@@ -200,7 +200,7 @@ export function lifecycleMixin (Vue: Class<Component>) {
 
 /**
  * 组件安装,创建监听 Vue实例
- * 只执行一次
+ * 只执行一次,      可以直接调用安装组件，会常见内存中的dom对象
  * @param {*} vm Vue构造函数实例
  * @param {*} el 挂在元素（这里时必须为dom节点
  * @param {*} hydrating 

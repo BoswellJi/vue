@@ -158,9 +158,11 @@ export function initInternalComponent(vm: Component, options: InternalComponentO
   // 父vnode配置的标签
   opts._componentTag = vnodeComponentOptions.tag
 
-  // 组件有render函数
+  // 组件有 render函数
   if (options.render) {
+    // 获取组件的 render()
     opts.render = options.render
+    // 获取组件上的 staticRenderFns()
     opts.staticRenderFns = options.staticRenderFns
   }
 }

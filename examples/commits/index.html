@@ -28,7 +28,15 @@
 </head>
 
 <body>
-  <div id="demo">
+  <!-- 
+    a: 是描述符
+    'df': 表达式（计算值的式子
+    test: 指令名称
+    v-test.a ：rawName（原始名称
+    value: df
+
+   -->
+  <div id="demo" v-test.a="'df'">
     <h1 @click="test">Latest Vue.js Commits</h1>
     <!-- <template v-for="branch in branches">
       <input type="radio" :id="branch" :value="branch" name="branch" v-model="currentBranch">
@@ -50,7 +58,7 @@
       <test></test>
 
     </keep-alive>
-    <transition name="fade" :mode="'out-in'" :appear="true" :css="true">
+    <transition name="fade" :mode="'out-in'">
       <div v-show="ok">toggled content</div>
     </transition>
     <input type="text" v-model="text" />
@@ -58,6 +66,10 @@
   <script src="mock.js"></script>
   <script src="app.js"></script>
 
+  <script>
+   
+
+  </script>
   <style>
     /* 进入时过度,从没有到有 */
     .fade-enter-active {
@@ -80,7 +92,7 @@
     .fade-enter-to,
     /* 开始离开状态 */
     .fade-leave {
-      transform: translateX(100px);
+      /* transform: translateX(100px); */
     }
   </style>
 </body>
