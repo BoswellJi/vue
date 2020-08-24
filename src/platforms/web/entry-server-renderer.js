@@ -10,10 +10,15 @@ import { isUnaryTag, canBeLeftOpenTag } from './compiler/util'
 import { createRenderer as _createRenderer } from 'server/create-renderer'
 import { createBundleRendererCreator } from 'server/bundle-renderer/create-bundle-renderer'
 
+/**
+ * 创建渲染器
+ * @param {*} options 
+ */
 export function createRenderer (options?: Object = {}): {
   renderToString: Function,
   renderToStream: Function
 } {
+  
   return _createRenderer(extend(extend({}, options), {
     isUnaryTag,
     canBeLeftOpenTag,

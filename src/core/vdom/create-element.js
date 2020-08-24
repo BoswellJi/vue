@@ -56,7 +56,7 @@ export function createElement(
     normalizationType = ALWAYS_NORMALIZE
   }
   const vnode = _createElement(context, tag, data, children, normalizationType)
-  console.log(vnode);
+  
   return vnode;
 }
 

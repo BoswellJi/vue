@@ -264,7 +264,7 @@ export default {
         let delayedLeave
         // 执行离开
         const performLeave = () => { delayedLeave() }
-        // 合并vnode钩子函数 进入后
+        // 合并vnode钩子函数
         mergeVNodeHook(data, 'afterEnter', performLeave)
         mergeVNodeHook(data, 'enterCancelled', performLeave)
         mergeVNodeHook(oldData, 'delayLeave', leave => { delayedLeave = leave })

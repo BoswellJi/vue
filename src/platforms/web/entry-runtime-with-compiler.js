@@ -67,7 +67,8 @@ Vue.prototype.$mount = function (
         return this
       }
       
-    } else if (el) { //非模板，获取节点中的html结构
+    } else if (el) { 
+      //非模板，获取节点以及子节点的html字符串
       template = getOuterHTML(el)
     }
     if (template) {
@@ -93,8 +94,6 @@ Vue.prototype.$mount = function (
       options.render = render
       options.staticRenderFns = staticRenderFns
 
-      // console.log(render);
-
       /* istanbul ignore if */
       if (process.env.NODE_ENV !== 'production' && config.performance && mark) {
         mark('compile end')
@@ -102,10 +101,12 @@ Vue.prototype.$mount = function (
       }
     }
   }
+  // 安装调用
   return mount.call(this, el, hydrating)
 }
 
 /**
+ * 获取元素的外部html
  * Get outerHTML of elements, taking care
  * of SVG elements in IE as well.
  */
@@ -118,7 +119,7 @@ function getOuterHTML (el: Element): string {
     const container = document.createElement('div')
     // 将el克隆到容器
     container.appendChild(el.cloneNode(true))
-
+    // 
     return container.innerHTML
   }
 }

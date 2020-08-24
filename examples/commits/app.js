@@ -18,7 +18,7 @@ Vue.directive('test', {
    * @param {*} bind 
    * @param {*} vnode html元素的vnode对象
    */
-  bind(...args){
+  bind(...args) {
     console.log(args);
   },
   /**
@@ -28,7 +28,7 @@ Vue.directive('test', {
    * 4. 绑定元素的old vnode
    * @param  {...any} args 
    */
-  inserted(...args){
+  inserted(...args) {
     console.log(args);
   }
 });
@@ -82,6 +82,21 @@ const vm = new Vue({
   },
 
   methods: {
+    beforeEnterFn(e) {
+      console.log('before enter',e);
+    },
+    beforeLeaveFn(e) {
+      console.log('before leave',e);
+    },
+    beforeAppearFn(e) {
+      console.log('before appear',e);
+    },
+    enterFn(e) {
+      console.log('enter',e);
+    },
+    leaveFn(e) {
+      console.log('leave',e);
+    },
     test() {
       this.ok = !this.ok;
       this.branches.splice(0, 1);

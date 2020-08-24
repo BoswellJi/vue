@@ -128,6 +128,7 @@ export function toNumber (val: string): number | string {
 }
 
 /**
+ * 创造一个map，返回一个函数用来检查key是否在map中
  * Make a map and return a function for checking if a key
  * is in that map.
  */

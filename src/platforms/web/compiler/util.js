@@ -2,19 +2,22 @@
 
 import { makeMap } from 'shared/util'
 
-// 是
+// 非普通标签
 export const isUnaryTag = makeMap(
   'area,base,br,col,embed,frame,hr,img,input,isindex,keygen,' +
   'link,meta,param,source,track,wbr'
 )
 
+// 
 // Elements that you can, intentionally, leave open
 // (and which close themselves)
 export const canBeLeftOpenTag = makeMap(
   'colgroup,dd,dt,li,options,p,td,tfoot,th,thead,tr,source'
 )
 
+// html5标签
 // HTML5 tags https://html.spec.whatwg.org/multipage/indices.html#elements-3
+// 
 // Phrasing Content https://html.spec.whatwg.org/multipage/dom.html#phrasing-content
 export const isNonPhrasingTag = makeMap(
   'address,article,aside,base,blockquote,body,caption,col,colgroup,dd,' +

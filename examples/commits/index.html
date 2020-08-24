@@ -58,7 +58,14 @@
       <test></test>
 
     </keep-alive>
-    <transition name="fade" :mode="'out-in'">
+    <transition 
+      name="fade" 
+      :mode="'out-in'" 
+      @before-enter="beforeEnterFn"
+      @before-leave ='beforeLeaveFn'
+      @before-appear = 'beforeAppearFn'
+      @enter="enterFn"
+      @leave="leaveFn">
       <div v-show="ok">toggled content</div>
     </transition>
     <input type="text" v-model="text" />

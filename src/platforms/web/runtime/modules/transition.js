@@ -304,7 +304,7 @@ function checkDuration (val, name, vnode) {
   }
 }
 
-// 是否时有效的间期
+// 是否是有效的一段时间
 function isValidDuration (val) {
   // 为数值，不是NaN
   return typeof val === 'number' && !isNaN(val)

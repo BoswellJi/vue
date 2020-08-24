@@ -9,12 +9,14 @@ const replaceRE = /./g
 const isSpecialTag = makeMap('script,style,template', true)
 
 /**
+ * 解析一个单文件组件.vue文件到一个sfc描述对象
  * Parse a single-file component (*.vue) file into an SFC Descriptor Object.
  */
 export function parseComponent (
   content: string,
   options?: Object = {}
 ): SFCDescriptor {
+  // sfc描述器
   const sfc: SFCDescriptor = {
     template: null,
     script: null,
@@ -93,6 +95,7 @@ export function parseComponent (
     }
   }
 
+  // 结尾
   function end (tag: string, start: number) {
     if (depth === 1 && currentBlock) {
       currentBlock.end = start
