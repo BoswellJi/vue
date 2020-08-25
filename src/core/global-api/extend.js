@@ -22,32 +22,32 @@ export function initExtend (Vue: GlobalAPI) {
     extendOptions = extendOptions || {} // 子类属性
     const Super = this // 构造函数
     const SuperId = Super.cid // 构造函数的静态属性cid
-    // 给子类添加 _Ctor 属性
+    // 获取扩展组件构造函数
     const cachedCtors = extendOptions._Ctor || (extendOptions._Ctor = {}) 
-    // 缓存构造函数
+
+    // 构造函数中存在父构造函数
     if (cachedCtors[SuperId]) {
       return cachedCtors[SuperId]
     }
-    // 获取实例的name属性
+    // 获取组件的name属性
     const name = extendOptions.name || Super.options.name
     // 非生产环境进程，进行组件名称验证
     if (process.env.NODE_ENV !== 'production' && name) {
       validateComponentName(name)
     }
 
-    // 子类
+    // 创建一个构造函数，代表子类
     const Sub = function VueComponent (options) {
       this._init(options)
     }
     Sub.prototype = Object.create(Super.prototype) // 原型继承，Vue.prototype
     Sub.prototype.constructor = Sub // 纠正子类的构造函数指向
     Sub.cid = cid++  // 新增子类id(每个子类都一个id)
-    // Vue子类的options
-    // 不是子类实例组件的options
-    // 实例组件的opions在 init.js中进行处理
+
+    // 合并选项参数，将父类和子类的选项进行合并
     Sub.options = mergeOptions(
       Super.options, // 父构造函数的静态属性options
-      extendOptions // 自身options
+      extendOptions // 扩展的options
     )
     Sub['super'] = Super //子类指向父类的索引
 

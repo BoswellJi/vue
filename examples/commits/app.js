@@ -8,17 +8,34 @@ var apiURL = 'https://api.github.com/repos/vuejs/vue/commits?per_page=3&sha='
 
 // Vue.config.silent = true;
 
-const people = Vue.observable({ name: 'jmz' });
-people.name;
+const component1 = Vue.component('c1', {
+  template: '<div>hhhh</div>'
+});
+
+const vm1 = new Vue({
+  el: document.createElement('div'),
+  data: {
+    name: 'df'
+  },
+  components: {
+    component1: component1
+  },
+  template: '<div><c1></c1>{{name}}</div>'
+});
+
+document.body.appendChild(vm1.$el);
 
 Vue.directive('test', {
   /**
-   * 
+   * 指令绑定初始化
    * @param {*} el dom元素
    * @param {*} bind 
    * @param {*} vnode html元素的vnode对象
    */
   bind(...args) {
+    // console.log(args);
+  },
+  undate(...args) {
     console.log(args);
   },
   /**
@@ -29,24 +46,24 @@ Vue.directive('test', {
    * @param  {...any} args 
    */
   inserted(...args) {
-    console.log(args);
+    // console.log(args);
   }
 });
 
 const testChildren = {
-  template: '<div>children</div>'
+  template: '<div>children slot</div>'
 };
 
 const test = {
-  components: {
-    testChildren
-  },
   data() {
     return {
       name: 'jmz'
     }
   },
-  template: '<div>dfdf<test-children></test-children></div>'
+  mounted() {
+    console.log(this.$slots)
+  },
+  template: '<div><slot name="a"></slot></div>'
 }
 
 const vm = new Vue({
@@ -66,11 +83,12 @@ const vm = new Vue({
   created: function () {
     this.fetchData()
   },
+  mounted() {
 
+  },
   watch: {
     currentBranch: 'fetchData'
   },
-
   filters: {
     truncate: function (v) {
       var newline = v.indexOf('\n')
@@ -80,22 +98,21 @@ const vm = new Vue({
       return v.replace(/T|Z/g, ' ')
     }
   },
-
   methods: {
     beforeEnterFn(e) {
-      console.log('before enter',e);
+      console.log('before enter', e);
     },
     beforeLeaveFn(e) {
-      console.log('before leave',e);
+      console.log('before leave', e);
     },
     beforeAppearFn(e) {
-      console.log('before appear',e);
+      console.log('before appear', e);
     },
     enterFn(e) {
-      console.log('enter',e);
+      console.log('enter', e);
     },
     leaveFn(e) {
-      console.log('leave',e);
+      console.log('leave', e);
     },
     test() {
       this.ok = !this.ok;

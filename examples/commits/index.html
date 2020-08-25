@@ -53,28 +53,24 @@
       </li>
     </ul>
     <keep-alive>
-
-      556<test-children></test-children>
+      <test-children></test-children>
       <test></test>
-
     </keep-alive>
-    <transition 
-      name="fade" 
-      :mode="'out-in'" 
-      @before-enter="beforeEnterFn"
-      @before-leave ='beforeLeaveFn'
-      @before-appear = 'beforeAppearFn'
-      @enter="enterFn"
-      @leave="leaveFn">
+    <transition name="fade" :mode="'out-in'" @before-enter="beforeEnterFn" @before-leave='beforeLeaveFn'
+      @before-appear='beforeAppearFn' @enter="enterFn" @leave="leaveFn">
       <div v-show="ok">toggled content</div>
     </transition>
     <input type="text" v-model="text" />
+    <test>
+      <!-- <test-children  v-slot="a"></test-children> -->
+    </test>
   </div>
+
   <script src="mock.js"></script>
   <script src="app.js"></script>
 
   <script>
-   
+
 
   </script>
   <style>
