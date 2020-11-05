@@ -26,7 +26,7 @@ const arrayKeys = Object.getOwnPropertyNames(arrayMethods)
  */
 export let shouldObserve: boolean = true
 
-export function toggleObserving (value: boolean) {
+export function toggleObserving(value: boolean) {
   shouldObserve = value
 }
 
@@ -45,7 +45,7 @@ export class Observer {
   vmCount: number; // number of vms that have this object as root $data
 
   // 需要转变为响应式对象的对象
-  constructor (value: any) {
+  constructor(value: any) {
     // 数组或者对象
     this.value = value
     //对象或者数组的依赖
@@ -76,7 +76,7 @@ export class Observer {
    * getter/setters. This method should only be called when
    * value type is Object.
    */
-  walk (obj: Object) {
+  walk(obj: Object) {
     const keys = Object.keys(obj)
     // 每个键， 响应式对象都会生成一个依赖数据对象
     for (let i = 0; i < keys.length; i++) {
@@ -89,7 +89,7 @@ export class Observer {
    * 观察数组项目列表
    * Observe a list of Array items.
    */
-  observeArray (items: Array<any>) {
+  observeArray(items: Array<any>) {
     for (let i = 0, l = items.length; i < l; i++) {
       observe(items[i])
     }
@@ -103,7 +103,7 @@ export class Observer {
  * Augment a target Object or Array by intercepting
  * the prototype chain using __proto__
  */
-function protoAugment (target, src: Object) {
+function protoAugment(target, src: Object) {
   /* eslint-disable no-proto */
   // 将对象的内部原型属性指向新对象(原型继承)
   target.__proto__ = src
@@ -122,7 +122,7 @@ function protoAugment (target, src: Object) {
  * @param {*} src 源对象
  * @param {*} keys key集合
  */
-function copyAugment (target: Object, src: Object, keys: Array<string>) {
+function copyAugment(target: Object, src: Object, keys: Array<string>) {
   for (let i = 0, l = keys.length; i < l; i++) {
     const key = keys[i]
     // 给对象定义指定属性,将src上的属性定义到目标对象上(需要观察的对象)
@@ -131,11 +131,8 @@ function copyAugment (target: Object, src: Object, keys: Array<string>) {
 }
 
 /**
- * 尝试给一个值创建一个观察者实例
  * Attempt to create an observer instance for a value,
- * 如果成功观察，返回新的观察者
  * returns the new observer if successfully observed,
- * 或者如果一个值已经是的化，返回现存的观察者
  * or the existing observer if the value already has one.
  */
 /**
@@ -149,68 +146,57 @@ function copyAugment (target: Object, src: Object, keys: Array<string>) {
  * @param {*} value 组件实例的data属性的值
  * @param {*} asRootData 作为根数据
  */
-export function observe (value: any, asRootData: ?boolean): Observer | void {
-  // 不是(非null的对象) || 是VNode
+export function observe(value: any, asRootData: ?boolean): Observer | void {
   if (!isObject(value) || value instanceof VNode) {
     return
   }
   let ob: Observer | void
-  // 有__ob__属性,已经是响应式对象 && __ob__ 属性值为 Observer 实例
+  // 是响应式对象
   if (hasOwn(value, '__ob__') && value.__ob__ instanceof Observer) {
-    // 获取观察者对象
     ob = value.__ob__
   } else if (
-    // 是否可观测的开关
     shouldObserve &&
-    // 非服务端渲染
     !isServerRendering() &&
-    // 数组 || 普通对象
     (Array.isArray(value) || isPlainObject(value)) &&
-    // 可扩展对象
     Object.isExtensible(value) &&
-    // 不是Vue实例，_isVue为Vue实例属性
     !value._isVue
   ) {
-    // 创建一个观察者
-    // 组件的 data 对象
     ob = new Observer(value)
   }
-  // 观察者对象
   if (asRootData && ob) {
     ob.vmCount++
   }
-  // 观察者对象
   return ob
 }
 
 /**
  * Define a reactive property on an Object.
- * 对象的响应式原理是：设置对象属性的 get set,对对象的属性进行监听
- * 给对象的属性设置get set，这个是可观察者，会有依赖进行监听
+ * 将普通对象定义为响应式对象
+ * obj js对象
+ * key 对象属性
+ * val 对象值
+ * customSetter 自定义set
+ * shallow 深浅定义
  */
-export function defineReactive (
+export function defineReactive(
   obj: Object,
   key: string,
   val: any,
-  customSetter?: ?Function,  // 用户自定义的setter访问器
+  customSetter?: ?Function,
   shallow?: boolean
 ) {
-  // 给这个响应式对象属性,添加依赖对象,通过闭包缓存依赖
-  // 每个数据字段都会有一个 依赖 的框
+  // 响应式对象的属性,添加依赖对象,通过闭包缓存依赖
   const dep = new Dep()
 
-  // 获取当前这个属性描述
   const property = Object.getOwnPropertyDescriptor(obj, key)
-  // 属性必须是可配置的，否则不可作为响应式属性
   if (property && property.configurable === false) {
     return
   }
 
-  // 保存当前属性的get set 访问器
   // cater for pre-defined getter/setters
   const getter = property && property.get
   const setter = property && property.set
-  
+
   /**
    * 存在getter访问器属性，就不会获取 对象的属性
    * 之后的val就会使undefined
@@ -219,14 +205,10 @@ export function defineReactive (
    * 1.属性存在getter时，在深度观测之前不会取值，所以，在深度观测语句执行之前取不到属性值，无法深度观测；
    * 2. 之所以在深度观测之前不取值，是因为属性原本的getter是用户定义，用户可能在getter中做任何想不到的事情；
    * 
-   * 
    * 1.当数据属性只有getter访问器时，在个属性不会被深度检测，但是defineReactive函数处理之后，该属性将拥有get,set，新值将会被观测，这时候就矛盾了
    * 2.拥有setter的属性，即使拥有getter也要获取属性值并观测之
-   * 
    */
-  // 没有getter 或者只有setter 当前函数参数只有2个，将对象属性值赋给val
   if ((!getter || setter) && arguments.length === 2) {
-    // 没有直接传入val,所以需要从对象的属性上进行获取
     val = obj[key]
   }
 
@@ -243,7 +225,7 @@ export function defineReactive (
      * 1. 正确的返回属性值
      * 2. 收集这个数据字段下的依赖
      */
-    get: function reactiveGetter () {
+    get: function reactiveGetter() {
       // 获取之前访问器中的值， 不能存在的，直接返回当前值
       const value = getter ? getter.call(obj) : val
       // 依赖的目标，观察者对象（组件的监听器
@@ -266,7 +248,7 @@ export function defineReactive (
      * 2. 触发对应的依赖
      * @param {*} newVal 
      */
-    set: function reactiveSetter (newVal) {
+    set: function reactiveSetter(newVal) {
       // 获取旧值
       const value = getter ? getter.call(obj) : val
       /* eslint-disable no-self-compare */
@@ -304,7 +286,7 @@ export function defineReactive (
  * triggers change notification if the property doesn't
  * already exist.
  */
-export function set (target: Array<any> | Object, key: any, val: any): any {
+export function set(target: Array<any> | Object, key: any, val: any): any {
   if (process.env.NODE_ENV !== 'production' &&
     (isUndef(target) || isPrimitive(target))
   ) {
@@ -340,7 +322,7 @@ export function set (target: Array<any> | Object, key: any, val: any): any {
  * 删除一个属性并且在必要时触发变更
  * Delete a property and trigger change if necessary.
  */
-export function del (target: Array<any> | Object, key: any) {
+export function del(target: Array<any> | Object, key: any) {
   if (process.env.NODE_ENV !== 'production' &&
     (isUndef(target) || isPrimitive(target))
   ) {
@@ -372,7 +354,7 @@ export function del (target: Array<any> | Object, key: any) {
  * Collect dependencies on array elements when the array is touched, since
  * we cannot intercept array element access like property getters.
  */
-function dependArray (value: Array<any>) {
+function dependArray(value: Array<any>) {
   for (let e, i = 0, l = value.length; i < l; i++) {
     e = value[i]
     e && e.__ob__ && e.__ob__.dep.depend()

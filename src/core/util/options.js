@@ -305,17 +305,11 @@ const defaultStrat = function (parentVal: any, childVal: any): any {
 }
 
 /**
- * 验证组件名称是否合法
- * Validate component names
- * @param {} options
+ * Validate component names 
+ * @param {} options 构造函数的选项
  */
 function checkComponents(options: Object) {
-  // 遍历选项中components属性（注册组件集合
-  /**
-   * 根组件中没有注册组件
-   */
   for (const key in options.components) {
-    // 验证组件名称
     validateComponentName(key)
   }
 }
@@ -325,6 +319,7 @@ function checkComponents(options: Object) {
  * @param {*} name 
  */
 export function validateComponentName(name: string) {
+  // a\j
   if (!new RegExp(`^[a-zA-Z][\\-\\.0-9_${unicodeRegExp.source}]*$`).test(name)) {
     warn(
       'Invalid component name: "' + name + '". Component names ' +
@@ -341,17 +336,14 @@ export function validateComponentName(name: string) {
 
 /**
  * Ensure all props option syntax are normalized into the
- * Object-based format.
- * props值需要时数组或者对象
+ * Object-based format
  */
 function normalizeProps(options: Object, vm: ?Component) {
-  // 获取属性对象
   const props = options.props
   if (!props) return
 
   const res = {}
   let i, val, name
-  // 数组
   if (Array.isArray(props)) {
     i = props.length
     while (i--) {
@@ -363,7 +355,6 @@ function normalizeProps(options: Object, vm: ?Component) {
         warn('props must be strings when using array syntax.')
       }
     }
-    // 对象
   } else if (isPlainObject(props)) {
     for (const key in props) {
       val = props[key]
@@ -424,7 +415,6 @@ function normalizeDirectives(options: Object) {
   }
 }
 
-// 是否为原生对象类型 object
 function assertObjectType(name: string, value: any, vm: ?Component) {
   if (!isPlainObject(value)) {
     warn(
@@ -441,18 +431,17 @@ function assertObjectType(name: string, value: any, vm: ?Component) {
  */
 /**
  * 对组件的各个option参数有这合并策略，将继承过来的，Vue构造函数的，都统统合并到当前组件实例下面 vm.$options = {...parent,...child}
- * @param {*} parent 组件的构造函数的option, 在global-api/index.js
- * @param {*} child 组件的option
- * @param {*} vm Vue实例，子实例
+ * @param {*} parent 组件的构造函数的选项, 在global-api/index.js
+ * @param {*} child 组件的选项
+ * @param {*} vm 组件实例
  */
 export function mergeOptions(
   parent: Object,
   child: Object,
   vm?: Component
 ): Object {
-  // 不是生产环境下
   if (process.env.NODE_ENV !== 'production') {
-    // 检查组件的options选项
+    // 验证组件名称
     checkComponents(child)
   }
 
@@ -466,21 +455,17 @@ export function mergeOptions(
   normalizeInject(child, vm)
   normalizeDirectives(child)
 
-  // 在子options中使用继承和混合
   // Apply extends and mixins on the child options,
-  // 但是如果他只是一个原生的options对象不是另一个合并调用的结果
   // but only if it is a raw options object that isn't
   // the result of another mergeOptions call.
-  // 只合并options有_base属性的
   // Only merged options has the _base property.
 
-  // 非Vue构造函数
   if (!child._base) {
-    // 组件继承的父组件
+    // 当前组件存在extends，继承其他组件
     if (child.extends) {
       parent = mergeOptions(parent, child.extends, vm)
     }
-    // 组件混合的组件配置
+    // 当前组件存在mixins，混合其他组件
     if (child.mixins) {
       for (let i = 0, l = child.mixins.length; i < l; i++) {
         parent = mergeOptions(parent, child.mixins[i], vm)
@@ -488,39 +473,35 @@ export function mergeOptions(
     }
   }
 
+  // 最终的选项对象
   const options = {}
   let key
 
-  // 当前组件的构造函数对象的options
+  // 先合并父构造函数的选项
   for (key in parent) {
-    // 合并字段
     mergeField(key)
   }
-  /**
-   * 组件本身的options
-   * parent 上没有的options配置参数
-   */
+
+  // 合并组件自身以及父构造函数没有的字段
   for (key in child) {
-    // 构造函数中没有
     if (!hasOwn(parent, key)) {
       mergeField(key)
     }
   }
   /**
    * 合并字段
-   * @param {*} key options中的key
+   * @param {*} key 键
    */
   function mergeField(key) {
     // 根据options的key进行获取合并策略，没在vue options中的key,使用默认的策略
-    // 获取策略函数
     const strat = strats[key] || defaultStrat
-    // 调用策略进行合并
+
     /**
-     * parent[key] 主要是组件的继承组件或者组件的混合元素
-     * child[key]组件本身的options参数
-     * vm组件实例
-     * key组件的options以及Vue的options
+     * parent[key] 主要是组件的构造函数以及父构造函数的选项
+     * child[key] 组件本身的选项
+     * 组件选项中的键
      */
+    // 调用策略进行合并， 构造函数的选项和组件的选项合并
     options[key] = strat(parent[key], child[key], vm, key)
   }
   return options

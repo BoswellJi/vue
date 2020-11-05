@@ -9,10 +9,13 @@ import {
 } from '../util/index'
 import { updateListeners } from '../vdom/helpers/index'
 
-export function initEvents (vm: Component) {
-  // 创建组件的事件容器
+/**
+ * 初始化组件的事件
+ * @param {*} vm 组件实例
+ */
+export function initEvents(vm: Component) {
   vm._events = Object.create(null)
-  // 组件没有钩子事件函数
+  // 组件是否有钩子事件函数
   vm._hasHookEvent = false
   // init parent attached events
   // 父组件中监听器（内部组件才有） 创建子组件实例的时候才会用到 _parentListeners
@@ -22,23 +25,19 @@ export function initEvents (vm: Component) {
   }
 }
 
-// 组件实例
 let target: any
 
-// 新增自定义事件
-function add (event, fn) {
+function add(event, fn) {
   target.$on(event, fn)
 }
 
-// 解绑事件
-function remove (event, fn) {
+function remove(event, fn) {
   target.$off(event, fn)
 }
 
-// 创建一次性的自定义事件
-function createOnceHandler (event, fn) {
+function createOnceHandler(event, fn) {
   const _target = target
-  return function onceHandler () {
+  return function onceHandler() {
     const res = fn.apply(null, arguments)
     if (res !== null) {
       _target.$off(event, onceHandler)
@@ -46,20 +45,23 @@ function createOnceHandler (event, fn) {
   }
 }
 
-export function updateComponentListeners (
+/**
+ * 更新组件监听器
+ * @param {*} vm 组件实例
+ * @param {*} listeners 监听器
+ * @param {*} oldListeners 老监听器
+ */
+export function updateComponentListeners(
   vm: Component,
   listeners: Object,
   oldListeners: ?Object
 ) {
-  // 当前组件
   target = vm
-  // 
   updateListeners(listeners, oldListeners || {}, add, remove, createOnceHandler, vm)
-  // 清空
   target = undefined
 }
 
-export function eventsMixin (Vue: Class<Component>) {
+export function eventsMixin(Vue: Class<Component>) {
   // 开头是hook:的字符 hook:created
   const hookRE = /^hook:/
   Vue.prototype.$on = function (event: string | Array<string>, fn: Function): Component {
@@ -85,7 +87,7 @@ export function eventsMixin (Vue: Class<Component>) {
   // 只绑定一次
   Vue.prototype.$once = function (event: string, fn: Function): Component {
     const vm: Component = this
-    function on () {
+    function on() {
       vm.$off(event, on)
       fn.apply(vm, arguments)
     }

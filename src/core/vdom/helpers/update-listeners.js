@@ -83,7 +83,6 @@ export function updateListeners (
   vm: Component
 ) {
   let name, def, cur, old, event
-  // 事件监听
   for (name in on) {
     def = cur = on[name]
     old = oldOn[name]

@@ -5,15 +5,13 @@ import { warn, hasSymbol } from '../util/index'
 import { defineReactive, toggleObserving } from '../observer/index'
 
 /**
- * 初始化提供器
- * @param {*} vm 
+ * 初始化组件提供
+ * @param {*} vm 组件实例
  */
 export function initProvide (vm: Component) {
-  // 获取组件的提供器选项
   const provide = vm.$options.provide
-  // 存在情况下
   if (provide) {
-    // _provided属性是函数，调用获取返回值，否则直接赋值
+    // 添加到_provided属性
     vm._provided = typeof provide === 'function'
       ? provide.call(vm)
       : provide

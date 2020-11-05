@@ -28,11 +28,24 @@ var data = {
   ]
 }
 
+const child = Vue.component('child',{
+  template:`<div>hhh</div>`
+});
+
+
 // define the item component
 Vue.component('item', {
   template: '#item-template',
+  name:'c\h',
+
   props: {
     model: Object
+  },
+  created(){
+    
+  },
+  mounted(){
+    console.log(this.$attrs);
   },
   data: function () {
     return {
@@ -66,6 +79,8 @@ Vue.component('item', {
   }
 })
 
+Vue.config.performance=true;
+
 // boot up the demo
 var demo = new Vue({
   el: '#demo',
@@ -73,3 +88,4 @@ var demo = new Vue({
     treeData: data
   }
 })
+

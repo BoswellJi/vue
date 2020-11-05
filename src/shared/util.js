@@ -128,24 +128,20 @@ export function toNumber (val: string): number | string {
 }
 
 /**
- * 创造一个map，返回一个函数用来检查key是否在map中
  * Make a map and return a function for checking if a key
  * is in that map.
+ * str 字符串
+ * expectsLowerCase 期待的字符串为小写，强制
  */
 export function makeMap (
   str: string,
   expectsLowerCase?: boolean
 ): (key: string) => true | void {
-  // 创建一个没有上层原型的对象
   const map = Object.create(null)
-  // 将字符串分割为数组
   const list: Array<string> = str.split(',')
-  // 将数组元素添加到map的属性上
   for (let i = 0; i < list.length; i++) {
-    // list中的每个元素都当作属性
     map[list[i]] = true
   }
-  // 是否获取的属性为小写(js 区分变量名大小写)
   return expectsLowerCase
     ? val => map[val.toLowerCase()]
     : val => map[val]
@@ -161,7 +157,7 @@ export const isBuiltInTag = makeMap('slot,component', true)
 /**
  * Check if an attribute is a reserved attribute.
  */
-// 保留的属性
+// 保留的特性
 export const isReservedAttribute = makeMap('key,ref,slot,slot-scope,is')
 
 /**

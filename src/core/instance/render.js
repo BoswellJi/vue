@@ -17,58 +17,46 @@ import VNode, { createEmptyVNode } from '../vdom/vnode'
 import { isUpdatingChildComponent } from './lifecycle'
 
 /**
- * 初始化渲染
+ * 初始化组件渲染
  * @param {*} vm 组件实例
  */
 export function initRender (vm: Component) {
-  // 组件添加虚拟节点属性
   vm._vnode = null // the root of the child tree 
-  // 组件添加静态树属性
   vm._staticTrees = null // v-once cached trees
-  // 获取组件的配置
   const options = vm.$options  
-  // 父虚拟节点
   const parentVnode = vm.$vnode = options._parentVnode // the placeholder node in parent tree
-  // 父节点上下文，即父组件
-  const renderContext = parentVnode && parentVnode.context
-  // 解析组件的插槽
+  const renderContext = parentVnode && parentVnode.context // 渲染parentVnode节点在其中的组件
+  // 渲染的子节点（插槽中的节点
+  /**
+   * { default:vnode,slotname:vnode }
+   */
   vm.$slots = resolveSlots(options._renderChildren, renderContext)
-  // 组件的作用域插槽（冻结对象，不再被改变
+  // 作用域插槽
   vm.$scopedSlots = emptyObject
 
-  // 绑定createElement 函数到这个组件实例，以至于我们在他的内部获取合适的渲染上下文
   // bind the createElement fn to this instance
   // so that we get proper render context inside it.
-  // 参数排序： 标签，数据，子元素，规范化类型，总是规范化
   // args order: tag, data, children, normalizationType, alwaysNormalize
-  // 被用来从模板编译到渲染函数的内部版本
   // internal version is used by render functions compiled from templates
   vm._c = (a, b, c, d) => createElement(vm, a, b, c, d, false)
 
-  // 规范化一直被应用在公共版本，在用户写的渲染函数中使用
   // normalization is always applied for the public version, used inComponent
   // user-written render functions.
-  // 将组件创建为虚拟节点（vdom == all vnode）
   vm.$createElement = (a, b, c, d) => createElement(vm, a, b, c, d, true)
 
-  // $attrs & $listeners 被暴露来更容易创建 高阶组件 High Order Component
-  // 他们需要被响应，以至于hocs使用他们一直被更新
   // $attrs & $listeners are exposed for easier HOC creation.
   // they need to be reactive so that HOCs using them are always updated
   const parentData = parentVnode && parentVnode.data
 
   /* istanbul ignore else */
   if (process.env.NODE_ENV !== 'production') {
-    // 将$attrs对象定义为响应式对象
     defineReactive(vm, '$attrs', parentData && parentData.attrs || emptyObject, () => {
       !isUpdatingChildComponent && warn(`$attrs is readonly.`, vm)
     }, true)
-    // 将$listeners对象定义为响应式对象
     defineReactive(vm, '$listeners', options._parentListeners || emptyObject, () => {
       !isUpdatingChildComponent && warn(`$listeners is readonly.`, vm)
     }, true)
   } else {
-    // 定义响应式属性
     defineReactive(vm, '$attrs', parentData && parentData.attrs || emptyObject, null, true)
     defineReactive(vm, '$listeners', options._parentListeners || emptyObject, null, true)
   }
@@ -82,9 +70,12 @@ export function setCurrentRenderingInstance (vm: Component) {
   currentRenderingInstance = vm
 }
 
+/**
+ * 渲染混合
+ * @param {} Vue 实例
+ */
 export function renderMixin (Vue: Class<Component>) {
   // install runtime convenience helpers
-  // 添加
   installRenderHelpers(Vue.prototype)
 
   /**

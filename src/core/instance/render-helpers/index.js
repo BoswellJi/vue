@@ -14,7 +14,7 @@ import { bindDynamicKeys, prependModifier } from './bind-dynamic-keys'
 
 /**
  * 安装渲染助手
- * @param {*} target vm 原型对象
+ * @param {*} target Vue原型对象
  */
 export function installRenderHelpers (target: any) {
   target._o = markOnce

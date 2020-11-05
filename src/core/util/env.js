@@ -45,18 +45,15 @@ if (inBrowser) {
   } catch (e) {}
 }
 
-// 这个需要延迟执行，因为vue-server-renderer能设置VUE_ENV之前，vue可能需要
 // this needs to be lazy-evaled because vue may be required before
 // vue-server-renderer can set VUE_ENV
 let _isServer
 export const isServerRendering = () => {
-  // _isServer变量没有被初始化
   if (_isServer === undefined) {
     /* istanbul ignore if */
-    // 非浏览器 && 非wexx && global不为undefined（node的global为对象）
     if (!inBrowser && !inWeex && typeof global !== 'undefined') {
       // detect presence of vue-server-renderer and avoid
-      // Webpack shimming the process
+      // Webpack shimming the process 获取进程的环境变量VUE_ENV
       _isServer = global['process'] && global['process'].env.VUE_ENV === 'server'
     } else {
       _isServer = false

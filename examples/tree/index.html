@@ -21,13 +21,15 @@
       }
     </style>
     <!-- Delete ".min" for console warnings in development -->
-    <script src="../../dist/vue.js"></script>
+    <script src="../../dist/vue.min.js"></script>
   </head>
   <body>
 
     <!-- item template -->
     <script type="text/x-template" id="item-template">
       <li>
+        <slot name="name"></slot>
+        <slot name="name1"></slot>
         <div
           :class="{bold: isFolder}"
           @click="toggle"
@@ -38,8 +40,9 @@
         <ul v-show="open" v-if="isFolder">
           <item
             class="item"
-            v-for="model in model.children"
-            :model="model">
+            v-for="(model,index) in model.children"
+            :model="model"
+            :key="index">
           </item>
           <li class="add" @click="addChild">+</li>
         </ul>
@@ -53,6 +56,10 @@
       <item
         class="item"
         :model="treeData">
+        <template slot="name">jmz</template>
+        <template slot="name1">jmz1</template>
+        <div>hhh1</div>
+        <div>hhh2</div>
       </item>
     </ul>
 

@@ -20,7 +20,6 @@ function Vue (options) {
   this._init(options)
 }
 
-
 // 给Vue添加原型方法
 
 /**

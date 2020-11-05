@@ -13,6 +13,7 @@ if (process.env.NODE_ENV !== 'production') {
     'require' // for Webpack/Browserify
   )
 
+  // 非当前实例属性
   const warnNonPresent = (target, key) => {
     warn(
       `Property or method "${key}" is not defined on the instance but ` +
@@ -24,6 +25,7 @@ if (process.env.NODE_ENV !== 'production') {
     )
   }
 
+  // 保留前缀
   const warnReservedPrefix = (target, key) => {
     warn(
       `Property "${key}" must be accessed with "$data.${key}" because ` +
@@ -34,18 +36,14 @@ if (process.env.NODE_ENV !== 'production') {
     )
   }
 
-  // 是否存在Proxy原生对象
   const hasProxy =
     typeof Proxy !== 'undefined' && isNative(Proxy)
 
   if (hasProxy) {
-    // 内置修饰符
     const isBuiltInModifier = makeMap('stop,prevent,self,ctrl,shift,alt,meta,exact')
     config.keyCodes = new Proxy(config.keyCodes, {
-      set (target, key, value) {
-        // 如果使用的key是内置的修饰符
+      set(target, key, value) {
         if (isBuiltInModifier(key)) {
-          // 警告提示
           warn(`Avoid overwriting built-in modifier in config.keyCodes: .${key}`)
           return false
         } else {
@@ -57,9 +55,8 @@ if (process.env.NODE_ENV !== 'production') {
   }
 
   const hasHandler = {
-
     /**
-        属性查询: foo in proxy
+     * 属性查询: foo in proxy 实例，原型链）
         继承属性查询: foo in Object.create(proxy)
         with 检查: with(proxy) { (foo); }
         Reflect.has()
@@ -68,30 +65,24 @@ if (process.env.NODE_ENV !== 'production') {
      */
     // 主要是在with语句中触发，with是 编译后的render function中获取 实例属性时候触发
     // 手写的render function 不会被包裹在with语句中
-    has (target, key) {
-      // 属性是否存在目标对象上 （实例，原型链）
+    has(target, key) {
       const has = key in target
-      // key是否存在定义的全局对象中，也就是说，全局对象也是允许在模板中访问的 
+      // key是否存在allowedGlobals配置变量中
       const isAllowed = allowedGlobals(key) ||
-      // key为字符串 && 第一个字符为_ && 不能存在Vue实例的的$data对象上
         (typeof key === 'string' && key.charAt(0) === '_' && !(key in target.$data))
-        // 没有 && 不允许
+      // key不是对象上的属性 && 不是全局属性
       if (!has && !isAllowed) {
-        // 警告提示
-        if (key in target.$data) warnReservedPrefix(target, key) 
+        // 而是组件的$data属性
+        if (key in target.$data) warnReservedPrefix(target, key)
         else warnNonPresent(target, key)
       }
       return has || !isAllowed
     }
   }
 
+  // get拦截
   const getHandler = {
-    /**
-     * 获取属性值
-     * @param {*} target 目标对象
-     * @param {*} key 属性
-     */
-    get (target, key) {
+    get(target, key) {
       if (typeof key === 'string' && !(key in target)) {
         if (key in target.$data) warnReservedPrefix(target, key)
         else warnNonPresent(target, key)
@@ -100,16 +91,14 @@ if (process.env.NODE_ENV !== 'production') {
     }
   }
 
-  initProxy = function initProxy (vm) {
-    // Proxy对象是否可以使用
+  initProxy = function initProxy(vm) {
     if (hasProxy) {
-      // determine which proxy handler to use 决定使用哪个代理处理器
+      // determine which proxy handler to use  
       const options = vm.$options
-      // 存在用户render函数， _withStripped 这个属性为true
       const handlers = options.render && options.render._withStripped
         ? getHandler
         : hasHandler
-        // 创建代理对象
+        // 组件对象的代理对象
       vm._renderProxy = new Proxy(vm, handlers)
     } else {
       vm._renderProxy = vm

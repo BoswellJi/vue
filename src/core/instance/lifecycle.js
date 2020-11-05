@@ -37,48 +37,34 @@ export function setActiveInstance(vm: Component) {
 }
 
 /**
- * 初始化,生命周期
+ * 初始化组件生命周期
  * @param {} vm 组件实例
  */ 
 export function initLifecycle (vm: Component) {
-  // 获取组件的选项数据
   const options = vm.$options
 
-  // locate first non-abstract parent 本地第一个非抽象的父组件
-  // 引用当前实例的父实例 （vm.$options.parent 从哪里来
+  // locate first non-abstract parent  
   let parent = options.parent // 父类
   // 存在父组件，不是abstract（抽象组件一般不渲染真实dom,并且不出现在父子组件的路径上
   if (parent && !options.abstract) {
-    // 向上迭代父组件不是abstract的或者没有父组件实例
     while (parent.$options.abstract && parent.$parent) {
-      // 父组件实例的父组件
       parent = parent.$parent
     }
-    // 将组件放到非抽象的父组件的$children数组中
     parent.$children.push(vm)
   }
 
-  // 设置实例的$parent属性指向父组件实例
   vm.$parent = parent
-  // 设置组件的根组件，没有父组件，那就是 Vue实例
+  // 第一个组件为根组件
   vm.$root = parent ? parent.$root : vm
 
-  // 定义子组件容器
   vm.$children = []
-  // 定义节点的引用
   vm.$refs = {}
 
-  // 组件的监听器
   vm._watcher = null
-  // 组件的活跃
   vm._inactive = null
-  // 组件的
   vm._directInactive = false
-  // 组件是否被安装
   vm._isMounted = false
-  // 组件的被销毁
   vm._isDestroyed = false
-  // 组件是否正在被销毁
   vm._isBeingDestroyed = false
 }
 
@@ -459,30 +445,25 @@ export function deactivateChildComponent (vm: Component, direct?: boolean) {
 }
 
 /**
- * 钩子函数回调
+ * 调用钩子函数
  * @param {*} vm 组件实例
  * @param {*} hook 钩子函数名称
  */
 export function callHook (vm: Component, hook: string) {
   // #7573 disable dep collection when invoking lifecycle hooks
   pushTarget()
-  // 获取组件的$options的钩子函数
+  // 组件的选项定义的钩子函数
   const handlers = vm.$options[hook]
-  // 生命周期信息
   const info = `${hook} hook`
 
-  // 根据options的合并策略，得到的是数组
   if (handlers) {
-    // 遍历执行钩子函数
     for (let i = 0, j = handlers.length; i < j; i++) {
-      // 调用使用异常处理
       invokeWithErrorHandling(handlers[i], vm, null, vm, info)
     }
   }
-  // 有hook自定义事件,自动触发
   if (vm._hasHookEvent) {
     vm.$emit('hook:' + hook)
   }
-  // 开启依赖追踪功能
+
   popTarget()
 }
