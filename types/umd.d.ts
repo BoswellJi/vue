@@ -8,6 +8,7 @@ import {
 } from "./options";
 
 // Expose some types for backward compatibility...
+// 全局的Vue对象得类型定义
 declare namespace Vue {
   // vue.d.ts
   export type CreateElement = V.CreateElement;

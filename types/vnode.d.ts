@@ -39,7 +39,6 @@ export interface VNodeComponentOptions {
 }
 
 export interface VNodeData {
-  // 
   key?: string | number;
   slot?: string;
   scopedSlots?: { [key: string]: ScopedSlot | undefined };
