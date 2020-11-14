@@ -19,45 +19,41 @@ import type { SimpleSet } from '../util/index'
 let uid = 0
 
 /**
- * 一个监听器解析一个表达式，收集依赖，并且当表达式值改变时触发回调，这个被用来在$watch api和指令
  * A watcher parses an expression, collects dependencies,
  * and fires callback when the expression value changes.
  * This is used for both the $watch() api and directives.
  */
 export default class Watcher {
-  vm: Component;
-  expression: string;
-  cb: Function;
+  vm: Component; // 组件实例
+  expression: string; // 表达式
+  cb: Function; // 回调函数
   id: number;
   deep: boolean;
   user: boolean;
   lazy: boolean;
   sync: boolean;
   dirty: boolean;
-  active: boolean;
-  deps: Array<Dep>;
+  active: boolean; // 是否活跃
+  deps: Array<Dep>; // 
   newDeps: Array<Dep>;
   depIds: SimpleSet;
   newDepIds: SimpleSet;
-  before: ?Function;
-  getter: Function;
-  value: any;
+  before: ?Function; // 执行修改之前
+  getter: Function; // 获取表达式值
+  value: any; // getter返回的值
 
   constructor (
     vm: Component,
-    // 更新组件函数
     expOrFn: string | Function,
     cb: Function,
     options?: ?Object,
     isRenderWatcher?: boolean
   ) {
-    // 初始化组件实例
     this.vm = vm
     if (isRenderWatcher) {
       vm._watcher = this
     }
-    // 当前组件中的监听器容器（vm._watchers = [];
-    // this:监听器实例
+    // this: 监听器实例，当前new的watcher
     vm._watchers.push(this)
     // options
     if (options) {
@@ -69,10 +65,10 @@ export default class Watcher {
     } else {
       this.deep = this.user = this.lazy = this.sync = false
     }
-    this.cb = cb // 回调函数
+    this.cb = cb // 数据改变后的回调函数
     this.id = ++uid // uid for batching
     this.active = true
-    this.dirty = this.lazy // for lazy watchers 用于懒观察者
+    this.dirty = this.lazy // for lazy watchers 
     this.deps = []
     this.newDeps = []
     this.depIds = new Set()
@@ -80,16 +76,12 @@ export default class Watcher {
     this.expression = process.env.NODE_ENV !== 'production'
       ? expOrFn.toString()
       : ''
-    // 解析getter表达式
     // parse expression for getter
     if (typeof expOrFn === 'function') {
       this.getter = expOrFn
     } else {
-      // $watch('a',function(){
-      // 
-      //})
+      // $watch('a',function(){  }) => a
       this.getter = parsePath(expOrFn)
-      // 没有解析出来，提示报错
       if (!this.getter) {
         this.getter = noop
         process.env.NODE_ENV !== 'production' && warn(
@@ -100,7 +92,6 @@ export default class Watcher {
         )
       }
     }
-    // 懒加载
     this.value = this.lazy
       ? undefined
       : this.get()
@@ -123,16 +114,13 @@ export default class Watcher {
    * 3. 组件中的所有响应式属性的监听器都是，这个组件监听器
    */
   get () {
-    // 添加一个监听对像，new Watcher()，针对某个数据属性的监听
+    // 开始设置依赖目标，即开启依赖收集（this: Watcher）
     pushTarget(this)
     let value
+    // 获取当前监听器绑定的组件
     const vm = this.vm
     try {
-      // 调用updateComponent方法,更新组件，同步
-      /**
-       * 组件初始化安装时，
-       * 1. 调用的时lifecycle.js中的updateComponent，回调函数
-       */
+      // 调用的时lifecycle.js中的updateComponent，开始安装组件,调用响应式对象的getter
       value = this.getter.call(vm, vm)
     } catch (e) {
       if (this.user) {
@@ -141,12 +129,12 @@ export default class Watcher {
         throw e
       }
     } finally {
-      // 触达每一个属性所以他们都被追踪
       // "touch" every property so they are all tracked as
       // dependencies for deep watching
       if (this.deep) {
         traverse(value)
       }
+      // 关闭依赖收集
       popTarget()
       this.cleanupDeps()
     }
@@ -155,32 +143,30 @@ export default class Watcher {
 
   /**
    * Add a dependency to this directive.
-   * 依赖
+   * @param dep 依赖实例(defineReactive中实例化的Dep对象)
    */
   addDep (dep: Dep) {
     const id = dep.id
     // 因为当组件中，使用watch option，$watch来定义属性监听时，同一个属性多个监听器
-    // 依赖实例没有id,不重复添加依赖
     // 每个对象上的属性的依赖实例都有唯一的id，防止不会重复添加依赖实例
     if (!this.newDepIds.has(id)) {
-      // 存储新的依赖id
+      // 将dep设置到当前的watcher下，同一个属性的dep相同
       this.newDepIds.add(id)
-      // 存储新的依赖实例
       this.newDeps.push(dep)
-      // 依赖id中没有当前依赖实例
+      // console.log(this.newDepIds,'newDep');
       if (!this.depIds.has(id)) {
         dep.addSub(this)
+        console.log(dep,'dep');
       }
-    }
+    } 
   }
 
   /**
-   * 清空监听器依赖
    * Clean up for dependency collection.
    */
   cleanupDeps () {
     let i = this.deps.length
-    while (i--) {
+    while (i--) { 
       const dep = this.deps[i]
       if (!this.newDepIds.has(dep.id)) {
         dep.removeSub(this)
@@ -191,55 +177,47 @@ export default class Watcher {
     this.newDepIds = tmp
     this.newDepIds.clear()
     tmp = this.deps
+    // 将收集到的依赖存储起来，清空newDep
     this.deps = this.newDeps
     this.newDeps = tmp
     this.newDeps.length = 0
   }
 
   /**
-   * 订阅者接口
    * Subscriber interface.
-   * 当依赖改变时，将被调用
    * Will be called when a dependency changes.
-   * 更新时，会创建一个任务队列
    */
   update () {
     /* istanbul ignore else */
-    // 监测器的配置参数
     if (this.lazy) {
       this.dirty = true
     } else if (this.sync) {
-      // 监听器同步运行
       this.run()
     } else {
-      // 监听器异步运行（nextTick）
+      // 监听器异步运行（nextTick） this: dep
       queueWatcher(this)
     }
   }
 
   /**
-   * 调度器job接口
    * Scheduler job interface.
-   * 将被通过定时器调用
    * Will be called by the scheduler.
    */
   run () {
-    // 当前监听器活跃
+    // 当前监听器是否活跃
     if (this.active) {
+      // 重新渲染组件，重新调用响应式对象，进行更新
       const value = this.get()
       if (
-        // 
         value !== this.value ||
-        // 深度观察者和在object/array上的监听器应该触发,甚至当值相同时，因为只可能突变
         // Deep watchers and watchers on Object/Arrays should fire even
         // when the value is the same, because the value may
         // have mutated.
         isObject(value) ||
         this.deep
       ) {
-        // set new value 将之前的值保存为老值
+        // set new value  
         const oldValue = this.value
-        // 将当前生成的值,设置为新值
         this.value = value
         // 用户自定义的监听器
         if (this.user) {
@@ -276,7 +254,6 @@ export default class Watcher {
   }
 
   /**
-   * 从所有依赖的订阅者列表中移除
    * Remove self from all dependencies' subscriber list.
    */
   teardown () {
@@ -284,16 +261,13 @@ export default class Watcher {
       // remove self from vm's watcher list
       // this is a somewhat expensive operation so we skip it
       // if the vm is being destroyed.
-      // 组件被删除
       if (!this.vm._isBeingDestroyed) {
-        // 删除监听器
         remove(this.vm._watchers, this)
       }
       let i = this.deps.length
       while (i--) {
         this.deps[i].removeSub(this)
       }
-      // 设置这个监听器不活跃
       this.active = false
     }
   }

@@ -16,11 +16,9 @@ import {
   isServerRendering
 } from '../util/index'
 
-// 获取对象自身的属性名称
 const arrayKeys = Object.getOwnPropertyNames(arrayMethods)
 
 /**
- * 在一些案例中,我们可能想要禁用观察在组件的更新计算中
  * In some cases we may want to disable observation inside a component's
  * update computation.
  */
@@ -31,37 +29,31 @@ export function toggleObserving(value: boolean) {
 }
 
 /**
- * 观察者类，被依附到每一个被观察者对象
  * Observer class that is attached to each observed
- * 一旦依附，观察者转换目标对象的属性key到getter/setter收集依赖和触发更新
  * object. Once attached, the observer converts the target
  * object's property keys into getter/setters that
  * collect dependencies and dispatch updates.
  */
+/**
+ * 观察者
+ */
 export class Observer {
   value: any;
   dep: Dep;
-  // vms的数量，有这些对象作为根数据
   vmCount: number; // number of vms that have this object as root $data
 
-  // 需要转变为响应式对象的对象
   constructor(value: any) {
-    // 数组或者对象
     this.value = value
-    //对象或者数组的依赖
     this.dep = new Dep()
     this.vmCount = 0
-    // 给对象定义__ob__属性标记
     def(value, '__ob__', this)
-    // 这个对象是数组,非数组
     if (Array.isArray(value)) {
-      // 对象上有__proto__原型属性
       if (hasProto) {
         protoAugment(value, arrayMethods)
       } else {
         copyAugment(value, arrayMethods, arrayKeys)
       }
-      // 观测数组
+      // 数组
       this.observeArray(value)
     } else {
       // 对象
@@ -70,23 +62,18 @@ export class Observer {
   }
 
   /**
-   * 遍历所有属性，并且转换他们到getter/setter
    * Walk through all properties and convert them into
-   * 只有当值是Object类型时，方法才应该被调用
    * getter/setters. This method should only be called when
    * value type is Object.
    */
   walk(obj: Object) {
     const keys = Object.keys(obj)
-    // 每个键， 响应式对象都会生成一个依赖数据对象
     for (let i = 0; i < keys.length; i++) {
-      // 给对象的属性定义访问器属性
       defineReactive(obj, keys[i])
     }
   }
 
   /**
-   * 观察数组项目列表
    * Observe a list of Array items.
    */
   observeArray(items: Array<any>) {
@@ -151,10 +138,10 @@ export function observe(value: any, asRootData: ?boolean): Observer | void {
     return
   }
   let ob: Observer | void
-  // 是响应式对象
   if (hasOwn(value, '__ob__') && value.__ob__ instanceof Observer) {
     ob = value.__ob__
   } else if (
+    // 对象可以监听的条件
     shouldObserve &&
     !isServerRendering() &&
     (Array.isArray(value) || isPlainObject(value)) &&
@@ -171,7 +158,6 @@ export function observe(value: any, asRootData: ?boolean): Observer | void {
 
 /**
  * Define a reactive property on an Object.
- * 将普通对象定义为响应式对象
  * obj js对象
  * key 对象属性
  * val 对象值
@@ -216,7 +202,7 @@ export function defineReactive(
   // 子集下的观察者对象
   let childOb = !shallow && observe(val)
 
-  // 重新定义对象属性的描述符  ，设置 getter setter访问器
+  // 重新定义对象属性的描述符，设置 getter setter访问器
   // 在get获取的是否收集依赖（这个对象的属性的依赖）
   Object.defineProperty(obj, key, {
     enumerable: true,
@@ -226,15 +212,11 @@ export function defineReactive(
      * 2. 收集这个数据字段下的依赖
      */
     get: function reactiveGetter() {
-      // 获取之前访问器中的值， 不能存在的，直接返回当前值
       const value = getter ? getter.call(obj) : val
-      // 依赖的目标，观察者对象（组件的监听器
+      // 依赖的目标，观察者对象（组件的监听器实例， 是否开启依赖收集的开关
       if (Dep.target) {
-        // 添加依赖，将观察者添加到依赖中
         dep.depend()
-        // 子观察者
         if (childOb) {
-          // 子观察者中的依赖 dep属性
           childOb.dep.depend()
           if (Array.isArray(value)) {
             dependArray(value)
@@ -249,10 +231,9 @@ export function defineReactive(
      * @param {*} newVal 
      */
     set: function reactiveSetter(newVal) {
-      // 获取旧值
+      // 获取原值来判断是否值被更改
       const value = getter ? getter.call(obj) : val
       /* eslint-disable no-self-compare */
-      // 新值等于旧值 || 新值不等于新值 && 旧值不等于旧值
       if (newVal === value || (newVal !== newVal && value !== value)) {
         return
       }
@@ -260,21 +241,17 @@ export function defineReactive(
       if (process.env.NODE_ENV !== 'production' && customSetter) {
         customSetter()
       }
-      // 这个属性没有setter访问器，
       // #7981: for accessor properties without setter
       if (getter && !setter) return
-      // 存在setter
       if (setter) {
         // watch
-        // 调用
         setter.call(obj, newVal)
       } else {
-        // 不存在，直接赋值
         val = newVal
       }
       // 新值是否需要深度观测
       childOb = !shallow && observe(newVal)
-      // 对应响应式属性的依赖容器
+      // 通知这个属性的监听器
       dep.notify()
     }
   })

@@ -31,18 +31,15 @@ extend(Vue.options.directives, platformDirectives)
 extend(Vue.options.components, platformComponents)
 
 // install platform patch function
-// 浏览器下使用patch函数
 Vue.prototype.__patch__ = inBrowser ? patch : noop
 
 // public mount method
 // 这里是runtime版本的$mount,因为模板编译阶段被预编译了成为render函数，可以直接安装
 Vue.prototype.$mount = function (
-  el?: string | Element, // 组件的挂载点，可以时选择器，和 dom元素
+  el?: string | Element,  
   hydrating?: boolean
 ): Component {
-  // 将挂载根节点转换为dom对象
   el = el && inBrowser ? query(el) : undefined
-  // 安装组件
   return mountComponent(this, el, hydrating)
 }
 
@@ -50,7 +47,6 @@ Vue.prototype.$mount = function (
 /* istanbul ignore next */
 if (inBrowser) {
   setTimeout(() => {
-    // devtools是否为true,其实：是否为开发环境
     if (config.devtools) {
       if (devtools) {
         devtools.emit('init', Vue)

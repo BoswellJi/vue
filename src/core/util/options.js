@@ -22,7 +22,6 @@ import {
 } from 'shared/util'
 
 /**
- * Option重写策略是处理如何合并一个父(构造函数的options)option值和一个子option值到最终值得函数
  * Option overwriting strategies are functions that handle
  * how to merge a parent option value and a child option
  * value into the final value.
@@ -30,7 +29,6 @@ import {
 const strats = config.optionMergeStrategies
 
 /**
- * options的限制
  * Options with restrictions
  */
 if (process.env.NODE_ENV !== 'production') {
@@ -43,9 +41,7 @@ if (process.env.NODE_ENV !== 'production') {
    * })实例化的时候才能使用
    */
   strats.el = strats.propsData = function (parent, child, vm, key) {
-    // 没有vm实例
     if (!vm) {
-      // option的key只能被使用,在实例使用new关键字创建期间
       warn(
         `option "${key}" can only be used during instance ` +
         'creation with the `new` keyword.'
@@ -66,28 +62,32 @@ if (process.env.NODE_ENV !== 'production') {
 /**
  * Helper that recursively merges two data objects together.
  */
+/**
+ * @param {*} to 组件自身实例
+ * @param {*} from 父类
+ */
 function mergeData(to: Object, from: ?Object): Object {
   if (!from) return to
   let key, toVal, fromVal
 
   const keys = hasSymbol
     ? Reflect.ownKeys(from)
-    : Object.keys(from)  // 获取对象那个key，返回数组 ['a','b']
+    : Object.keys(from)  //  不可获取原型上的属性
 
   for (let i = 0; i < keys.length; i++) {
     key = keys[i]
     // in case the object is already observed...
+    // 跳过已经监听的属性
     if (key === '__ob__') continue
 
     toVal = to[key]
     fromVal = from[key]
-    // to 对象没有此实例属性
     if (!hasOwn(to, key)) {
       set(to, key, fromVal)
     } else if (
       toVal !== fromVal &&
-      isPlainObject(toVal) && // 纯对象
-      isPlainObject(fromVal)  // 纯对象
+      isPlainObject(toVal) &&
+      isPlainObject(fromVal)
     ) {
       mergeData(toVal, fromVal)
     }
@@ -97,6 +97,12 @@ function mergeData(to: Object, from: ?Object): Object {
 
 /**
  * Data
+ */
+/**
+ * 合并组件的data选项
+ * @param {*} parentVal 父类data
+ * @param {*} childVal 组件data
+ * @param {*} vm 组件实例
  */
 export function mergeDataOrFn(
   parentVal: any,
@@ -146,7 +152,6 @@ strats.data = function (
   vm?: Component
 ): ?Function {
   // 子组件中没有vm，global-api/extend.js中调用的options合并方法
-  // 组件的data必须是函数
   if (!vm) {
     if (childVal && typeof childVal !== 'function') {
       process.env.NODE_ENV !== 'production' && warn(
@@ -155,7 +160,6 @@ strats.data = function (
         'definitions.',
         vm
       )
-
       return parentVal
     }
     return mergeDataOrFn(parentVal, childVal)
@@ -231,7 +235,13 @@ ASSET_TYPES.forEach(function (type) {
  *
  * Watchers hashes should not overwrite one
  * another, so we merge them as arrays.
- * watch 必须是纯对象
+ */
+/**
+ * 合并watch选项参数
+ * @param {*} parentVal 父级
+ * @param {*} childVal 组件watch选项
+ * @param {*} vm 组件实例
+ * @param {*} key 
  */
 strats.watch = function (
   parentVal: ?Object,
@@ -292,13 +302,12 @@ strats.props =
 strats.provide = mergeDataOrFn
 
 /**
- * 默认策略
+ * 默认策略，子组件没有就返回父级的
  * Default strategy.
  * @param {} parentVal 组件构造函数的options的指定key的值
  * @param {} childVal 组件的options的指定key的值
  */
 const defaultStrat = function (parentVal: any, childVal: any): any {
-  // 组件的option，值，不存在，返回父级的
   return childVal === undefined
     ? parentVal
     : childVal
@@ -430,7 +439,7 @@ function assertObjectType(name: string, value: any, vm: ?Component) {
  * Core utility used in both instantiation and inheritance.
  */
 /**
- * 对组件的各个option参数有这合并策略，将继承过来的，Vue构造函数的，都统统合并到当前组件实例下面 vm.$options = {...parent,...child}
+ * 对组件自身的选项以及继承的父构造函数的选项，都统统合并到当前组件实例下面 vm.$options = {...parent,...child}
  * @param {*} parent 组件的构造函数的选项, 在global-api/index.js
  * @param {*} child 组件的选项
  * @param {*} vm 组件实例
@@ -461,11 +470,11 @@ export function mergeOptions(
   // Only merged options has the _base property.
 
   if (!child._base) {
-    // 当前组件存在extends，继承其他组件
+    // 当前组件存在extends: 继承其他组件（继承
     if (child.extends) {
       parent = mergeOptions(parent, child.extends, vm)
     }
-    // 当前组件存在mixins，混合其他组件
+    // 当前组件存在mixins: 混合其他组件(继承
     if (child.mixins) {
       for (let i = 0, l = child.mixins.length; i < l; i++) {
         parent = mergeOptions(parent, child.mixins[i], vm)
@@ -524,7 +533,6 @@ export function resolveAsset(
   warnMissing?: boolean
 ): any {
   /* istanbul ignore if */
-  // 资产名称不是字符串，直接返回
   if (typeof id !== 'string') {
     return
   }
@@ -536,20 +544,17 @@ export function resolveAsset(
    * 2. 调整组件名，再次查找，找到就返回这个组件实例
    */
 
-  //  判断资产中指定名称的属性是否存在，存在直接返回指令对象
   if (hasOwn(assets, id)) return assets[id]
-  // 不存在，整理资产名称，再次匹配，返回资产引用
-
-  // 小驼峰化tag名
+  // a-bc => aBc
   const camelizedId = camelize(id)
-  // 再次进行判断
+
   if (hasOwn(assets, camelizedId)) return assets[camelizedId]
-  // 大驼峰化tag名
+
+  // bac => Bac
   const PascalCaseId = capitalize(camelizedId)
-  // 再进行验证
+
   if (hasOwn(assets, PascalCaseId)) return assets[PascalCaseId]
   // fallback to prototype chain
-  // 组件对象实例 export default 到处对象
   const res = assets[id] || assets[camelizedId] || assets[PascalCaseId]
   if (process.env.NODE_ENV !== 'production' && warnMissing && !res) {
     warn(

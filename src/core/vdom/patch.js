@@ -11,8 +11,8 @@
  */
 
 
- /**
-  * patchVnode的规则是这样的：
+/** 
+patchVnode的规则是这样的：
 
 1.如果新旧VNode都是静态的，同时它们的key相同（代表同一节点），并且新的VNode是clone或者是标记了once（标记v-once属性，只渲染一次），那么只需要替换elm以及componentInstance即可。
 
@@ -23,7 +23,7 @@
 4.当新节点没有子节点而老节点有子节点的时候，则移除该DOM节点的所有子节点。
 
 5.当新老节点都无子节点的时候，只是文本的替换。
-  */
+ */
 
 import VNode, { cloneVNode } from './vnode'
 import config from '../config'
@@ -43,10 +43,9 @@ import {
   isPrimitive
 } from '../util/index'
 
-// 创建一个空vnode
 export const emptyNode = new VNode('', {}, [])
 
-// vnode 声明周期函数
+// vnode 生命周期函数
 const hooks = ['create', 'activate', 'update', 'remove', 'destroy']
 
 /**
@@ -99,6 +98,10 @@ function createKeyToOldIdx(children, beginIdx, endIdx) {
   return map
 }
 
+/**
+ * 创建补丁函数
+ * @param {*} backend 后端
+ */
 export function createPatchFunction(backend) {
   let i, j
   const cbs = {}
@@ -142,11 +145,8 @@ export function createPatchFunction(backend) {
    * @param {*} el dom节点对象
    */
   function removeNode(el) {
-    // 获取父节点
     const parent = nodeOps.parentNode(el)
     // element may have already been removed due to v-html / v-text 
-    // 因为v-html v-text，元素可能已经被删除了
-    // 存在父节点
     if (isDef(parent)) {
       nodeOps.removeChild(parent, el)
     }
@@ -282,13 +282,13 @@ export function createPatchFunction(backend) {
       if (process.env.NODE_ENV !== 'production' && data && data.pre) {
         creatingElmInVPre--
       }
-    // null, undefined，节点可能是注释，或者文本
-    } else if (isTrue(vnode.isComment)) { 
+      // null, undefined，节点可能是注释，或者文本
+    } else if (isTrue(vnode.isComment)) {
       //注释节点，创建注释节点
       vnode.elm = nodeOps.createComment(vnode.text)
       // 插入到父节点中
       insert(parentElm, vnode.elm, refElm)
-    } else { 
+    } else {
       //文本节点，创建文本节点
       vnode.elm = nodeOps.createTextNode(vnode.text)
       // 插入到父节点中
@@ -305,26 +305,20 @@ export function createPatchFunction(backend) {
    */
   function createComponent(vnode, insertedVnodeQueue, parentElm, refElm) {
     let i = vnode.data
-    // 定义了vnode的data字段被定义
     if (isDef(i)) {
       // vnode组件实例 是keepAlive组件
       const isReactivated = isDef(vnode.componentInstance) && i.keepAlive
       // 组件的hook属性被定义 && 组件的init属性被定义 （将vnode的init钩子函数赋值给i
       if (isDef(i = i.hook) && isDef(i = i.init)) {
-        // 调用
+        // init 调用
         i(vnode, false /* hydrating */)
       }
 
-      // 调用init钩子之后，如果vnode是一个子组件
       // after calling the init hook, if the vnode is a child component
-      // 它应该已经创建了一个子实例并且安装它
       // it should've created a child instance and mounted it. the child
-      // 子组件还已经设置了vnode的elm的占位符，在那个案例中，我们只能返回元素并且完成
       // component also has set the placeholder vnode's elm.
       // in that case we can just return the element and be done.
-      // vnode的组件实例
       if (isDef(vnode.componentInstance)) {
-        // 初始化组件
         initComponent(vnode, insertedVnodeQueue)
         // 插入：将组建的elm,插入父元素中
         insert(parentElm, vnode.elm, refElm)
@@ -1063,7 +1057,6 @@ export function createPatchFunction(backend) {
         }
 
         // destroy old node 
-        // 销毁老vnode
         if (isDef(parentElm)) {
           // 移除
           removeVnodes([oldVnode], 0, 0)

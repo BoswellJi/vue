@@ -7,87 +7,40 @@ var apiURL = 'https://api.github.com/repos/vuejs/vue/commits?per_page=3&sha='
  */
 
 // Vue.config.silent = true;
+Vue.config.performance = true;
 
-const component1 = Vue.component('c1', {
-  template: '<div>hhhh</div>'
-});
-
-const vm1 = new Vue({
-  el: document.createElement('div'),
-  data: {
-    name: 'df'
+const component2 = {
+  props: {
+    text: String,
   },
-  components: {
-    component1: component1
-  },
-  template: '<div><c1></c1>{{name}}</div>'
-});
-
-document.body.appendChild(vm1.$el);
-
-Vue.directive('test', {
-  /**
-   * 指令绑定初始化
-   * @param {*} el dom元素
-   * @param {*} bind 
-   * @param {*} vnode html元素的vnode对象
-   */
-  bind(...args) {
-    // console.log(args);
-  },
-  undate(...args) {
-    console.log(args);
-  },
-  /**
-   * 1. dom元素
-   * 2. 指令信息
-   * 3. 绑定元素的new vnode
-   * 4. 绑定元素的old vnode
-   * @param  {...any} args 
-   */
-  inserted(...args) {
-    // console.log(args);
-  }
-});
-
-const testChildren = {
-  template: '<div>children slot</div>'
+  template: `<div id="hhh1">{{text}}</div>`
 };
 
-const test = {
-  data() {
-    return {
-      name: 'jmz'
-    }
-  },
-  mounted() {
-    console.log(this.$slots)
-  },
-  template: '<div><slot name="a"></slot></div>'
-}
-
 const vm = new Vue({
-  el: '#demo',
+  el: '#demo', 
   components: {
-    test,
-    testChildren
+    component2,
   },
   data: {
-    branches: ['master', 'dev', 'df', 'bb', 'dfdf'],
-    currentBranch: 'master',
-    commits: null,
-    ok: false,
-    text: ''
+    // branches: ['master', 'dev', 'df', 'bb', 'dfdf'],
+    // currentBranch: 'master',
+    // commits: null,
+    // ok: false,
+    text: '',
+    name: 'test'
   },
-
   created: function () {
-    this.fetchData()
+    // this.fetchData();
+    // this.$watch('name', (...arg) => {
+    // }, { sync: true });
+    // this.$watch('name', (...arg) => {
+    // }, { sync: true });
   },
   mounted() {
-
+    // console.log(document.querySelector('#name').innerText);
   },
   watch: {
-    currentBranch: 'fetchData'
+    currentBranch() { }
   },
   filters: {
     truncate: function (v) {
@@ -135,7 +88,7 @@ const vm = new Vue({
       }
     }
   }
-})
+});
 
 
 

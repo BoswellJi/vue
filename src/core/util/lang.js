@@ -37,7 +37,7 @@ export function def (obj: Object, key: string, val: any, enumerable?: boolean) {
 
 /**
  * Parse simple path.
- * 解析简单的路径,正则表达式的 source ,获取的是正则的源文本
+ * 正则表达式的 source ,获取的是正则的源文本
  */
 const bailRE = new RegExp(`[^${unicodeRegExp.source}.$_\\d]`)
 

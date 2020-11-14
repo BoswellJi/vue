@@ -64,16 +64,22 @@ export function initMixin(Vue: Class<Component>) {
       vm._renderProxy = vm
     }
     // expose real self
-    /**
-     * events lifecycle
-     * render
-     * beforeCreate
-     * injections state(reactivity)
-     * provide
-     * created
-     * 
-     */
     vm._self = vm
+    /**
+     * 开始初始化框架
+     * lifecycle
+     * events 
+     * render
+     * 
+     * 开始创建组件
+     * beforeCreate
+     * injections 
+     * state(reactivity)
+     * provide
+     * created 
+     * 
+     * 开始安装组件
+     */
     initLifecycle(vm)
     initEvents(vm)
     initRender(vm)
@@ -182,3 +188,15 @@ function resolveModifiedOptions(Ctor: Class<Component>): ?Object {
   // 找出options被修改的部分
   return modified
 }
+
+
+// 组件创建：从父组件开始，然后到子组件的安装
+
+// 合并组件的选项，初始化组件的响应式系统，等组件需要的系统
+
+// 组件安装：从子组件开始，最后到父组件安装完成
+
+// 依赖收集
+
+// dep: 每个属性都会创建的依赖容器，包含属性的监听器
+// watcher: 解析表达式，获取值，重新渲染组件

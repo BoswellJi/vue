@@ -87,16 +87,14 @@ export function renderMixin (Vue: Class<Component>) {
   }
 
   /**
-   * 渲染方法，将组件生成虚拟节点
+   * 将组件生成虚拟节点
    * @return 组件的vnode
    */
   Vue.prototype._render = function (): VNode {
-    // 组件实例
     const vm: Component = this
     // 组件实例的render函数和父虚拟节点
     const { render, _parentVnode } = vm.$options
 
-    // 父虚拟节点
     if (_parentVnode) {
       // 作用域插槽
       vm.$scopedSlots = normalizeScopedSlots(
@@ -108,7 +106,6 @@ export function renderMixin (Vue: Class<Component>) {
 
     // set parent vnode. this allows render functions to have access
     // to the data on the placeholder node.
-    // 将父虚拟节点添加到组件的$vnode属性
     vm.$vnode = _parentVnode
     // render self
     let vnode
@@ -116,7 +113,6 @@ export function renderMixin (Vue: Class<Component>) {
       // There's no need to maintain a stack because all render fns are called
       // separately from one another. Nested component's render fns are called
       // when parent component is patched.
-      // 保存当前组件的引用
       currentRenderingInstance = vm
       /**
        * 调用了组件的render函数，render函数的第一个参数为  
@@ -129,32 +125,24 @@ export function renderMixin (Vue: Class<Component>) {
       // return error render result,
       // or previous vnode to prevent render error causing blank component
       /* istanbul ignore else */
-      // 开发环境中，组件选项中有renderErrorf配置
       if (process.env.NODE_ENV !== 'production' && vm.$options.renderError) {
         try {
-          // 调用渲染错误方法
           vnode = vm.$options.renderError.call(vm._renderProxy, vm.$createElement, e)
         } catch (e) {
-          // 处理错误
           handleError(e, vm, `renderError`)
-          // 组件实例的_vnode属性
           vnode = vm._vnode
         }
       } else {
         vnode = vm._vnode
       }
     } finally {
-      // 清掉保存的组件引用
       currentRenderingInstance = null
     }
     // if the returned array contains only a single node, allow it
-    // vnode是数组
     if (Array.isArray(vnode) && vnode.length === 1) {
-      // 获取第一个虚拟节点
       vnode = vnode[0]
     }
     // return empty vnode in case the render function errored out
-    // 返回空节点
     if (!(vnode instanceof VNode)) {
       if (process.env.NODE_ENV !== 'production' && Array.isArray(vnode)) {
         warn(
@@ -163,7 +151,6 @@ export function renderMixin (Vue: Class<Component>) {
           vm
         )
       }
-      // 给一个空的vnode
       vnode = createEmptyVNode()
     }
     // set parent

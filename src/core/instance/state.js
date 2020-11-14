@@ -177,10 +177,10 @@ function initData (vm: Component) {
         vm
       )
     } else if (!isReserved(key)) { //开头不是_ &的,_ &这些属于框架保留字符
-      // 
       proxy(vm, `_data`, key)
     }
   }
+  // 观察data
   observe(data, true /* asRootData */)
 }
 
@@ -460,9 +460,8 @@ export function stateMixin (Vue: Class<Component>) {
     }
     options = options || {}
     options.user = true
-    // 对对象的属性进行监听
+    // 这里会new 一个监听器实例
     const watcher = new Watcher(vm, expOrFn, cb, options)
-    // 这里是立即调用watch函数一次
     if (options.immediate) {
       try {
         cb.call(vm, watcher.value)
@@ -476,7 +475,6 @@ export function stateMixin (Vue: Class<Component>) {
     }
   }
 }
-
 
 /**
  * Vue中添加监听器的几种情况：

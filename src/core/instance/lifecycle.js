@@ -75,37 +75,32 @@ export function lifecycleMixin (Vue: Class<Component>) {
   * @param {} 
   */
   Vue.prototype._update = function (vnode: VNode, hydrating?: boolean) {
-    // 组件实例
     const vm: Component = this
-    // 挂载的到dom对象
     const prevEl = vm.$el
-    // 保存当前虚拟节点
+    // 当前组件的vnode
     const prevVnode = vm._vnode
-    // 设置组件实例为当前活跃状态
+    
+    // 设置当前组件为活跃实例
     const restoreActiveInstance = setActiveInstance(vm)
     // 重新添加新的虚拟节点 vm._vnode 与vm.$vnode 是父子级关系
     // vm._vnode.parent === vm.$vnode
     vm._vnode = vnode 
     // Vue.prototype.__patch__ is injected in entry points
     // based on the rendering backend used.
-    // 第一次创建虚拟节点（第一次被渲染
     if (!prevVnode) {
       // initial render
       vm.$el = vm.__patch__(vm.$el, vnode, hydrating, false /* removeOnly */)
     } else {
       // updates
-      // 更新虚拟节点
       vm.$el = vm.__patch__(prevVnode, vnode)
     }
-    // 更新完成将当前组件实例设置为前活跃组件实例
+    // 更新完成 恢复
     restoreActiveInstance()
     // update __vue__ reference
     if (prevEl) {
       prevEl.__vue__ = null
     }
-    // 根组件
     if (vm.$el) {
-      // 给根dom对象添加__vue__属性
       vm.$el.__vue__ = vm
     }
     // if parent is an HOC, update its $el as well
@@ -127,17 +122,14 @@ export function lifecycleMixin (Vue: Class<Component>) {
   // 销毁组件，清理内存
   Vue.prototype.$destroy = function () {
     const vm: Component = this
-    // 组件正在被销毁
     if (vm._isBeingDestroyed) {
       return
     }
-    // 组件销毁之前，调用组件的钩子函数
+
     callHook(vm, 'beforeDestroy')
 
-    // 标记组件当前正在卸载，不会重复执行
     vm._isBeingDestroyed = true
     // remove self from parent
-    // 获取父组件实例
     const parent = vm.$parent
     // 父组件实例存在，父组件不是正在被销毁，组件的选项中没有abstract属性
     if (parent && !parent._isBeingDestroyed && !vm.$options.abstract) {
@@ -186,7 +178,6 @@ export function lifecycleMixin (Vue: Class<Component>) {
 
 /**
  * 组件安装,创建监听 Vue实例
- * 只执行一次,      可以直接调用安装组件，会常见内存中的dom对象
  * @param {*} vm Vue构造函数实例
  * @param {*} el 挂在元素（这里时必须为dom节点
  * @param {*} hydrating 
@@ -196,7 +187,6 @@ export function mountComponent (
   el: ?Element,
   hydrating?: boolean
 ): Component {
-  // 组件模板将要挂载到的dom节点
   vm.$el = el
   // 首先找到Vue实例上的render(框架初始化时为Vue构造函数实例，安装子组件为Vue构造函数子类的实例)
   if (!vm.$options.render) {
@@ -221,81 +211,61 @@ export function mountComponent (
       }
     }
   }
-  // 安装组件之前，调用生命周期： 安装之前时期
+
   callHook(vm, 'beforeMount')
 
   let updateComponent
   /* istanbul ignore if */
   // 开发环境中，配置开启性能，以及mark功能
+  // render + update 是同步操作
   if (process.env.NODE_ENV !== 'production' && config.performance && mark) {
     updateComponent = () => {
-      // 获取组件名称
       const name = vm._name
-      // 获取组件唯一id
       const id = vm._uid
-      // 开始标签
       const startTag = `vue-perf-start:${id}`
-      // 结束标签
       const endTag = `vue-perf-end:${id}`
-
-      // 标记开始时间戳
-      mark(startTag)
+     
+      // console.log('s1');
+      // mark(startTag)
       // 调用组件的render函数，生成虚拟节点
       const vnode = vm._render()
-      // 标记结束时间戳
-      mark(endTag)
-      // 测量结果
-      measure(`vue ${name} render`, startTag, endTag)
-      // 重新标记开始时间戳
-      mark(startTag)
-      // 将vnode渲染为真实dom（到这里组件被安装到真实dom中）
+      // mark(endTag)
+      // measure(`vue ${name} render`, startTag, endTag)
+      // mark(startTag)
+      // 将vnode渲染为真实dom（到这里组件被安装到真实dom中）这里是diff算法
+      // 安装真实dom,为同步安装，递归安装了
       vm._update(vnode, hydrating)
-      // 重新标记结束时间戳
-      mark(endTag)
-      // 测量结果
-      measure(`vue ${name} patch`, startTag, endTag)
+      // mark(endTag)
+      // measure(`vue ${name} patch`, startTag, endTag)
+      // console.log('s2');
     }
   } else {
-    // 将渲染函数返回的vdom进行真实dom渲染
-    // 每个组件都将调用这个更新方法
     updateComponent = () => {
-      // 创建组件的vnode
-      const vnode = vm._render();
-      // 进行更新dom(对比新老： vnode)
+      const vnode = vm._render()
       vm._update(vnode, hydrating)
     }
   }
 
-  // 我们设置this到 监听者的构造函数内部的vm._watcher
   // we set this to vm._watcher inside the watcher's constructor
   // since the watcher's initial patch may call $forceUpdate (e.g. inside child
   // component's mounted hook), which relies on vm._watcher being already defined
-  // 组件实例
-  // 更新组件函数
-  // 钩子函数
-  // 检测vm实例中数据发生改变的时候，进行更新操作
+  // 每个安装的组件都会实例化一个监听器（Watcher
   new Watcher(vm, updateComponent, noop, {
     // watch的钩子函数，在渲染真实dom之前执行
     before () {
-      // 被安装了 && 没有比销毁
       if (vm._isMounted && !vm._isDestroyed) {
-        // 更新之前的钩子函数
         callHook(vm, 'beforeUpdate')
       }
-    }
+    },
   }, true /* isRenderWatcher */)
   hydrating = false
 
   // manually mounted instance, call mounted on self
   // mounted is called for render-created child components in its inserted hook
-  // 组件的虚拟节点为null
   if (vm.$vnode == null) {
-    // 组件被安装到真是dom中
     vm._isMounted = true
-    // 调用组件已被安装钩子函数
     callHook(vm, 'mounted')
   }
-  // 返回组件实例
   return vm
 }
 
@@ -380,11 +350,10 @@ export function updateChildComponent (
 }
 
 /**
- * 是否不活跃的树
  * @param {*} vm 
  */
 function isInInactiveTree (vm) {
-  // 组件，组件的父组件，向上找，找到不活跃的组件
+  // 从组件自身向上找
   while (vm && (vm = vm.$parent)) {
     if (vm._inactive) return true
   }

@@ -124,13 +124,9 @@ if (typeof Promise !== 'undefined' && isNative(Promise)) {
  */
 export function nextTick (cb?: Function, ctx?: Object) {
   let _resolve
-  // 将每个回调函数进行包装后，放入callbacks数组
-  // 通过闭包，获取ctx
   callbacks.push(() => {
-    // 执行回调函数的处理
     if (cb) {
       try {
-        // nextTick的回调函数中可以拿到上下文对象，通过call的调用
         cb.call(ctx)
       } catch (e) {
         handleError(e, ctx, 'nextTick')
@@ -145,9 +141,7 @@ export function nextTick (cb?: Function, ctx?: Object) {
     timerFunc()
   }
   // $flow-disable-line
-  // 没有回调函数 && Promise对象存在
   if (!cb && typeof Promise !== 'undefined') {
-    // 返回
     return new Promise(resolve => {
       _resolve = resolve
     })
