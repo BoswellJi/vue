@@ -1,33 +1,28 @@
 /* @flow */
 
-// 创建一个冻结对象
 export const emptyObject = Object.freeze({})
 
 // These helpers produce better VM code in JS engines due to their
 // explicitness and function inlining.
-// 判断变量是否是undefined和null值
 export function isUndef (v: any): boolean %checks {
   return v === undefined || v === null
 }
 
-// 判断变量是否不是undefined和null值
 export function isDef (v: any): boolean %checks {
   return v !== undefined && v !== null
 }
 
-// 判断变量是否为true 值
 export function isTrue (v: any): boolean %checks {
   return v === true
 }
 
-// 判断变量是否为false 值
 export function isFalse (v: any): boolean %checks {
   return v === false
 }
 
 /**
  * Check if value is primitive.
- * 判断变量是否为原始数据类型 string number symbol boolean
+ * string number symbol boolean
  */
 export function isPrimitive (value: any): boolean %checks {
   return (
@@ -44,7 +39,6 @@ export function isPrimitive (value: any): boolean %checks {
  * Objects from primitive values when we know the value
  * is a JSON-compliant type.
  */
-// 判断变量是否为对象,但非null
 export function isObject (obj: mixed): boolean %checks {
   return obj !== null && typeof obj === 'object'
 }
@@ -52,7 +46,6 @@ export function isObject (obj: mixed): boolean %checks {
 /**
  * Get the raw type string of a value, e.g., [object Object].
  */
-// 保存toString方法的引用
 const _toString = Object.prototype.toString
 
 //[object Object]. -》 Object
@@ -61,21 +54,17 @@ const _toString = Object.prototype.toString
  * @param {*} value 
  */
 export function toRawType (value: any): string {
-  // value 改变toString方法中的上下文
   return _toString.call(value).slice(8, -1)
 }
 
 /**
- * 严格的对象类型检查，对于普通的js对象，只返回true
  * Strict object type check. Only returns true
  * for plain JavaScript objects.
  */
-// 判断变量是否为原生对象类型
 export function isPlainObject (obj: any): boolean {
   return _toString.call(obj) === '[object Object]'
 }
 
-// 判断变量是否为正则类型
 export function isRegExp (v: any): boolean {
   return _toString.call(v) === '[object RegExp]'
 }
@@ -83,7 +72,6 @@ export function isRegExp (v: any): boolean {
 /**
  * Check if val is a valid array index.
  */
-// 是否为有效的数组索引
 export function isValidArrayIndex (val: any): boolean {
   // 将变量强制转换为字符串类型,在强制转换为浮点数类型
   const n = parseFloat(String(val))
@@ -92,7 +80,7 @@ export function isValidArrayIndex (val: any): boolean {
 }
 
 /**
- * 判断变量类型是否为Promise类型
+ * 判断变量类型是否为Promise类型的变量
  * @param {*} val 
  */
 export function isPromise (val: any): boolean {

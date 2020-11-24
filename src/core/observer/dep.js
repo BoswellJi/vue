@@ -34,7 +34,7 @@ export default class Dep {
    */
   addSub(sub: Watcher) {
     this.subs.push(sub)
-    console.log(this.subs, 'watcher');
+    // console.log(this.subs, 'watcher');
   }
 
   removeSub(sub: Watcher) {

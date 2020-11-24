@@ -10,24 +10,31 @@ var apiURL = 'https://api.github.com/repos/vuejs/vue/commits?per_page=3&sha='
 Vue.config.performance = true;
 
 const component2 = {
-  props: {
-    text: String,
+  template: `<div id="hhh1">abc</div>`,
+  created() {
+    console.log('2');
   },
-  template: `<div id="hhh1">{{text}}</div>`
+};
+
+const component3 = {
+  template: `<div id="hhh1">123</div>`,
+  created() {
+    console.log('3');
+  },
 };
 
 const vm = new Vue({
-  el: '#demo', 
+  el: '#demo',
   components: {
     component2,
+    component3,
   },
   data: {
     // branches: ['master', 'dev', 'df', 'bb', 'dfdf'],
     // currentBranch: 'master',
     // commits: null,
     // ok: false,
-    text: '',
-    name: 'test'
+    index: 1,
   },
   created: function () {
     // this.fetchData();
@@ -67,9 +74,12 @@ const vm = new Vue({
     leaveFn(e) {
       console.log('leave', e);
     },
-    test() {
-      this.ok = !this.ok;
-      this.branches.splice(0, 1);
+    count() {
+      if(this.index==1){
+         this.index=2;
+      } else{
+        this.index=1
+      }
     },
     fetchData: function () {
       var self = this

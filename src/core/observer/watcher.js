@@ -156,7 +156,7 @@ export default class Watcher {
       // console.log(this.newDepIds,'newDep');
       if (!this.depIds.has(id)) {
         dep.addSub(this)
-        console.log(dep,'dep');
+        // console.log(dep,'dep');
       }
     } 
   }
