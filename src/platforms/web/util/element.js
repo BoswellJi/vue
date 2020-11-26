@@ -3,13 +3,11 @@
 import { inBrowser } from 'core/util/env'
 import { makeMap } from 'shared/util'
 
-// 创建标记的命名空间(svg,html)
 export const namespaceMap = {
   svg: 'http://www.w3.org/2000/svg',
   math: 'http://www.w3.org/1998/Math/MathML'
 }
 
-// html标签
 export const isHTMLTag = makeMap(
   'html,body,base,head,link,meta,style,title,' +
   'address,article,aside,footer,header,h1,h2,h3,h4,h5,h6,hgroup,nav,section,' +
@@ -26,7 +24,6 @@ export const isHTMLTag = makeMap(
 
 // this map is intentionally selective, only covering SVG elements that may
 // contain child elements.
-// 可用的svg标签
 export const isSVG = makeMap(
   'svg,animate,circle,clippath,cursor,defs,desc,ellipse,filter,font-face,' +
   'foreignObject,g,glyph,image,line,marker,mask,missing-glyph,path,pattern,' +
@@ -34,7 +31,6 @@ export const isSVG = makeMap(
   true
 )
 
-// 保留格式标签
 export const isPreTag = (tag: ?string): boolean => tag === 'pre'
 
 // 被保留的标签(自定义组件不能使用)(w3c规范)

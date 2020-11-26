@@ -7,11 +7,8 @@ import { isDef, isObject } from 'shared/util'
  * @param {*} vnode 
  */
 export function genClassForVnode(vnode: VNodeWithData): string {
-  // vnode的信息
   let data = vnode.data
-  // 设置vnode为父vnode
   let parentNode = vnode
-  // 设置vnode为子vnode
   let childNode = vnode
   // 子vnode的组件实例是否被定义,知道没有被定义为止
   while (isDef(childNode.componentInstance)) {
@@ -30,7 +27,7 @@ export function genClassForVnode(vnode: VNodeWithData): string {
 }
 
 /**
- * 
+ * 合并类数据
  * @param {*} child 
  * @param {*} parent 
  */
@@ -70,17 +67,14 @@ export function concat(a: ?string, b: ?string): string {
 }
 
 export function stringifyClass(value: any): string {
-  // class设置为数组
   if (Array.isArray(value)) {
     // 序列化数组
     return stringifyArray(value)
   }
-  // class设置为对象
   if (isObject(value)) {
     // 序列化对象
     return stringifyObject(value)
   }
-  // value为字符串
   if (typeof value === 'string') {
     // 直接返回
     return value

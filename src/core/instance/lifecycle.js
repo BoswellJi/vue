@@ -39,8 +39,8 @@ export function setActiveInstance(vm: Component) {
 /**
  * 初始化组件生命周期
  * @param {} vm 组件实例
- */ 
-export function initLifecycle (vm: Component) {
+ */
+export function initLifecycle(vm: Component) {
   const options = vm.$options
 
   // locate first non-abstract parent  
@@ -68,23 +68,23 @@ export function initLifecycle (vm: Component) {
   vm._isBeingDestroyed = false
 }
 
-export function lifecycleMixin (Vue: Class<Component>) {
- /**
-  * 更新组件,将组件的虚拟节点安装到真实dom中
-  * @param {} vnode 组件的vnode vm._render生成
-  * @param {} 
-  */
+export function lifecycleMixin(Vue: Class<Component>) {
+  /**
+   * 更新组件,将组件的虚拟节点安装到真实dom中
+   * @param {} vnode 组件的vnode vm._render生成
+   * @param {} 
+   */
   Vue.prototype._update = function (vnode: VNode, hydrating?: boolean) {
     const vm: Component = this
     const prevEl = vm.$el
     // 当前组件的vnode
     const prevVnode = vm._vnode
-    
+
     // 设置当前组件为活跃实例
     const restoreActiveInstance = setActiveInstance(vm)
     // 重新添加新的虚拟节点 vm._vnode 与vm.$vnode 是父子级关系
     // vm._vnode.parent === vm.$vnode
-    vm._vnode = vnode 
+    vm._vnode = vnode
     // Vue.prototype.__patch__ is injected in entry points
     // based on the rendering backend used.
     if (!prevVnode) {
@@ -177,16 +177,17 @@ export function lifecycleMixin (Vue: Class<Component>) {
 }
 
 /**
- * 组件安装,创建监听 Vue实例
+ * 组件安装,创建监听 Vue实例 (组件安装)
  * @param {*} vm Vue构造函数实例
  * @param {*} el 挂在元素（这里时必须为dom节点
  * @param {*} hydrating 
  */
-export function mountComponent (
+export function mountComponent(
   vm: Component,
   el: ?Element,
   hydrating?: boolean
 ): Component {
+  console.log('beforeMount');
   vm.$el = el
   // 首先找到Vue实例上的render(框架初始化时为Vue构造函数实例，安装子组件为Vue构造函数子类的实例)
   if (!vm.$options.render) {
@@ -224,7 +225,7 @@ export function mountComponent (
       const id = vm._uid
       const startTag = `vue-perf-start:${id}`
       const endTag = `vue-perf-end:${id}`
-     
+
       // console.log('s1');
       // mark(startTag)
       // 调用组件的render函数，生成虚拟节点
@@ -252,7 +253,7 @@ export function mountComponent (
   // 每个安装的组件都会实例化一个监听器（Watcher
   new Watcher(vm, updateComponent, noop, {
     // watch的钩子函数，在渲染真实dom之前执行
-    before () {
+    before() {
       if (vm._isMounted && !vm._isDestroyed) {
         callHook(vm, 'beforeUpdate')
       }
@@ -269,7 +270,7 @@ export function mountComponent (
   return vm
 }
 
-export function updateChildComponent (
+export function updateChildComponent(
   vm: Component,
   propsData: ?Object,
   listeners: ?Object,
@@ -352,7 +353,7 @@ export function updateChildComponent (
 /**
  * @param {*} vm 
  */
-function isInInactiveTree (vm) {
+function isInInactiveTree(vm) {
   // 从组件自身向上找
   while (vm && (vm = vm.$parent)) {
     if (vm._inactive) return true
@@ -364,7 +365,7 @@ function isInInactiveTree (vm) {
  * @param {*} vm  组件实例
  * @param {*} direct 
  */
-export function activateChildComponent (vm: Component, direct?: boolean) {
+export function activateChildComponent(vm: Component, direct?: boolean) {
   if (direct) {
     // 直接激活
     vm._directInactive = false
@@ -393,7 +394,7 @@ export function activateChildComponent (vm: Component, direct?: boolean) {
  * @param {*} vm 
  * @param {*} direct 
  */
-export function deactivateChildComponent (vm: Component, direct?: boolean) {
+export function deactivateChildComponent(vm: Component, direct?: boolean) {
   // 直接失活
   if (direct) {
     vm._directInactive = true
@@ -405,7 +406,7 @@ export function deactivateChildComponent (vm: Component, direct?: boolean) {
   if (!vm._inactive) {
     // 设置失活
     vm._inactive = true
-    
+
     for (let i = 0; i < vm.$children.length; i++) {
       deactivateChildComponent(vm.$children[i])
     }
@@ -418,7 +419,7 @@ export function deactivateChildComponent (vm: Component, direct?: boolean) {
  * @param {*} vm 组件实例
  * @param {*} hook 钩子函数名称
  */
-export function callHook (vm: Component, hook: string) {
+export function callHook(vm: Component, hook: string) {
   // #7573 disable dep collection when invoking lifecycle hooks
   pushTarget()
   // 组件的选项定义的钩子函数

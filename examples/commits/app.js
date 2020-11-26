@@ -35,6 +35,7 @@ const vm = new Vue({
     // commits: null,
     // ok: false,
     index: 1,
+    name: 'app'
   },
   created: function () {
     // this.fetchData();
@@ -44,11 +45,11 @@ const vm = new Vue({
     // }, { sync: true });
   },
   mounted() {
-    // console.log(document.querySelector('#name').innerText);
+    console.log(this);    
   },
-  watch: {
-    currentBranch() { }
-  },
+  // watch: {
+  //   currentBranch() { }
+  // },
   filters: {
     truncate: function (v) {
       var newline = v.indexOf('\n')
@@ -75,10 +76,10 @@ const vm = new Vue({
       console.log('leave', e);
     },
     count() {
-      if(this.index==1){
-         this.index=2;
-      } else{
-        this.index=1
+      if (this.index == 1) {
+        this.index = 2;
+      } else {
+        this.index = 1
       }
     },
     fetchData: function () {

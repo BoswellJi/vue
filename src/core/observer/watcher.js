@@ -18,6 +18,8 @@ import type { SimpleSet } from '../util/index'
 
 let uid = 0
 
+// 每个组件默认只有一个Watcher
+
 /**
  * A watcher parses an expression, collects dependencies,
  * and fires callback when the expression value changes.
