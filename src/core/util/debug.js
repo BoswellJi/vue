@@ -8,9 +8,7 @@ export let tip = noop
 export let generateComponentTrace = (noop: any) // work around flow check
 export let formatComponentName = (noop: any)
 
-// 开发中
 if (process.env.NODE_ENV !== 'production') {
-  // 全局对象console不为undefined
   const hasConsole = typeof console !== 'undefined'
   // 正则: 3434 -3434 _3434
   const classifyRE = /(?:^|[-_])(\w)/g

@@ -99,13 +99,12 @@ export function eventsMixin(Vue: Class<Component>) {
 
   Vue.prototype.$off = function (event?: string | Array<string>, fn?: Function): Component {
     const vm: Component = this
-    // all（所有的定义事件都取消
+    // all
     if (!arguments.length) {
       vm._events = Object.create(null)
       return vm
     }
     // array of events
-    // 多个事件，遍历取消
     if (Array.isArray(event)) {
       for (let i = 0, l = event.length; i < l; i++) {
         vm.$off(event[i], fn)
@@ -113,7 +112,6 @@ export function eventsMixin(Vue: Class<Component>) {
       return vm
     }
     // specific event
-    // 指定的单个事件
     const cbs = vm._events[event]
     // 不存在这个自定义事件
     if (!cbs) {

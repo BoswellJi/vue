@@ -4,11 +4,10 @@ import { mergeOptions } from '../util/index'
 
 export function initMixin (Vue: GlobalAPI) {
   /**
-   * 混合对象
+   * Vue是所有组件的父构造函数，所以，会被继承
    * @param {} mixin 
    */
   Vue.mixin = function (mixin: Object) {
-    // Vue.options的选项混入指定的对象
     this.options = mergeOptions(this.options, mixin)
     return this
   }

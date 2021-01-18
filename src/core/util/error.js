@@ -19,7 +19,6 @@ export function handleError(err: Error, vm: any, info: string) {
   try {
     if (vm) {
       let cur = vm
-      // 组件
       while ((cur = cur.$parent)) {
         // 当前组件的错误捕获钩子函数
         const hooks = cur.$options.errorCaptured

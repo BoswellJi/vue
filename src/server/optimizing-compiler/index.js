@@ -12,6 +12,7 @@ export const createCompiler = createCompilerCreator(function baseCompile (
   const ast = parse(template.trim(), options)
   optimize(ast, options)
   const code = generate(ast, options)
+  console.log(code,'b1');
   return {
     ast,
     render: code.render,

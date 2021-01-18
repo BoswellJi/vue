@@ -73,18 +73,15 @@ export function isRegExp (v: any): boolean {
  * Check if val is a valid array index.
  */
 export function isValidArrayIndex (val: any): boolean {
-  // 将变量强制转换为字符串类型,在强制转换为浮点数类型
   const n = parseFloat(String(val))
-  // n大于等于0 ,向下取整后相等,是有限数值
   return n >= 0 && Math.floor(n) === n && isFinite(val)
 }
 
 /**
- * 判断变量类型是否为Promise类型的变量
+ * 判断变量类型是否为Promise类型
  * @param {*} val 
  */
 export function isPromise (val: any): boolean {
-  // 不是undefined不是null bingqie 有then函数，catch函数
   return (
     isDef(val) &&
     typeof val.then === 'function' &&
@@ -137,15 +134,14 @@ export function makeMap (
 
 /**
  * Check if a tag is a built-in tag.
- * 框架内置的标签
  */
-// vue内建的组件
+// vue内置标签
 export const isBuiltInTag = makeMap('slot,component', true)
 
 /**
  * Check if an attribute is a reserved attribute.
  */
-// 保留的特性
+// vue内置属性
 export const isReservedAttribute = makeMap('key,ref,slot,slot-scope,is')
 
 /**
@@ -155,12 +151,9 @@ export const isReservedAttribute = makeMap('key,ref,slot,slot-scope,is')
  * @param {any} item 数组元素
  */
 export function remove (arr: Array<any>, item: any): Array<any> | void {
-  // 数组中有元素
   if (arr.length) {
-    // 找到元素在数组中的位置
     const index = arr.indexOf(item)
     if (index > -1) {
-      // 删除元素
       return arr.splice(index, 1)
     }
   }
@@ -169,7 +162,6 @@ export function remove (arr: Array<any>, item: any): Array<any> | void {
 /**
  * Check whether an object has the property.
  */
-// 保存方法的引用,缩短原型链查找带来的开销
 const hasOwnProperty = Object.prototype.hasOwnProperty
 export function hasOwn (obj: Object | Array<*>, key: string): boolean {
   return hasOwnProperty.call(obj, key)
@@ -180,13 +172,9 @@ export function hasOwn (obj: Object | Array<*>, key: string): boolean {
  */
 
 export function cached<F: Function> (fn: F): F {
-  // 创建一个哈希表,用来缓存属性
   const cache = Object.create(null)
-  // 
   return (function cachedFn (str: string) {
-    // 缓存中有就取出,没有就添加到缓存
     const hit = cache[str]
-    // 缓存的是否函数的返回值(省去函数调用开销)
     return hit || (cache[str] = fn(str))
   }: any)
 }
@@ -266,9 +254,7 @@ export function toArray (list: any, start?: number): Array<any> {
  */
 // 混合式继承,潜复制
 export function extend (to: Object, _from: ?Object): Object {
-  // 遍历对象
   for (const key in _from) {
-    // 将目标对象的属性复制给源对象上
     to[key] = _from[key]
   }
   return to
@@ -277,14 +263,10 @@ export function extend (to: Object, _from: ?Object): Object {
 /**
  * Merge an Array of Objects into a single Object.
  */
-// 合并Object类型的数组,到一个对象中去
 export function toObject (arr: Array<any>): Object {
   const res = {}
-  // 遍历数组
   for (let i = 0; i < arr.length; i++) {
-    // 元素存在时
     if (arr[i]) {
-      // 将对象继承res
       extend(res, arr[i])
     }
   }
@@ -303,7 +285,6 @@ export function noop (a?: any, b?: any, c?: any) {}
 /**
  * Always return false.
  */
-// 总是say no
 export const no = (a?: any, b?: any, c?: any) => false
 
 /* eslint-enable no-unused-vars */
@@ -311,7 +292,6 @@ export const no = (a?: any, b?: any, c?: any) => false
 /**
  * Return the same value.
  */
-// 总是返回本身
 export const identity = (_: any) => _
 
 /**
@@ -329,33 +309,23 @@ export function genStaticKeys (modules: Array<ModuleOptions>): string {
  * Check if two values are loosely equal - that is,
  * if they are plain objects, do they have the same shape?
  */
-// 宽松的变量比较，外形像，那就是了
 export function looseEqual (a: any, b: any): boolean {
-  // 两个变量全等
   if (a === b) return true
-  // 都是对象 typeof 下的
   const isObjectA = isObject(a)
   const isObjectB = isObject(b)
   if (isObjectA && isObjectB) {
     try {
-      // 都是数组
       const isArrayA = Array.isArray(a)
       const isArrayB = Array.isArray(b)
       if (isArrayA && isArrayB) {
-        // 长度都一样,每个元素都相等
         return a.length === b.length && a.every((e, i) => {
           return looseEqual(e, b[i])
         })
-        // 都是Date的类型
       } else if (a instanceof Date && b instanceof Date) {
-        // 根据时间戳来判断
         return a.getTime() === b.getTime()
-        // 都不是数组
       } else if (!isArrayA && !isArrayB) {
-        // 对象Object对象
         const keysA = Object.keys(a)
         const keysB = Object.keys(b)
-        // key的长度相等,每个属性值都相等
         return keysA.length === keysB.length && keysA.every(key => {
           return looseEqual(a[key], b[key])
         })
@@ -367,12 +337,9 @@ export function looseEqual (a: any, b: any): boolean {
       /* istanbul ignore next */
       return false
     }
-    // 都不是Object对象
   } else if (!isObjectA && !isObjectB) {
-    // 原始类型,转换为字符串
     return String(a) === String(b)
   } else {
-    // 不等
     return false
   }
 }
@@ -382,9 +349,7 @@ export function looseEqual (a: any, b: any): boolean {
  * found in the array (if value is a plain object, the array must
  * contain an object of the same shape), or -1 if it is not present.
  */
-// 宽松的变量比较
 export function looseIndexOf (arr: Array<mixed>, val: mixed): number {
-  // 数组中是否存在这个数（外形像那就是了
   for (let i = 0; i < arr.length; i++) {
     if (looseEqual(arr[i], val)) return i
   }
@@ -394,16 +359,11 @@ export function looseIndexOf (arr: Array<mixed>, val: mixed): number {
 /**
  * Ensure a function is called only once.
  */
-// 只执行一次
 export function once (fn: Function): Function {
-  // 初始化为false，意为可以执行
   let called = false
   return function () {
-    // 开始执行
     if (!called) {
-      // 设置为true
       called = true
-      // 调用函数（之后不会再执行这个函数，这个once方法
       fn.apply(this, arguments)
     }
   }

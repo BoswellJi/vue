@@ -26,6 +26,7 @@ export const createCompiler = createCompilerCreator(function baseCompile (
   }
   // 生成代码
   const code = generate(ast, options)
+  console.log(code,'2');
   return {
     ast,
     // 渲染函数，都是字符串形式的， 需要通过 new Function来创建 渲染函数
