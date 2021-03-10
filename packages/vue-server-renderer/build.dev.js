@@ -6998,9 +6998,6 @@ function createCompilerCreator (baseCompile) {
  * 2. 对错误的收集
  * 3. 调用baseCompile编译模板字符串
  */
-
-/*  */
-
 var createCompiler = createCompilerCreator(function baseCompile (
   template,
   options
@@ -7015,8 +7012,9 @@ var createCompiler = createCompilerCreator(function baseCompile (
   }
 });
 
-/*  */
-
+/**
+ * 创建模板编译器
+ */ 
 var ref = createCompiler(baseOptions);
 var compile = ref.compile;
 var compileToFunctions = ref.compileToFunctions;
@@ -9293,6 +9291,8 @@ var normalizeRender = function (vm) {
 
       vm.$options.render = compiled.render;
       vm.$options.staticRenderFns = compiled.staticRenderFns;
+
+      console.log(vm.$options);
     } else {
       throw new Error(
         ("render function or template not defined in component: " + (vm.$options.name || vm.$options._componentTag || 'anonymous'))

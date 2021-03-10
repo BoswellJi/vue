@@ -22,34 +22,31 @@
  */
 export default class VNode {
   tag: string | void; // 标签
-  data: VNodeData | void; // vnode的相关数据，标签属性，事件，样式等
-  children: ?Array<VNode>; // 子vnode
-  text: string | void; // 文本vnode
+  data: VNodeData | void; // vnode的相关数据，标签属性，vnode的事件，样式等
+  children: ?Array<VNode>; 
+  text: string | void; 
   elm: Node | void; // vnode的真实dom对象的引用(根据这个属性，子vnode确定创建的真实dom插入到哪里)
   ns: string | void; // 元素的命名空间
   context: Component | void; // rendered in this component's scope， 
   key: string | number | void;
-  componentOptions: VNodeComponentOptions | void; //（组件的选项）
-  componentInstance: Component | void; // component instance 组件的实例
-  parent: VNode | void; // component placeholder node 组件占位符节点
+  componentOptions: VNodeComponentOptions | void; 
+  componentInstance: Component | void; // component instance 
+  parent: VNode | void; // component placeholder node 
 
-  // 严格的内部
   // strictly internal
-  raw: boolean; // contains raw HTML? (server only)  包含原生html？ 服务器
-  isStatic: boolean; // hoisted static node 宿主静态节点
-  isRootInsert: boolean; // necessary for enter transition check 必要的进入过渡检查
-  isComment: boolean; // empty comment placeholder? 空注释占位符
-  isCloned: boolean; // is a cloned node? (是否被克隆的节点) 
-  isOnce: boolean; // is a v-once node?  是否是一次性节点
-  asyncFactory: Function | void; // async component factory function 异步组件工厂函数
-  asyncMeta: Object | void; // 异步元
-  isAsyncPlaceholder: boolean; // 是否是异步占位符
-  ssrContext: Object | void; // 服务端渲染上下文
-  fnContext: Component | void; // real context vm for functional nodes 用于函数式节点的真实上下文vm
-  fnOptions: ?ComponentOptions; // for SSR caching 用于服务端渲染缓存
-  devtoolsMeta: ?Object; // used to store functional render context for devtools 用于存储devtools的功能呈现上下文
-  fnScopeId: ?string; // functional scope id support 函数式作用id支持
-
+  raw: boolean; // contains raw HTML? (server only)  
+  isStatic: boolean; // hoisted static node 
+  isRootInsert: boolean; // necessary for enter transition check 
+  isComment: boolean; // empty comment placeholder? 
+  isCloned: boolean; // is a cloned node?  
+  isOnce: boolean; // is a v-once node?  
+  asyncFactory: Function | void; // async component factory function 
+  asyncMeta: Object | void;  
+  isAsyncPlaceholder: boolean;
+  fnContext: Component | void; // real context vm for functional nodes 
+  fnOptions: ?ComponentOptions; // for SSR caching 
+  devtoolsMeta: ?Object; // used to store functional render context for devtools 
+  fnScopeId: ?string; // functional scope id support 
   /**
    * @param {*} tag 标签
    * @param {*} data 标签数据（属性
@@ -95,11 +92,9 @@ export default class VNode {
     this.isAsyncPlaceholder = false
   }
 
-  // 废弃： 组件实例的别名用来向后兼容
   // DEPRECATED: alias for componentInstance for backwards compat.
   /* istanbul ignore next */
   get child (): Component | void {
-    // 组件实例
     return this.componentInstance
   }
 }

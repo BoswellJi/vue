@@ -117,6 +117,7 @@ function assertProp (
   let type = prop.type
   let valid = !type || type === true
   const expectedTypes = []
+  // type: 为数组类型
   if (type) {
     if (!Array.isArray(type)) {
       type = [type]

@@ -187,7 +187,6 @@ export function mountComponent(
   el: ?Element,
   hydrating?: boolean
 ): Component {
-  console.log('beforeMount');
   vm.$el = el
   // 首先找到Vue实例上的render(框架初始化时为Vue构造函数实例，安装子组件为Vue构造函数子类的实例)
   if (!vm.$options.render) {
@@ -226,19 +225,17 @@ export function mountComponent(
       const startTag = `vue-perf-start:${id}`
       const endTag = `vue-perf-end:${id}`
 
-      // console.log('s1');
       // mark(startTag)
       // 调用组件的render函数，生成虚拟节点
       const vnode = vm._render()
+      console.log(vnode,'vnode');
       // mark(endTag)
       // measure(`vue ${name} render`, startTag, endTag)
       // mark(startTag)
-      // 将vnode渲染为真实dom（到这里组件被安装到真实dom中）这里是diff算法
-      // 安装真实dom,为同步安装，递归安装了
+      // 将vnode渲染为真实dom
       vm._update(vnode, hydrating)
       // mark(endTag)
       // measure(`vue ${name} patch`, startTag, endTag)
-      // console.log('s2');
     }
   } else {
     updateComponent = () => {

@@ -81,7 +81,7 @@ export function initState (vm: Component) {
 }
 
 /**
- * 初始化输入属性props
+ * 初始化props
  * @param {*} vm 组件实例
  * @param {*} propsOptions props的值
  */
@@ -96,8 +96,10 @@ function initProps (vm: Component, propsOptions: Object) {
   if (!isRoot) {
     toggleObserving(false)
   }
+  console.log(propsOptions);
   for (const key in propsOptions) {
     keys.push(key)
+    // 验证组件属性
     const value = validateProp(key, propsOptions, propsData, vm)
     /* istanbul ignore else */
     if (process.env.NODE_ENV !== 'production') {

@@ -17,18 +17,14 @@ const idToTemplate = cached(id => {
   return el && el.innerHTML
 })
 
-// 装饰器模式，动态改写$mount方法
 const mount = Vue.prototype.$mount
-/* 安装组件 */
 Vue.prototype.$mount = function (
   el?: string | Element,
   hydrating?: boolean
 ): Component {
-  // 获取dom节点
   el = el && query(el)
 
   /* istanbul ignore if */
-  // 不能安装Vue组件到body,html
   if (el === document.body || el === document.documentElement) {
     process.env.NODE_ENV !== 'production' && warn(
       `Do not mount Vue to <html> or <body> - mount to normal elements instead.`
@@ -36,18 +32,13 @@ Vue.prototype.$mount = function (
     return this
   }
 
-  // 组件配置对象
   const options = this.$options
   // resolve template/el and convert to render function
-  // 没有render函数，将回吧el,template中的模板进行编译为render函数
   if (!options.render) {
     let template = options.template
     if (template) {
-      // 模板字符串
       if (typeof template === 'string') {
-        // 选择器，
         if (template.charAt(0) === '#') {
-          // 获取模板
           template = idToTemplate(template)
           /* istanbul ignore if */
           if (process.env.NODE_ENV !== 'production' && !template) {
@@ -57,7 +48,6 @@ Vue.prototype.$mount = function (
             )
           }
         }
-        // dom节点，获取模板html
       } else if (template.nodeType) {
         template = template.innerHTML
       } else {
