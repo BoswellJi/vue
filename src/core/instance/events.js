@@ -10,7 +10,6 @@ import {
 import { updateListeners } from '../vdom/helpers/index'
 
 /**
- * 初始化组件的事件
  * @param {*} vm 组件实例
  */
 export function initEvents(vm: Component) {
@@ -46,7 +45,6 @@ function createOnceHandler(event, fn) {
 }
 
 /**
- * 更新组件监听器
  * @param {*} vm 组件实例
  * @param {*} listeners 监听器
  * @param {*} oldListeners 老监听器
@@ -62,18 +60,15 @@ export function updateComponentListeners(
 }
 
 export function eventsMixin(Vue: Class<Component>) {
-  // 开头是hook:的字符 hook:created
   const hookRE = /^hook:/
   Vue.prototype.$on = function (event: string | Array<string>, fn: Function): Component {
     const vm: Component = this
 
-    // 定义多个自定义事件
     if (Array.isArray(event)) {
       for (let i = 0, l = event.length; i < l; i++) {
         vm.$on(event[i], fn)
       }
     } else {
-      //给定义的事件，初始化为数组，因为可能一个事件，多个订阅
       (vm._events[event] || (vm._events[event] = [])).push(fn)
       // optimize hook:event cost by using a boolean flag marked at registration
       // instead of a hash lookup

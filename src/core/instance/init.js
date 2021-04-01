@@ -15,8 +15,7 @@ let uid = 0
 
 export function initMixin(Vue: Class<Component>) {
   /**
-   * 组件初始化
-   * @param {Object} options 组件配置选项
+   * @param {Object} options
    */
   Vue.prototype._init = function (options?: Object) {
     const vm: Component = this
@@ -30,7 +29,6 @@ export function initMixin(Vue: Class<Component>) {
       mark(startTag)
     }
 
-    // 合并选项
     // a flag to avoid this being observed
     vm._isVue = true
     // merge options
@@ -40,7 +38,6 @@ export function initMixin(Vue: Class<Component>) {
       // internal component options needs special treatment.
       initInternalComponent(vm, options)
     } else {
-      // 这里慢
       /**
        * {
        *  _isVue: true,
@@ -48,9 +45,7 @@ export function initMixin(Vue: Class<Component>) {
        * }
        */
       vm.$options = mergeOptions(
-        // 组件构造函数及其父构造函数的 选项
         resolveConstructorOptions(vm.constructor),
-        // 组件自身选项
         options || {},
         vm
       )
@@ -140,13 +135,11 @@ export function initInternalComponent(vm: Component, options: InternalComponentO
 
 
 /**
- * 解析构造函数以及父构造函数选项
  * @param {*} Ctor 构造函数
  */
 export function resolveConstructorOptions(Ctor: Class<Component>) {
   let options = Ctor.options
   if (Ctor.super) {
-    // Vue的子类上获取配置选项
     const superOptions = resolveConstructorOptions(Ctor.super)
     const cachedSuperOptions = Ctor.superOptions
     if (superOptions !== cachedSuperOptions) {

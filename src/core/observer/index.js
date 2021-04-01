@@ -34,9 +34,6 @@ export function toggleObserving(value: boolean) {
  * object's property keys into getter/setters that
  * collect dependencies and dispatch updates.
  */
-/**
- * 观察者
- */
 export class Observer {
   value: any;
   dep: Dep;
@@ -53,10 +50,8 @@ export class Observer {
       } else {
         copyAugment(value, arrayMethods, arrayKeys)
       }
-      // 数组
       this.observeArray(value)
     } else {
-      // 对象
       this.walk(value)
     }
   }
@@ -86,33 +81,23 @@ export class Observer {
 // helpers
 
 /**
- * 通过使用__proto__拦截原型链，来扩充目标对象或者数组
  * Augment a target Object or Array by intercepting
  * the prototype chain using __proto__
  */
 function protoAugment(target, src: Object) {
   /* eslint-disable no-proto */
-  // 将对象的内部原型属性指向新对象(原型继承)
   target.__proto__ = src
   /* eslint-enable no-proto */
 }
 
 /**
- * 通过定义隐藏属性，来扩充目标对象或者数组
  * Augment a target Object or Array by defining
  * hidden properties.
  */
 /* istanbul ignore next */
-/**
- * 拷贝参数
- * @param {*} target 目标对象
- * @param {*} src 源对象
- * @param {*} keys key集合
- */
 function copyAugment(target: Object, src: Object, keys: Array<string>) {
   for (let i = 0, l = keys.length; i < l; i++) {
     const key = keys[i]
-    // 给对象定义指定属性,将src上的属性定义到目标对象上(需要观察的对象)
     def(target, key, src[key])
   }
 }
@@ -141,7 +126,6 @@ export function observe(value: any, asRootData: ?boolean): Observer | void {
   if (hasOwn(value, '__ob__') && value.__ob__ instanceof Observer) {
     ob = value.__ob__
   } else if (
-    // 对象可以监听的条件
     shouldObserve &&
     !isServerRendering() &&
     (Array.isArray(value) || isPlainObject(value)) &&
@@ -158,11 +142,6 @@ export function observe(value: any, asRootData: ?boolean): Observer | void {
 
 /**
  * Define a reactive property on an Object.
- * obj js对象
- * key 对象属性
- * val 对象值
- * customSetter 自定义set
- * shallow 深浅定义
  */
 export function defineReactive(
   obj: Object,
@@ -171,7 +150,6 @@ export function defineReactive(
   customSetter?: ?Function,
   shallow?: boolean
 ) {
-  // 响应式对象的属性,添加依赖对象,通过闭包缓存依赖
   const dep = new Dep()
 
   const property = Object.getOwnPropertyDescriptor(obj, key)
@@ -202,18 +180,11 @@ export function defineReactive(
   // 子集下的观察者对象
   let childOb = !shallow && observe(val)
 
-  // 重新定义对象属性的描述符，设置 getter setter访问器
-  // 在get获取的是否收集依赖（这个对象的属性的依赖）
   Object.defineProperty(obj, key, {
     enumerable: true,
     configurable: true,
-    /**
-     * 1. 正确的返回属性值
-     * 2. 收集这个数据字段下的依赖
-     */
     get: function reactiveGetter() {
       const value = getter ? getter.call(obj) : val
-      // 依赖的目标，观察者对象（组件的监听器实例， 是否开启依赖收集的开关
       if (Dep.target) {
         dep.depend()
         if (childOb) {
@@ -226,12 +197,9 @@ export function defineReactive(
       return value
     },
     /**
-     * 1. 正确给属性设置新值
-     * 2. 触发对应的依赖
      * @param {*} newVal 
      */
     set: function reactiveSetter(newVal) {
-      // 获取原值来判断是否值被更改
       const value = getter ? getter.call(obj) : val
       /* eslint-disable no-self-compare */
       if (newVal === value || (newVal !== newVal && value !== value)) {
@@ -249,16 +217,13 @@ export function defineReactive(
       } else {
         val = newVal
       }
-      // 新值是否需要深度观测
       childOb = !shallow && observe(newVal)
-      // 通知这个属性的监听器
       dep.notify()
     }
   })
 }
 
 /**
- * 设置一个属性给对象，如果这个属性已经不存在，添加新属性并且触发变更通知
  * Set a property on an object. Adds the new property and
  * triggers change notification if the property doesn't
  * already exist.
@@ -296,7 +261,6 @@ export function set(target: Array<any> | Object, key: any, val: any): any {
 }
 
 /**
- * 删除一个属性并且在必要时触发变更
  * Delete a property and trigger change if necessary.
  */
 export function del(target: Array<any> | Object, key: any) {

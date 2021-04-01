@@ -9,19 +9,16 @@ var he = _interopDefault(require('he'));
 
 /*  */
 
-// 创建一个冻结对象
 var emptyObject = Object.freeze({});
 
 // These helpers produce better VM code in JS engines due to their
 // explicitness and function inlining.
-// 判断变量是否是undefined和null值
 function isUndef (v) {
   return v === undefined || v === null
 }
 
 /**
  * Check if value is primitive.
- * 判断变量是否为原始数据类型 string number symbol boolean
  */
 function isPrimitive (value) {
   return (
@@ -38,7 +35,6 @@ function isPrimitive (value) {
  * Objects from primitive values when we know the value
  * is a JSON-compliant type.
  */
-// 判断变量是否为对象,但非null
 function isObject (obj) {
   return obj !== null && typeof obj === 'object'
 }
@@ -46,25 +42,20 @@ function isObject (obj) {
 /**
  * Get the raw type string of a value, e.g., [object Object].
  */
-// 保存toString方法的引用
 var _toString = Object.prototype.toString;
 
 //[object Object]. -》 Object
 /**
- * 获取值的数据类型
  * @param {*} value 
  */
 function toRawType (value) {
-  // value 改变toString方法中的上下文
   return _toString.call(value).slice(8, -1)
 }
 
 /**
- * 严格的对象类型检查，对于普通的js对象，只返回true
  * Strict object type check. Only returns true
  * for plain JavaScript objects.
  */
-// 判断变量是否为原生对象类型
 function isPlainObject (obj) {
   return _toString.call(obj) === '[object Object]'
 }
@@ -72,16 +63,12 @@ function isPlainObject (obj) {
 /**
  * Check if val is a valid array index.
  */
-// 是否为有效的数组索引
 function isValidArrayIndex (val) {
-  // 将变量强制转换为字符串类型,在强制转换为浮点数类型
   var n = parseFloat(String(val));
-  // n大于等于0 ,向下取整后相等,是有限数值
   return n >= 0 && Math.floor(n) === n && isFinite(val)
 }
 
 /**
- * 创造一个map，返回一个函数用来检查key是否在map中
  * Make a map and return a function for checking if a key
  * is in that map.
  */
@@ -89,16 +76,11 @@ function makeMap (
   str,
   expectsLowerCase
 ) {
-  // 创建一个没有上层原型的对象
   var map = Object.create(null);
-  // 将字符串分割为数组
   var list = str.split(',');
-  // 将数组元素添加到map的属性上
   for (var i = 0; i < list.length; i++) {
-    // list中的每个元素都当作属性
     map[list[i]] = true;
   }
-  // 是否获取的属性为小写(js 区分变量名大小写)
   return expectsLowerCase
     ? function (val) { return map[val.toLowerCase()]; }
     : function (val) { return map[val]; }
@@ -106,15 +88,12 @@ function makeMap (
 
 /**
  * Check if a tag is a built-in tag.
- * 框架内置的标签
  */
-// vue内建的组件
 var isBuiltInTag = makeMap('slot,component', true);
 
 /**
  * Check if an attribute is a reserved attribute.
  */
-// 保留的属性
 var isReservedAttribute = makeMap('key,ref,slot,slot-scope,is');
 
 /**

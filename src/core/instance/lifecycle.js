@@ -177,9 +177,8 @@ export function lifecycleMixin(Vue: Class<Component>) {
 }
 
 /**
- * 组件安装,创建监听 Vue实例 (组件安装)
- * @param {*} vm Vue构造函数实例
- * @param {*} el 挂在元素（这里时必须为dom节点
+ * @param {*} vm  
+ * @param {*} el  
  * @param {*} hydrating 
  */
 export function mountComponent(

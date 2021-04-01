@@ -441,16 +441,12 @@ export function stateMixin (Vue: Class<Component>) {
       warn(`$props is readonly.`, this)
     }
   }
-  // 给Vue实例的原型对象 添加 属性
   Object.defineProperty(Vue.prototype, '$data', dataDef)
   Object.defineProperty(Vue.prototype, '$props', propsDef)
 
   Vue.prototype.$set = set
   Vue.prototype.$delete = del
 
-  /**
-   * 手动添加监听器
-   */
   Vue.prototype.$watch = function (
     expOrFn: string | Function,
     cb: any,
@@ -462,7 +458,6 @@ export function stateMixin (Vue: Class<Component>) {
     }
     options = options || {}
     options.user = true
-    // 这里会new 一个监听器实例
     const watcher = new Watcher(vm, expOrFn, cb, options)
     if (options.immediate) {
       try {
@@ -471,7 +466,6 @@ export function stateMixin (Vue: Class<Component>) {
         handleError(error, vm, `callback for immediate watcher "${watcher.expression}"`)
       }
     }
-    // 拆除监听器
     return function unwatchFn () {
       watcher.teardown()
     }

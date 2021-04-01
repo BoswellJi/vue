@@ -23,11 +23,9 @@ let flushing = false
 let index = 0
 
 /**
- * 种植调度器的状态
  * Reset the scheduler's state.
  */
 function resetSchedulerState () {
-  // 将队列都清空
   index = queue.length = activatedChildren.length = 0
   has = {}
   if (process.env.NODE_ENV !== 'production') {
@@ -36,20 +34,15 @@ function resetSchedulerState () {
   waiting = flushing = false
 }
 
-// 异步边缘案例当事件监听器被粘合时，需要保存时间戳
 // Async edge case #6566 requires saving the timestamp when event listeners are
-// 但是，如果这个页面又上百个事件监听器，调用performance.now()会一个特别高的性能
 // attached. However, calling performance.now() has a perf overhead especially
-// 相反，我们每次传递一个时间戳， 
 // if the page has thousands of event listeners. Instead, we take a timestamp
-// 每次调度程序刷新时，我们取一个时间戳，并将其用于所有事件侦听器在冲平的时候连接上
 // every time the scheduler flushes and use that for all event listeners
 // attached during that flush.
 export let currentFlushTimestamp = 0
 
-// 异步边缘案例修复需要存储一个时间监听器得连接时间戳
 // Async edge case fix requires storing an event listener's attach timestamp.
-let getNow: () => number = Date.now // 获取当前时间
+let getNow: () => number = Date.now 
 
 // Determine what event timestamp the browser is using. Annoyingly, the
 // timestamp can either be hi-res (relative to page load) or low-res
@@ -57,21 +50,15 @@ let getNow: () => number = Date.now // 获取当前时间
 // same timestamp type when saving the flush timestamp.
 // All IE versions use low-res event timestamps, and have problematic clock
 // implementations (#9632)
-// 在浏览器中 && 不是IE的浏览器
 if (inBrowser && !isIE) {
   const performance = window.performance
-  // 宿主环境直至performance对象
   if (
     performance &&
-    // now属性时函数
     typeof performance.now === 'function' &&
-    // 当前时间>创建的事件的时间戳
     getNow() > document.createEvent('Event').timeStamp
   ) {
-    // 如果这个事件时间戳，尽管执行Date.now,比它更小，意味着事件是正在使用 hi-res时间戳
     // if the event timestamp, although evaluated AFTER the Date.now(), is
     // smaller than it, it means the event is using a hi-res timestamp,
-    // 但是我们需要给时间监听器时间戳，使用hi-res版本更好
     // and we need to use the hi-res version for event listener timestamps as
     // well.
     getNow = () => performance.now()
@@ -94,20 +81,18 @@ function flushSchedulerQueue () {
   //    user watchers are created before the render watcher)
   // 3. If a component is destroyed during a parent component's watcher run,
   //    its watchers can be skipped.
-  // 任务队列排序,从大到小
+  // 从大到小
   queue.sort((a, b) => a.id - b.id)
 
   // do not cache length because more watchers might be pushed
   // as we run existing watchers
   for (index = 0; index < queue.length; index++) {
     watcher = queue[index]
-    // 获取监听器的before方法，并执行,状态更新之前，执行
     if (watcher.before) {
       watcher.before()
     }
     id = watcher.id
     has[id] = null
-    // 运行监听器，重新渲染
     watcher.run()
     // in dev build, check and stop circular updates.
     if (process.env.NODE_ENV !== 'production' && has[id] != null) {
@@ -148,7 +133,6 @@ function callUpdatedHooks (queue) {
   while (i--) {
     const watcher = queue[i]
     const vm = watcher.vm
-    // 更新完成
     if (vm._watcher === watcher && vm._isMounted && !vm._isDestroyed) {
       callHook(vm, 'updated')
     }
@@ -179,15 +163,12 @@ function callActivatedHooks (queue) {
  * pushed when the queue is being flushed.
  */
 /**
- * 监听器队列
- * @param {*} watcher 监听器
+ * @param {*} watcher 
  */
 export function queueWatcher (watcher: Watcher) {
   const id = watcher.id
-  // null undefined
   if (has[id] == null) {
     has[id] = true
-    // 没有正在刷新的队列
     if (!flushing) {
       queue.push(watcher)
     } else {
@@ -197,7 +178,6 @@ export function queueWatcher (watcher: Watcher) {
       while (i > index && queue[i].id > watcher.id) {
         i--
       }
-      // [4,3,1] 2 => [4,3,1,2]
       queue.splice(i + 1, 0, watcher)
     }
     // queue the flush

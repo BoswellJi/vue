@@ -70,33 +70,19 @@ export function setCurrentRenderingInstance (vm: Component) {
   currentRenderingInstance = vm
 }
 
-/**
- * 渲染混合
- * @param {} Vue 实例
- */
 export function renderMixin (Vue: Class<Component>) {
   // install runtime convenience helpers
   installRenderHelpers(Vue.prototype)
 
-  /**
-   * 下周期执行：
-   * 当前同步任务执行完成，但是不包括渲染也完成（虚拟节点添加进了真实节点）
-   */
   Vue.prototype.$nextTick = function (fn: Function) {
     return nextTick(fn, this)
   }
 
-  /**
-   * 将组件生成虚拟节点
-   * @return 组件的vnode
-   */
   Vue.prototype._render = function (): VNode {
     const vm: Component = this
-    // 组件实例的render函数和父虚拟节点
     const { render, _parentVnode } = vm.$options
 
     if (_parentVnode) {
-      // 作用域插槽
       vm.$scopedSlots = normalizeScopedSlots(
         _parentVnode.data.scopedSlots,
         vm.$slots,
@@ -115,12 +101,10 @@ export function renderMixin (Vue: Class<Component>) {
       // when parent component is patched.
       currentRenderingInstance = vm
       /**
-       * 调用了组件的render函数，render函数的第一个参数为  
        * vm.$createElement 这个方法很重要 ，创建组件的虚拟节点
        */
       vnode = render.call(vm._renderProxy, vm.$createElement)
     } catch (e) {
-      // 错误处理 错误实例，组件实例，错误信息
       handleError(e, vm, `render`)
       // return error render result,
       // or previous vnode to prevent render error causing blank component

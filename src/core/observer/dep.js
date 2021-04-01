@@ -8,17 +8,17 @@ let uid = 0
 
 
 /**
+ * 一个依赖是一个可观察对象，它有多个订阅他的指令
  * A dep is an observable that can have multiple
  * directives subscribing to it.
  */
 export default class Dep {
-  // 依赖的目标对象，当前的监听器
   static target: ?Watcher;
   id: number;
-  // 一个属性会有多个监听器
-  // 1. vm.$watch('name')
-  // 2. watch:{ name(){} }
-  // 种形式添加监听器
+  // 响应式属性的使用位置的监听器（以下三种决定）：
+  // 1. vm.$watch('name')监听器
+  // 2. watch:{ name(){} }监听器
+  // 3. 组件监听器
   subs: Array<Watcher>;
 
   constructor() {
@@ -34,21 +34,15 @@ export default class Dep {
    */
   addSub(sub: Watcher) {
     this.subs.push(sub)
-    // console.log(this.subs, 'watcher');
   }
 
   removeSub(sub: Watcher) {
     remove(this.subs, sub)
   }
 
-  /**
-   * 添加依赖
-   */
   depend() {
-    // Watcher实例，将对象属性的依赖收集对象dep添加到watcher中
+    // 将对象属性的依赖收集对象dep添加到watcher中
     if (Dep.target) {
-      // 每个属性的依赖对象
-      // this是defineReactive中实例化的对象
       Dep.target.addDep(this)
     }
   }
@@ -62,7 +56,6 @@ export default class Dep {
       // order
       subs.sort((a, b) => a.id - b.id)
     }
-    // 调用订阅者更新函数 Watcher实例
     for (let i = 0, l = subs.length; i < l; i++) {
       subs[i].update()
     }

@@ -7,7 +7,7 @@ var apiURL = 'https://api.github.com/repos/vuejs/vue/commits?per_page=3&sha='
  */
 
 // Vue.config.silent = true;
-Vue.config.performance = true;
+// Vue.config.performance = true;
 
 const component2 = {
   template: `<div id="hhh1">
@@ -20,7 +20,7 @@ const component2 = {
   data() {
     return {
       name: 'jjj',
-      i:0
+      i: 0
     };
   },
   methods: {
@@ -31,20 +31,32 @@ const component2 = {
 };
 
 const component3 = {
-  template: `<div id="hhh2">
-  <slot></slot>
-      </div>
+  template: `
+    <div id="hhh2">
+      {{name}}{{c3Test1}}
+    </div>
   `,
   props: ['type', 'type1'],
+  watch: {
+    c3Test1() {
+       
+    }
+  },
+  created() {
+    console.log(this, 'component3');
+    this.$watch(function(){
+      this.i;
+    },function(){},);
+  },
   data() {
     return {
-      name: 'jjj',
-      i:0
+      name: 'c3_name',
+      i: 'c3_i',
+      c3Test1:'c3Test1'
     };
   },
   methods: {
     click() {
-      console.log('test');
       this.name = this.i++;
     },
   }
@@ -58,14 +70,18 @@ const vm = new Vue({
   },
   data: {
     index: 1,
-    name: 'app'
+    name: 'app',
+    test: 'a'
   },
   created: function () {
+    console.log(this);
   },
   mounted() {
   },
   watch: {
-    currentBranch() { }
+    currentBranch() {
+      this.test = ';';
+    }
   },
   filters: {
     truncate: function (v) {
@@ -78,7 +94,7 @@ const vm = new Vue({
   },
   methods: {
     clickHandle() {
-      this.name = 'Boswell'+ this.index++;
+      this.name = 'Boswell' + this.index++;
     },
   }
 });

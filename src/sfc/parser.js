@@ -9,7 +9,6 @@ const replaceRE = /./g
 const isSpecialTag = makeMap('script,style,template', true)
 
 /**
- * 解析一个单文件组件.vue文件到一个sfc描述对象
  * Parse a single-file component (*.vue) file into an SFC Descriptor Object.
  */
 export function parseComponent (
@@ -135,3 +134,11 @@ export function parseComponent (
 
   return sfc
 }
+
+
+console.log(parseComponent(
+`
+  <div>jmz</div>
+`
+
+));

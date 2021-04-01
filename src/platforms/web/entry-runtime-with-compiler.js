@@ -11,9 +11,7 @@ import { shouldDecodeNewlines, shouldDecodeNewlinesForHref } from './util/compat
 
 
 const idToTemplate = cached(id => {
-  // 根据id查找dom节点
   const el = query(id)
-  // 返回节点中的全部内容
   return el && el.innerHTML
 })
 
@@ -58,7 +56,6 @@ Vue.prototype.$mount = function (
       }
       
     } else if (el) { 
-      //非模板，获取节点以及子节点的html字符串
       template = getOuterHTML(el)
     }
     if (template) {
@@ -67,20 +64,15 @@ Vue.prototype.$mount = function (
         mark('compile')
       }
 
-      /**
-       * 将 template 编译到 render 函数
-       */
       const { render, staticRenderFns } = compileToFunctions(template, {
         outputSourceRange: process.env.NODE_ENV !== 'production',
-        // 为了兼容浏览器
         shouldDecodeNewlines,
         shouldDecodeNewlinesForHref,
 
-        // 这两个只会在完整版的Vue中会有
-        delimiters: options.delimiters, //配置
-        comments: options.comments //属性
+        delimiters: options.delimiters, 
+        comments: options.comments 
       }, this)
-      // 编译之后的render函数 staticRenderFns函数
+
       options.render = render
       options.staticRenderFns = staticRenderFns
 
@@ -91,25 +83,19 @@ Vue.prototype.$mount = function (
       }
     }
   }
-  // 安装调用
   return mount.call(this, el, hydrating)
 }
 
 /**
- * 获取元素的外部html
  * Get outerHTML of elements, taking care
  * of SVG elements in IE as well.
  */
 function getOuterHTML (el: Element): string {
-  // dom节点有内容
   if (el.outerHTML) {
     return el.outerHTML
   } else {
-    // 创建容器节点
     const container = document.createElement('div')
-    // 将el克隆到容器
-    container.appendChild(el.cloneNode(true))
-    // 
+    container.appendChild(el.cloneNode(true)) 
     return container.innerHTML
   }
 }

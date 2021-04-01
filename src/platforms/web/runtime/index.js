@@ -34,7 +34,6 @@ extend(Vue.options.components, platformComponents)
 Vue.prototype.__patch__ = inBrowser ? patch : noop
 
 // public mount method
-// 这里是runtime版本的$mount,因为模板编译阶段被预编译了成为render函数，可以直接安装
 Vue.prototype.$mount = function (
   el?: string | Element,  
   hydrating?: boolean
@@ -51,7 +50,6 @@ if (inBrowser) {
       if (devtools) {
         devtools.emit('init', Vue)
       } else if (
-        // 否者提示下载开发者工具
         process.env.NODE_ENV !== 'production' &&
         process.env.NODE_ENV !== 'test'
       ) {

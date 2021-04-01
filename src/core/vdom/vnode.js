@@ -22,42 +22,33 @@
  */
 export default class VNode {
   tag: string | void; // 标签
-  data: VNodeData | void; // vnode的相关数据，标签属性，vnode的事件，样式等
-  children: ?Array<VNode>; 
-  text: string | void; 
-  elm: Node | void; // vnode的真实dom对象的引用(根据这个属性，子vnode确定创建的真实dom插入到哪里)
+  data: VNodeData | void; // 相关数据：属性，事件，样式等
+  children: ?Array<VNode>; // 子节点
+  text: string | void;  // 文本节点的文本
+  elm: Node | void; // 真实DOM对象
   ns: string | void; // 元素的命名空间
   context: Component | void; // rendered in this component's scope， 
-  key: string | number | void;
-  componentOptions: VNodeComponentOptions | void; 
+  key: string | number | void; // 节点的key，value
+  componentOptions: VNodeComponentOptions | void; // 组件options
   componentInstance: Component | void; // component instance 
   parent: VNode | void; // component placeholder node 
 
   // strictly internal
   raw: boolean; // contains raw HTML? (server only)  
-  isStatic: boolean; // hoisted static node 
+  isStatic: boolean; // hoisted static node  
   isRootInsert: boolean; // necessary for enter transition check 
   isComment: boolean; // empty comment placeholder? 
   isCloned: boolean; // is a cloned node?  
   isOnce: boolean; // is a v-once node?  
   asyncFactory: Function | void; // async component factory function 
-  asyncMeta: Object | void;  
-  isAsyncPlaceholder: boolean;
+  asyncMeta: Object | void; // 异步元数据
+  isAsyncPlaceholder: boolean; // 是否为异步占位符
   fnContext: Component | void; // real context vm for functional nodes 
   fnOptions: ?ComponentOptions; // for SSR caching 
   devtoolsMeta: ?Object; // used to store functional render context for devtools 
   fnScopeId: ?string; // functional scope id support 
-  /**
-   * @param {*} tag 标签
-   * @param {*} data 标签数据（属性
-   * @param {*} children 节点的子虚拟节点
-   * @param {*} text 虚拟节点中的文本
-   * @param {*} elm 
-   * @param {*} context 虚拟节点的
-   * @param {*} componentOptions 虚拟节点的配置对象
-   * @param {*} asyncFactory 
-   */
-  constructor (
+
+  constructor(
     tag?: string,
     data?: VNodeData,
     children?: ?Array<VNode>,
@@ -94,23 +85,19 @@ export default class VNode {
 
   // DEPRECATED: alias for componentInstance for backwards compat.
   /* istanbul ignore next */
-  get child (): Component | void {
+  get child(): Component | void {
     return this.componentInstance
   }
 }
 
-// 创建一个空vnode
 export const createEmptyVNode = (text: string = '') => {
   const node = new VNode()
-  // 给注释节点添加文本
   node.text = text
-  // 标记为注释节点
   node.isComment = true
   return node
 }
 
-// 创建一个文本虚拟节点
-export function createTextVNode (val: string | number) {
+export function createTextVNode(val: string | number) {
   return new VNode(undefined, undefined, undefined, String(val))
 }
 
@@ -118,9 +105,7 @@ export function createTextVNode (val: string | number) {
 // used for static nodes and slot nodes because they may be reused across
 // multiple renders, cloning them avoids errors when DOM manipulations rely
 // on their elm reference.
-// 克隆vnode
-export function cloneVNode (vnode: VNode): VNode {
-  // 根据vnode重新实例化一个vnode
+export function cloneVNode(vnode: VNode): VNode {
   const cloned = new VNode(
     vnode.tag,
     vnode.data,
@@ -134,7 +119,6 @@ export function cloneVNode (vnode: VNode): VNode {
     vnode.componentOptions,
     vnode.asyncFactory
   )
-  // 添加
   cloned.ns = vnode.ns
   cloned.isStatic = vnode.isStatic
   cloned.key = vnode.key
@@ -146,3 +130,16 @@ export function cloneVNode (vnode: VNode): VNode {
   cloned.isCloned = true
   return cloned
 }
+
+
+// function anonymous(
+// ) {
+//   with (this) { 
+//     return _c('div', _l(
+//       [1, 2, 2], 
+//       function (item, index) { 
+//         return _c('div', { key: index }, [_v("\n" + _s(item) + "\n")])
+//       }
+//     ), 0) 
+//   }
+// }
