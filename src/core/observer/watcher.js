@@ -103,6 +103,11 @@ export default class Watcher {
 
   /**
    * 1. 收集这个表达式子中的getter属性(模板渲染，用户watch对象，$watch方法)
+   * 2. 变更触发后，每次都会重新调用这个监听方法
+   * 3. 组件每次都会重新渲染，触发diff
+   * 
+   * var vnode = vm._render();
+   * vm._update(vnode, hydrating);
    * 
    * Evaluate the getter, and re-collect dependencies.
    */
@@ -111,6 +116,7 @@ export default class Watcher {
     let value
     const vm = this.vm
     try {
+      console.log(this.getter);
       value = this.getter.call(vm, vm)
     } catch (e) {
       if (this.user) {

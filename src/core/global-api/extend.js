@@ -14,9 +14,9 @@ export function initExtend (Vue: GlobalAPI) {
   let cid = 1
 
   /**
+   * 在编译器+运行时的版本中进行使用的特性
    * Class inheritance
-   * 类继承
-   * @param {Object} extendOptions 扩展（组件)选项
+   * @param {Object} extendOptions 
    */
   Vue.extend = function (extendOptions: Object): Function {
     extendOptions = extendOptions || {}  
@@ -32,6 +32,7 @@ export function initExtend (Vue: GlobalAPI) {
       validateComponentName(name)
     }
 
+    // 这种方式创建的组件都是继承了Vue构造函数
     const Sub = function VueComponent (options) {
       this._init(options)
     }
@@ -39,10 +40,9 @@ export function initExtend (Vue: GlobalAPI) {
     Sub.prototype.constructor = Sub 
     Sub.cid = cid++   
 
-    // 合并选项参数
     Sub.options = mergeOptions(
-      Super.options, // 父类选项
-      extendOptions  // 子类扩展选项
+      Super.options, 
+      extendOptions  
     )
     Sub['super'] = Super  
 

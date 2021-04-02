@@ -176,24 +176,16 @@ export function lifecycleMixin(Vue: Class<Component>) {
   }
 }
 
-/**
- * @param {*} vm  
- * @param {*} el  
- * @param {*} hydrating 
- */
 export function mountComponent(
   vm: Component,
   el: ?Element,
   hydrating?: boolean
 ): Component {
   vm.$el = el
-  // 首先找到Vue实例上的render(框架初始化时为Vue构造函数实例，安装子组件为Vue构造函数子类的实例)
   if (!vm.$options.render) {
-    // 没有render函数的，初始化为创建一个空的vnode函数
     vm.$options.render = createEmptyVNode
     if (process.env.NODE_ENV !== 'production') {
       /* istanbul ignore if */
-      // 有模板 && （模板第一个字符不是# || 有el属性 || dom节点
       if ((vm.$options.template && vm.$options.template.charAt(0) !== '#') ||
         vm.$options.el || el) {
         warn(
@@ -215,7 +207,6 @@ export function mountComponent(
 
   let updateComponent
   /* istanbul ignore if */
-  // 开发环境中，配置开启性能，以及mark功能
   // render + update 是同步操作
   if (process.env.NODE_ENV !== 'production' && config.performance && mark) {
     updateComponent = () => {
@@ -225,13 +216,11 @@ export function mountComponent(
       const endTag = `vue-perf-end:${id}`
 
       // mark(startTag)
-      // 调用组件的render函数，生成虚拟节点
       const vnode = vm._render()
       console.log(vnode,'vnode');
       // mark(endTag)
       // measure(`vue ${name} render`, startTag, endTag)
       // mark(startTag)
-      // 将vnode渲染为真实dom
       vm._update(vnode, hydrating)
       // mark(endTag)
       // measure(`vue ${name} patch`, startTag, endTag)
@@ -246,9 +235,7 @@ export function mountComponent(
   // we set this to vm._watcher inside the watcher's constructor
   // since the watcher's initial patch may call $forceUpdate (e.g. inside child
   // component's mounted hook), which relies on vm._watcher being already defined
-  // 每个安装的组件都会实例化一个监听器（Watcher
   new Watcher(vm, updateComponent, noop, {
-    // watch的钩子函数，在渲染真实dom之前执行
     before() {
       if (vm._isMounted && !vm._isDestroyed) {
         callHook(vm, 'beforeUpdate')

@@ -61,19 +61,16 @@ export function initMixin(Vue: Class<Component>) {
     // expose real self
     vm._self = vm
     /**
-     * 开始初始化框架
      * lifecycle
      * events 
      * render
      * 
-     * 开始创建组件
      * beforeCreate
      * injections 
      * state(reactivity)
      * provide
      * created 
-     * 
-     * 开始安装组件
+     *
      */
     initLifecycle(vm)
     initEvents(vm)
@@ -86,15 +83,11 @@ export function initMixin(Vue: Class<Component>) {
 
     /* istanbul ignore if */
     if (process.env.NODE_ENV !== 'production' && config.performance && mark) {
-      // 格式化组件name
       vm._name = formatComponentName(vm, false)
-      // 组件结尾标记
       mark(endTag)
-      // 测量
       measure(`vue ${vm._name} init`, startTag, endTag)
     }
 
-    // dom节点
     if (vm.$options.el) {
       vm.$mount(vm.$options.el)
     }

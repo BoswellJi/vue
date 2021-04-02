@@ -11,10 +11,6 @@ import {
   isPlainObject
 } from 'shared/util'
 
-/**
- * 规范化事件
- * @param {} name 事件名称
- */
 const normalizeEvent = cached((name: string): {
   name: string,
   once: boolean,
@@ -23,16 +19,12 @@ const normalizeEvent = cached((name: string): {
   handler?: Function,
   params?: Array<any>
 } => {
-  // name 首字母为&  去掉
   const passive = name.charAt(0) === '&'
   name = passive ? name.slice(1) : name
-  // name 首字母为  ~ 去掉
   const once = name.charAt(0) === '~' // Prefixed last, checked first
   name = once ? name.slice(1) : name
-  // name 首字母为  ! 去掉
   const capture = name.charAt(0) === '!'
   name = capture ? name.slice(1) : name
-  // 返回事件名称
   return {
     name,
     once,

@@ -61,8 +61,7 @@ const componentVNodeHooks = {
         vnode,
         activeInstance
       )
-      // 初始化完成vm.$options之后安装组件
-      // 安装组件
+
       // 调用 mountComponent , vm._render() ,vm.__patch__
       // 这里有组件本身初始化时进行安装，不在Vue.prototype._init函数中进行安装
       child.$mount(hydrating ? vnode.elm : undefined, hydrating)
@@ -118,17 +117,6 @@ const componentVNodeHooks = {
 const hooksToMerge = Object.keys(componentVNodeHooks)
 
 //  Ctor vue组件可以时new Vue，可以时根据子类，使用继承vue的全局继承方式创建组件
-// 创建组件的vnode
-/**
- * 1.创建子组件的options
- * 2.安装组件钩子函数，利用的时虚拟dom提供的钩子函数
- * 3.实例化vnode
- * @param {*} Ctor 组件实例
- * @param {*} data 
- * @param {*} context  组件实例
- * @param {*} children 
- * @param {*} tag 
- */
 export function createComponent (
   Ctor: Class<Component> | Function | Object | void,
   data: ?VNodeData,

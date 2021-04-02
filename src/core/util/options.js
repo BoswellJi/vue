@@ -54,17 +54,11 @@ if (process.env.NODE_ENV !== 'production') {
 
 
 /**
- * 合并options中的各项的策略，  (合并父类的静态options和自身实例的options)
- * 
  data,beforeCreate,created,beforeMount,mounted,beforeUpdate,updated,beforeDestroy,destroyed,activated,deactivated,errorCaptured,serverPrefetch,filter,directive,component,watch,props,methods,inject,computed,provide
  */
 
 /**
  * Helper that recursively merges two data objects together.
- */
-/**
- * @param {*} to 组件自身实例
- * @param {*} from 父类
  */
 function mergeData(to: Object, from: ?Object): Object {
   if (!from) return to
@@ -77,7 +71,6 @@ function mergeData(to: Object, from: ?Object): Object {
   for (let i = 0; i < keys.length; i++) {
     key = keys[i]
     // in case the object is already observed...
-    // 跳过已经监听的属性
     if (key === '__ob__') continue
 
     toVal = to[key]
@@ -97,12 +90,6 @@ function mergeData(to: Object, from: ?Object): Object {
 
 /**
  * Data
- */
-/**
- * 合并组件的data选项
- * @param {*} parentVal 父类data
- * @param {*} childVal 组件data
- * @param {*} vm 组件实例
  */
 export function mergeDataOrFn(
   parentVal: any,
@@ -219,7 +206,6 @@ function mergeAssets(
   const res = Object.create(parentVal || null)
   if (childVal) {
     process.env.NODE_ENV !== 'production' && assertObjectType(key, childVal, vm)
-    // 进行继承
     return extend(res, childVal)
   } else {
     return res
@@ -235,13 +221,6 @@ ASSET_TYPES.forEach(function (type) {
  *
  * Watchers hashes should not overwrite one
  * another, so we merge them as arrays.
- */
-/**
- * 合并watch选项参数
- * @param {*} parentVal 父级
- * @param {*} childVal 组件watch选项
- * @param {*} vm 组件实例
- * @param {*} key 
  */
 strats.watch = function (
   parentVal: ?Object,
@@ -263,7 +242,6 @@ strats.watch = function (
   for (const key in childVal) {
     let parent = ret[key]
     const child = childVal[key]
-    // 父实例中的option存在不是数组，规范化为数组
     if (parent && !Array.isArray(parent)) {
       parent = [parent]
     }
@@ -301,12 +279,6 @@ strats.props =
   }
 strats.provide = mergeDataOrFn
 
-/**
- * 默认策略，子组件没有就返回父级的
- * Default strategy.
- * @param {} parentVal 组件构造函数的options的指定key的值
- * @param {} childVal 组件的options的指定key的值
- */
 const defaultStrat = function (parentVal: any, childVal: any): any {
   return childVal === undefined
     ? parentVal
@@ -315,7 +287,6 @@ const defaultStrat = function (parentVal: any, childVal: any): any {
 
 /**
  * Validate component names 
- * @param {} options 构造函数的选项
  */
 function checkComponents(options: Object) {
   for (const key in options.components) {
@@ -323,10 +294,6 @@ function checkComponents(options: Object) {
   }
 }
 
-/**
- * 组件名称规则
- * @param {*} name 
- */
 export function validateComponentName(name: string) {
   // a\j
   if (!new RegExp(`^[a-zA-Z][\\-\\.0-9_${unicodeRegExp.source}]*$`).test(name)) {
@@ -438,28 +405,20 @@ function assertObjectType(name: string, value: any, vm: ?Component) {
  * Merge two option objects into a new one.
  * Core utility used in both instantiation and inheritance.
  */
-/**
- * 对组件自身的选项以及继承的父构造函数的选项，都统统合并到当前组件实例下面 vm.$options = {...parent,...child}
- * @param {*} parent 组件的构造函数的选项, 在global-api/index.js
- * @param {*} child 组件的选项
- * @param {*} vm 组件实例
- */
 export function mergeOptions(
   parent: Object,
   child: Object,
   vm?: Component
 ): Object {
   if (process.env.NODE_ENV !== 'production') {
-    // 验证组件名称
     checkComponents(child)
   }
 
-  // 函数式组件
   if (typeof child === 'function') {
     child = child.options
   }
 
-  // 正规化 props inject directive
+  // 正规化
   normalizeProps(child, vm)
   normalizeInject(child, vm)
   normalizeDirectives(child)
@@ -470,11 +429,9 @@ export function mergeOptions(
   // Only merged options has the _base property.
 
   if (!child._base) {
-    // 当前组件存在extends: 继承其他组件（继承
     if (child.extends) {
       parent = mergeOptions(parent, child.extends, vm)
     }
-    // 当前组件存在mixins: 混合其他组件(继承
     if (child.mixins) {
       for (let i = 0, l = child.mixins.length; i < l; i++) {
         parent = mergeOptions(parent, child.mixins[i], vm)
@@ -482,35 +439,21 @@ export function mergeOptions(
     }
   }
 
-  // 最终的选项对象
   const options = {}
   let key
 
-  // 先合并父构造函数的选项
   for (key in parent) {
     mergeField(key)
   }
 
-  // 合并组件自身以及父构造函数没有的字段
   for (key in child) {
     if (!hasOwn(parent, key)) {
       mergeField(key)
     }
   }
-  /**
-   * 合并字段
-   * @param {*} key 键
-   */
-  function mergeField(key) {
-    // 根据options的key进行获取合并策略，没在vue options中的key,使用默认的策略
-    const strat = strats[key] || defaultStrat
 
-    /**
-     * parent[key] 主要是组件的构造函数以及父构造函数的选项
-     * child[key] 组件本身的选项
-     * 组件选项中的键
-     */
-    // 调用策略进行合并， 构造函数的选项和组件的选项合并
+  function mergeField(key) {
+    const strat = strats[key] || defaultStrat
     options[key] = strat(parent[key], child[key], vm, key)
   }
   return options
@@ -520,11 +463,6 @@ export function mergeOptions(
  * Resolve an asset.
  * This function is used because child instances need access
  * to assets defined in its ancestor chain.
- * 解析资产（ component,directive,filter
- * @param {} options 组件的配置项
- * @param {}  type 资产类型 
- * @param {} id 资产名称
- * @param {} warnMissing 警告缺失
  */
 export function resolveAsset(
   options: Object,
@@ -536,13 +474,8 @@ export function resolveAsset(
   if (typeof id !== 'string') {
     return
   }
-  // 获取组件中的资产
   const assets = options[type]
   // check local registration variations first
-  /**
-   * 1. id为tag，为components对象的key,如果组件的components对象有这个key，说明，他是一个组件
-   * 2. 调整组件名，再次查找，找到就返回这个组件实例
-   */
 
   if (hasOwn(assets, id)) return assets[id]
   // a-bc => aBc

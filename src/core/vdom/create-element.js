@@ -25,14 +25,6 @@ const ALWAYS_NORMALIZE = 2
 
 // wrapper function for providing a more flexible interface
 // without getting yelled at by flow
-/**
- * @param {*} context vnode（组件）的上下文
- * @param {*} tag 标签
- * @param {*} data vnode的数据(编译后的vnode信息)
- * @param {*} children 当前vnode的子节点
- * @param {*} normalizationType 子节点规范的类型
- * @param {*} alwaysNormalize 是否总是规范化
- */
 export function createElement(
   context: Component,
   tag: any,
@@ -55,17 +47,6 @@ export function createElement(
 }
 
 
-/**
- * 1. tag为空，创建一个空的 vnode
- * 2. 创建一个标签vnode
- * 3. 创建一个组件vnode
- * 
- * @param {*} context 整个组件实例
- * @param {*} tag 组件的vnode 1. 标签节点  2. 文本节点  3. 组件节点（组件实例
- * @param {*} data vnode的data
- * @param {*} children vnode的子vnode
- * @param {*} normalizationType 
- */
 export function _createElement(
   context: Component,
   tag?: string | Class<Component> | Function | Object,

@@ -5,24 +5,18 @@ import { isPlainObject, validateComponentName } from '../util/index'
 
 export function initAssetRegisters (Vue: GlobalAPI) {
   /**
-   * 创建资产注册方法
    * Create asset registration methods.
    * filter
    * directive
    * component
    */
   ASSET_TYPES.forEach(type => {
-    /**
-     * 全局定义
-     * id 名称
-     * definition 函数
-     */
+
     Vue[type] = function (
       id: string,
       definition: Function | Object
     ): Function | Object | void {
       if (!definition) {
-        // Vue.options中的配置
         return this.options[type + 's'][id]
       } else {
         /* istanbul ignore if */

@@ -71,16 +71,18 @@ const vm = new Vue({
   data: {
     index: 1,
     name: 'app',
-    test: 'a'
+    test: 'a',
+    age:21
   },
   created: function () {
     console.log(this);
   },
   mounted() {
+
   },
   watch: {
     currentBranch() {
-      this.test = ';';
+     
     }
   },
   filters: {
@@ -94,7 +96,7 @@ const vm = new Vue({
   },
   methods: {
     clickHandle() {
-      this.name = 'Boswell' + this.index++;
+      this.age = 20;
     },
   }
 });

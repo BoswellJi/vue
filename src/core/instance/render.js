@@ -16,22 +16,16 @@ import VNode, { createEmptyVNode } from '../vdom/vnode'
 
 import { isUpdatingChildComponent } from './lifecycle'
 
-/**
- * 初始化组件渲染
- * @param {*} vm 组件实例
- */
 export function initRender (vm: Component) {
   vm._vnode = null // the root of the child tree 
   vm._staticTrees = null // v-once cached trees
   const options = vm.$options  
   const parentVnode = vm.$vnode = options._parentVnode // the placeholder node in parent tree
-  const renderContext = parentVnode && parentVnode.context // 渲染parentVnode节点在其中的组件
-  // 渲染的子节点（插槽中的节点
+  const renderContext = parentVnode && parentVnode.context 
   /**
    * { default:vnode,slotname:vnode }
    */
   vm.$slots = resolveSlots(options._renderChildren, renderContext)
-  // 作用域插槽
   vm.$scopedSlots = emptyObject
 
   // bind the createElement fn to this instance
@@ -62,7 +56,6 @@ export function initRender (vm: Component) {
   }
 }
 
-// 当前渲染中的实例（组件实例
 export let currentRenderingInstance: Component | null = null
 
 // for testing only
@@ -101,7 +94,7 @@ export function renderMixin (Vue: Class<Component>) {
       // when parent component is patched.
       currentRenderingInstance = vm
       /**
-       * vm.$createElement 这个方法很重要 ，创建组件的虚拟节点
+       * vm.$createElement 是组件的render方法（自定义或者是编译后的）
        */
       vnode = render.call(vm._renderProxy, vm.$createElement)
     } catch (e) {

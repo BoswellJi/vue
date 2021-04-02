@@ -29,7 +29,6 @@ export function initGlobalAPI(Vue: GlobalAPI) {
       )
     }
   }
-  // 给Vue添加config属性，并修改为只读属性
   Object.defineProperty(Vue, 'config', configDef)
   /**
    * Vue.config.performance
@@ -49,12 +48,7 @@ export function initGlobalAPI(Vue: GlobalAPI) {
   Vue.delete = del
   Vue.nextTick = nextTick
 
-  // 显式的可观察api
   // 2.6 explicit observable API
-  /**
-   * 显式的
-   * 将对象改变为响应式对象
-   */
   Vue.observable = (obj) => {
     observe(obj)
     return obj
@@ -77,10 +71,8 @@ export function initGlobalAPI(Vue: GlobalAPI) {
 
   // this is used to identify the "base" constructor to extend all plain-object
   // components with in Weex's multi-instance scenarios.
-  // 指向自己的_base
   Vue.options._base = Vue
 
-  // 内置组件添加到到全局配置
   /**
    * keep-alive
    * transition
