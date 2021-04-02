@@ -9,16 +9,13 @@ import {
 } from '../util/index'
 import { updateListeners } from '../vdom/helpers/index'
 
-/**
- * @param {*} vm 组件实例
- */
 export function initEvents(vm: Component) {
   vm._events = Object.create(null)
-  // 组件是否有钩子事件函数
   vm._hasHookEvent = false
   // init parent attached events
-  // 父组件中监听器（内部组件才有） 创建子组件实例的时候才会用到 _parentListeners
   const listeners = vm.$options._parentListeners
+
+  // 这里我想到的是，用script标签引入时，创建的Vue构造函数的子构造函数来创建组件时
   if (listeners) {
     updateComponentListeners(vm, listeners)
   }
@@ -44,11 +41,6 @@ function createOnceHandler(event, fn) {
   }
 }
 
-/**
- * @param {*} vm 组件实例
- * @param {*} listeners 监听器
- * @param {*} oldListeners 老监听器
- */
 export function updateComponentListeners(
   vm: Component,
   listeners: Object,

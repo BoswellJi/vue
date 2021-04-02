@@ -69,15 +69,10 @@ export function initLifecycle(vm: Component) {
 }
 
 export function lifecycleMixin(Vue: Class<Component>) {
-  /**
-   * 更新组件,将组件的虚拟节点安装到真实dom中
-   * @param {} vnode 组件的vnode vm._render生成
-   * @param {} 
-   */
+
   Vue.prototype._update = function (vnode: VNode, hydrating?: boolean) {
     const vm: Component = this
     const prevEl = vm.$el
-    // 当前组件的vnode
     const prevVnode = vm._vnode
 
     // 设置当前组件为活跃实例
@@ -111,7 +106,6 @@ export function lifecycleMixin(Vue: Class<Component>) {
     // updated in a parent's updated hook.
   }
 
-  // 强迫组件更新
   Vue.prototype.$forceUpdate = function () {
     const vm: Component = this
     if (vm._watcher) {
@@ -119,7 +113,6 @@ export function lifecycleMixin(Vue: Class<Component>) {
     }
   }
 
-  // 销毁组件，清理内存
   Vue.prototype.$destroy = function () {
     const vm: Component = this
     if (vm._isBeingDestroyed) {
@@ -333,9 +326,6 @@ export function updateChildComponent(
   }
 }
 
-/**
- * @param {*} vm 
- */
 function isInInactiveTree(vm) {
   // 从组件自身向上找
   while (vm && (vm = vm.$parent)) {

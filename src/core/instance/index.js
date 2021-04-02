@@ -5,9 +5,6 @@ import { eventsMixin } from './events'
 import { lifecycleMixin } from './lifecycle'
 import { warn } from '../util/index'
 
-/**
- * @param {Object} options
- */
 function Vue (options) {
   if (process.env.NODE_ENV !== 'production' &&
     !(this instanceof Vue)
@@ -17,21 +14,14 @@ function Vue (options) {
   this._init(options)
 }
 
-/**
- */
 initMixin(Vue)
-/**
- */
+
 stateMixin(Vue)
-/**
- */
+
 eventsMixin(Vue)
-/**
- */
+
 lifecycleMixin(Vue)
-/**
- * $nextTick _render
- */
+
 renderMixin(Vue)
 
 export default Vue
