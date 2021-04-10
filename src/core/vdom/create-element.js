@@ -25,7 +25,7 @@ const ALWAYS_NORMALIZE = 2
 
 // wrapper function for providing a more flexible interface
 // without getting yelled at by flow
-export function createElement(
+export function createElement (
   context: Component,
   tag: any,
   data: any,
@@ -41,13 +41,10 @@ export function createElement(
   if (isTrue(alwaysNormalize)) {
     normalizationType = ALWAYS_NORMALIZE
   }
-  const vnode = _createElement(context, tag, data, children, normalizationType)
-  
-  return vnode;
+  return _createElement(context, tag, data, children, normalizationType)
 }
 
-
-export function _createElement(
+export function _createElement (
   context: Component,
   tag?: string | Class<Component> | Function | Object,
   data?: VNodeData,
@@ -98,31 +95,19 @@ export function _createElement(
   let vnode, ns
   if (typeof tag === 'string') {
     let Ctor
-
     ns = (context.$vnode && context.$vnode.ns) || config.getTagNamespace(tag)
-
     if (config.isReservedTag(tag)) {
-      // platform built-in elements 
-      if (process.env.NODE_ENV !== 'production' && isDef(data) && isDef(data.nativeOn)) {
+      // platform built-in elements
+      if (process.env.NODE_ENV !== 'production' && isDef(data) && isDef(data.nativeOn) && data.tag !== 'component') {
         warn(
           `The .native modifier for v-on is only valid on components but it was used on <${tag}>.`,
           context
         )
       }
-
       vnode = new VNode(
-        config.parsePlatformTagName(tag),
-        data,
-        children,
-        undefined,
-        undefined,
-        context
+        config.parsePlatformTagName(tag), data, children,
+        undefined, undefined, context
       )
-
-      /**
-       * resolveAsset对tag进行判断，并进行组件tag名的正规化，再进行判断
-       * 组件节点没有data属性
-       */
     } else if ((!data || !data.pre) && isDef(Ctor = resolveAsset(context.$options, 'components', tag))) {
       // component
       vnode = createComponent(Ctor, data, context, children, tag)
@@ -131,12 +116,8 @@ export function _createElement(
       // check at runtime because it may get assigned a namespace when its
       // parent normalizes children
       vnode = new VNode(
-        tag, 
-        data, 
-        children,
-        undefined, 
-        undefined, 
-        context
+        tag, data, children,
+        undefined, undefined, context
       )
     }
   } else {
@@ -146,24 +127,15 @@ export function _createElement(
   if (Array.isArray(vnode)) {
     return vnode
   } else if (isDef(vnode)) {
-
     if (isDef(ns)) applyNS(vnode, ns)
     if (isDef(data)) registerDeepBindings(data)
-
     return vnode
   } else {
     return createEmptyVNode()
   }
 }
 
-/**
- * 应用命名空间
- * @param {*} vnode 
- * @param {*} ns 
- * @param {*} force 
- */
-function applyNS(vnode, ns, force) {
-  // 虚拟节点ns属性赋值
+function applyNS (vnode, ns, force) {
   vnode.ns = ns
   if (vnode.tag === 'foreignObject') {
     // use default namespace inside foreignObject
@@ -184,7 +156,7 @@ function applyNS(vnode, ns, force) {
 // ref #5318
 // necessary to ensure parent re-render when deep bindings like :style and
 // :class are used on slot nodes
-function registerDeepBindings(data) {
+function registerDeepBindings (data) {
   if (isObject(data.style)) {
     traverse(data.style)
   }
