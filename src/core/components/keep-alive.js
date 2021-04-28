@@ -114,7 +114,6 @@ export default {
       // check pattern
       const name: ?string = getComponentName(componentOptions)
       const { include, exclude } = this
-      // 没在缓存条件中，直接返回组件
       if (
         // not included
         (include && (!name || !matches(include, name))) ||
@@ -125,22 +124,18 @@ export default {
       }
       const { cache, keys } = this
 
-      // 缓存的key
       const key: ?string = vnode.key == null
         // same constructor may get registered as different local components
         // so cid alone is not enough (#3269)
         ? componentOptions.Ctor.cid + (componentOptions.tag ? `::${componentOptions.tag}` : '')
         : vnode.key
-        // 已经存在缓存中
       if (cache[key]) {
         vnode.componentInstance = cache[key].componentInstance
         // make current key freshest  
         remove(keys, key)
-        // 添加到数组的末尾,作为最新的组件
         keys.push(key)
       } else {
         cache[key] = vnode
-        // 作为最新的组件
         keys.push(key)
         // prune oldest entry 
         // 修剪最老的条目,根据缓存上限来修剪缓存条目

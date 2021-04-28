@@ -116,7 +116,6 @@ export default class Watcher {
     let value
     const vm = this.vm
     try {
-      console.log(this.getter);
       value = this.getter.call(vm, vm)
     } catch (e) {
       if (this.user) {

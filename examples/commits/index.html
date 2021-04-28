@@ -1,82 +1,39 @@
 <!DOCTYPE html>
 <html>
+  <head>
+    <title>Vue.js github commits example</title>
+    <script src="../../dist/vue.min.js"></script>
+  </head>
 
-<head>
-  <title>Vue.js github commits example</title>
-  <style>
-    #demo {
-      font-family: 'Helvetica', Arial, sans-serif;
-    }
+  <body>
+    <div id="demo">
+      <div ref="dataId" data-id="1">{{age}}</div>
+      <button @click="clickHandle">按钮</button>
 
-    a {
-      text-decoration: none;
-      color: #f66;
-    }
+      <component2 :type="'2'">
+        <template v-slot:default>
+          <div>按钮slot1</div>
+        </template>
+        <template v-slot:header="scope">
+          <div>按钮 header{{scope.obj}}</div>
+        </template>
+        不在v-slot中的内容
+      </component2>
+      
+      <keep-alive>
+        <component3 v-if="index==1"></component3>
+        <component4 v-if="index==2"></component4>
+        <div>alive1</div>
+        <div>alive2</div>
+      </keep-alive>
 
-    li {
-      line-height: 1.5em;
-      margin-bottom: 20px;
-    }
+      <component :is="name"></component>
 
-    .author,
-    .date {
-      font-weight: bold;
-    }
-  </style>
-  <!-- Delete ".min" for console warnings in development -->
-  <script src="../../dist/vue.min.js"></script>
-</head>
-
-<body>
-  <!-- 
-    a: 是描述符
-    'df': 表达式（计算值的式子
-    test: 指令名称
-    v-test.a ：rawName（原始名称
-    value: df
-   -->
-  <div id="demo">
-    <div >
-      <div data-id="1">boswell{{index}}{{name}}{{name}}</div>
+      <keep-alive>
+        <component :is="name"></component>
+      </keep-alive>
     </div>
-    {{test}}
-    <component2 :type="'2'">
-      <button>按钮slot</button>
-    </component2>
-    <component3 :type="'2'">
-       
-    </component3>
-    <button @click="clickHandle">按钮</button>
-  </div>
-
-  <script src="mock.js"></script>
-  <script src="app.js"></script>
-
-  <style>
-    /* 进入时过度,从没有到有 */
-    .fade-enter-active {
-      transition: all .8s cubic-bezier(1.0, 0.5, 0.8, 1.0);
-    }
-
-    /* 离开时过度,从有到没有 */
-    .fade-leave-active {
-      transition: opacity .5s;
-    }
-
-    /* 开始进入状态 */
-    .fade-enter,
-    /* 离开最终状态 */
-    .fade-leave-to {
-      opacity: 0;
-    }
-
-    /* 进入最终状态 */
-    .fade-enter-to,
-    /* 开始离开状态 */
-    .fade-leave {
-      /* transform: translateX(100px); */
-    }
-  </style>
-</body>
-
+    <script src="mock.js"></script>
+    <script src="app.js"></script>
+  </body>
 </html>
