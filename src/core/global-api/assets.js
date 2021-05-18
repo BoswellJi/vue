@@ -6,9 +6,6 @@ import { isPlainObject, validateComponentName } from '../util/index'
 export function initAssetRegisters (Vue: GlobalAPI) {
   /**
    * Create asset registration methods.
-   * filter
-   * directive
-   * component
    */
   ASSET_TYPES.forEach(type => {
 
@@ -24,7 +21,6 @@ export function initAssetRegisters (Vue: GlobalAPI) {
           validateComponentName(id)
         }
         if (type === 'component' && isPlainObject(definition)) {
-          // 自定义组件名优先，选选项为普通对象
           definition.name = definition.name || id
           // Vue === this.options._base
           definition = this.options._base.extend(definition)

@@ -17,7 +17,7 @@ Vue.js is an MIT-licensed open source project with its ongoing development made 
 
 - [Become a backer or sponsor on Patreon](https://www.patreon.com/evanyou).
 - [Become a backer or sponsor on Open Collective](https://opencollective.com/vuejs).
-- [One-time donation via PayPal or crypto-currencies.](https://vuejs.org/support-vuejs/#One-time-Donations)
+- [One-time donation via PayPal or crypto-currencies](https://vuejs.org/support-vuejs/#One-time-Donations).
 
 #### What's the difference between Patreon and OpenCollective?
 
@@ -259,6 +259,18 @@ Funds donated via Patreon go directly to support Evan You's full-time work on Vu
       <td align="center" valign="middle">
         <a href="https://quickbookstoolhub.com/" target="_blank">
           <img width="148px" src="https://raw.githubusercontent.com/vuejs/vuejs.org/master/themes/vue/source/images/quickbooks_tool_hub.png">
+        </a>
+      </td>
+    </tr><tr></tr>
+    <tr>
+      <td align="center" valign="middle">
+        <a href="https://linecorp.com" target="_blank">
+          <img width="148px" src="https://raw.githubusercontent.com/vuejs/vuejs.org/master/themes/vue/source/images/line_corporation.png">
+        </a>
+      </td>
+      <td align="center" valign="middle">
+        <a href="https://exmax.it/" target="_blank">
+          <img width="148px" src="https://raw.githubusercontent.com/vuejs/vuejs.org/master/themes/vue/source/images/exmax.png">
         </a>
       </td>
     </tr><tr></tr>

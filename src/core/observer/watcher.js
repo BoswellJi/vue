@@ -7,6 +7,7 @@ import {
   parsePath,
   _Set as Set,
   handleError,
+  invokeWithErrorHandling,
   noop
 } from '../util/index'
 
@@ -18,34 +19,29 @@ import type { SimpleSet } from '../util/index'
 
 let uid = 0
 
-/**  
- * 一个观察者解析一个表达式，收集依赖，并且在表达式中的值发生变化时触发反馈。这被用在$watch()api和指令两处
+/**
  * A watcher parses an expression, collects dependencies,
  * and fires callback when the expression value changes.
  * This is used for both the $watch() api and directives.
  */
 export default class Watcher {
-  vm: Component; 
-  expression: string; 
-  cb: Function; 
+  vm: Component;
+  expression: string;
+  cb: Function;
   id: number;
   deep: boolean;
   user: boolean;
   lazy: boolean;
   sync: boolean;
   dirty: boolean;
-  active: boolean; 
-  /**
-   * 1. 组件中使用的响应式属性
-   * 2. 依赖容器
-   */
-  deps: Array<Dep>; 
+  active: boolean;
+  deps: Array<Dep>;
   newDeps: Array<Dep>;
   depIds: SimpleSet;
   newDepIds: SimpleSet;
-  before: ?Function; 
-  getter: Function; 
-  value: any; 
+  before: ?Function;
+  getter: Function;
+  value: any;
 
   constructor (
     vm: Component,
@@ -69,10 +65,10 @@ export default class Watcher {
     } else {
       this.deep = this.user = this.lazy = this.sync = false
     }
-    this.cb = cb 
+    this.cb = cb
     this.id = ++uid // uid for batching
     this.active = true
-    this.dirty = this.lazy // for lazy watchers 
+    this.dirty = this.lazy // for lazy watchers
     this.deps = []
     this.newDeps = []
     this.depIds = new Set()
@@ -84,7 +80,6 @@ export default class Watcher {
     if (typeof expOrFn === 'function') {
       this.getter = expOrFn
     } else {
-      // $watch('a',function(){  }) => a
       this.getter = parsePath(expOrFn)
       if (!this.getter) {
         this.getter = noop
@@ -102,13 +97,6 @@ export default class Watcher {
   }
 
   /**
-   * 1. 收集这个表达式子中的getter属性(模板渲染，用户watch对象，$watch方法)
-   * 2. 变更触发后，每次都会重新调用这个监听方法
-   * 3. 组件每次都会重新渲染，触发diff
-   * 
-   * var vnode = vm._render();
-   * vm._update(vnode, hydrating);
-   * 
    * Evaluate the getter, and re-collect dependencies.
    */
   get () {
@@ -136,21 +124,17 @@ export default class Watcher {
   }
 
   /**
-   * 给指令添加依赖（属性的getter被触发）
    * Add a dependency to this directive.
-   * @param dep 
    */
   addDep (dep: Dep) {
-    // 同一个属性的dep实例的id相同
     const id = dep.id
     if (!this.newDepIds.has(id)) {
       this.newDepIds.add(id)
       this.newDeps.push(dep)
- 
       if (!this.depIds.has(id)) {
         dep.addSub(this)
       }
-    } 
+    }
   }
 
   /**
@@ -158,7 +142,7 @@ export default class Watcher {
    */
   cleanupDeps () {
     let i = this.deps.length
-    while (i--) { 
+    while (i--) {
       const dep = this.deps[i]
       if (!this.newDepIds.has(dep.id)) {
         dep.removeSub(this)
@@ -185,7 +169,6 @@ export default class Watcher {
     } else if (this.sync) {
       this.run()
     } else {
-      // nextTick） this: dep
       queueWatcher(this)
     }
   }
@@ -205,16 +188,12 @@ export default class Watcher {
         isObject(value) ||
         this.deep
       ) {
-        // set new value  
+        // set new value
         const oldValue = this.value
         this.value = value
         if (this.user) {
-          try {
-            // callback(newVal,oldVal)
-            this.cb.call(this.vm, value, oldValue)
-          } catch (e) {
-            handleError(e, this.vm, `callback for watcher "${this.expression}"`)
-          }
+          const info = `callback for watcher "${this.expression}"`
+          invokeWithErrorHandling(this.cb, this.vm, [value, oldValue], this.vm, info)
         } else {
           this.cb.call(this.vm, value, oldValue)
         }

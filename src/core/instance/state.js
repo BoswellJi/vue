@@ -25,7 +25,8 @@ import {
   validateProp,
   isPlainObject,
   isServerRendering,
-  isReservedAttribute
+  isReservedAttribute,
+  invokeWithErrorHandling
 } from '../util/index'
 
 const sharedPropertyDefinition = {
@@ -232,6 +233,8 @@ function initComputed (vm: Component, computed: Object) {
         warn(`The computed property "${key}" is already defined in data.`, vm)
       } else if (vm.$options.props && key in vm.$options.props) {
         warn(`The computed property "${key}" is already defined as a prop.`, vm)
+      } else if (vm.$options.methods && key in vm.$options.methods) {
+        warn(`The computed property "${key}" is already defined as a method.`, vm)
       }
     }
   }
@@ -408,12 +411,9 @@ export function stateMixin (Vue: Class<Component>) {
     options.user = true
     const watcher = new Watcher(vm, expOrFn, cb, options)
     if (options.immediate) {
+      const info = `callback for immediate watcher "${watcher.expression}"`
       pushTarget()
-      try {
-        cb.call(vm, watcher.value)
-      } catch (error) {
-        handleError(error, vm, `callback for immediate watcher "${watcher.expression}"`)
-      }
+      invokeWithErrorHandling(cb, vm, [watcher.value], vm, info)
       popTarget()
     }
     return function unwatchFn () {

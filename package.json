@@ -1,5 +1,5 @@
 {
-  "name": "vue",
+  "name": "vue1",
   "version": "2.6.12",
   "description": "Reactive, component-oriented view layer for modern web interfaces.",
   "main": "dist/vue.runtime.common.js",
@@ -44,7 +44,7 @@
     "commit": "git-cz"
   },
   "gitHooks": {
-    
+
   },
   "lint-staged": {
 

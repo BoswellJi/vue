@@ -1,5 +1,9 @@
 /* @flow */
 
+/**
+ * 给Vue构造函数提供的静态函数，以及options属性
+ */
+
 import config from '../config'
 import { initUse } from './use'
 import { initMixin } from './mixin'
@@ -54,17 +58,8 @@ export function initGlobalAPI(Vue: GlobalAPI) {
     return obj
   }
 
-  // Vue的配置对象 === vm.constructor.options
   Vue.options = Object.create(null)
-  // 给options添加  components filters directive  组件，过滤器，指令
-  //组件中的注册组件，局部过滤器，局部指令
-  /**
-    {
-      components:{},
-      filters:{},
-      directives:{}
-    }
-   */
+
   ASSET_TYPES.forEach(type => {
     Vue.options[type + 's'] = Object.create(null)
   })
@@ -85,3 +80,4 @@ export function initGlobalAPI(Vue: GlobalAPI) {
   initExtend(Vue)
   initAssetRegisters(Vue)
 }
+

@@ -62,23 +62,24 @@ export function initMixin(Vue: Class<Component>) {
     vm._self = vm
     /**
      * lifecycle
-     * events 
+     * events
      * render
-     * 
+     *
      * beforeCreate
-     * injections 
+     * injections
      * state(reactivity)
      * provide
-     * created 
+     * created
      *
      */
     initLifecycle(vm)
     initEvents(vm)
     initRender(vm)
+    // 响应式系统之前
     callHook(vm, 'beforeCreate')
-    initInjections(vm) // resolve injections before data/props  
+    initInjections(vm) // resolve injections before data/props
     initState(vm)
-    initProvide(vm) // resolve provide after data/props   
+    initProvide(vm) // resolve provide after data/props
     callHook(vm, 'created')
 
     /* istanbul ignore if */
@@ -97,7 +98,7 @@ export function initMixin(Vue: Class<Component>) {
 /**
  * 子组件没有进行参数合并，
  * 提示：只有框架初始化的时候，回进行一次合并 （new Vue()
- * 
+ *
  * 方法的意义也是在于处理组件的options参数
  * @param {*} vm 组件实例
  * @param {*} options 配置选项
@@ -107,7 +108,7 @@ export function initInternalComponent(vm: Component, options: InternalComponentO
   // 就是在global-api.js中的Sub.options合并的过程中产生的options
   // vm.$options.prototype = Vue.options
   // 组件中也可以访问到Vue 构造函数的options参数
-  // 组件的$options还是使用mergeOptions 方法合并过来的 
+  // 组件的$options还是使用mergeOptions 方法合并过来的
   const opts = vm.$options = Object.create(vm.constructor.options)
   // doing this because it's faster than dynamic enumeration.
 
