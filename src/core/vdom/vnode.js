@@ -4,7 +4,7 @@
  * 进制转换
  * 2进制小数,转换为10进制, 小数点开始,从左向右,第一位乘上 1/2, 第二位乘上 1/4 ...
  * 每个数都计算下去,相加,就是小数部分的十进制的值;
- * 
+ *
  * 10进制的小数,转换为2进制,小数部分乘以2,每次取整数部分,一直乘下去,知道结果为1(每次取结果的小数继续乘
  */
 
@@ -19,6 +19,8 @@
  * 纯文本
  * Fragment
  * Portal
+ *
+ * create/createElement vnode -> diff->  patch （vnode-> dom
  */
 export default class VNode {
   tag: string | void; // 标签
@@ -27,26 +29,26 @@ export default class VNode {
   text: string | void;  // 文本节点的文本
   elm: Node | void; // 真实DOM对象
   ns: string | void; // 元素的命名空间
-  context: Component | void; // rendered in this component's scope， 
+  context: Component | void; // rendered in this component's scope，
   key: string | number | void; // 节点的key，value
   componentOptions: VNodeComponentOptions | void; // 组件options
-  componentInstance: Component | void; // component instance 
-  parent: VNode | void; // component placeholder node 
+  componentInstance: Component | void; // component instance
+  parent: VNode | void; // component placeholder node
 
   // strictly internal
-  raw: boolean; // contains raw HTML? (server only)  
-  isStatic: boolean; // hoisted static node  
-  isRootInsert: boolean; // necessary for enter transition check 
-  isComment: boolean; // empty comment placeholder? 
-  isCloned: boolean; // is a cloned node?  
-  isOnce: boolean; // is a v-once node?  
-  asyncFactory: Function | void; // async component factory function 
+  raw: boolean; // contains raw HTML? (server only)
+  isStatic: boolean; // hoisted static node
+  isRootInsert: boolean; // necessary for enter transition check
+  isComment: boolean; // empty comment placeholder?
+  isCloned: boolean; // is a cloned node?
+  isOnce: boolean; // is a v-once node?
+  asyncFactory: Function | void; // async component factory function
   asyncMeta: Object | void; // 异步元数据
   isAsyncPlaceholder: boolean; // 是否为异步占位符
-  fnContext: Component | void; // real context vm for functional nodes 
-  fnOptions: ?ComponentOptions; // for SSR caching 
-  devtoolsMeta: ?Object; // used to store functional render context for devtools 
-  fnScopeId: ?string; // functional scope id support 
+  fnContext: Component | void; // real context vm for functional nodes
+  fnOptions: ?ComponentOptions; // for SSR caching
+  devtoolsMeta: ?Object; // used to store functional render context for devtools
+  fnScopeId: ?string; // functional scope id support
 
   constructor(
     tag?: string,
@@ -134,12 +136,12 @@ export function cloneVNode(vnode: VNode): VNode {
 
 // function anonymous(
 // ) {
-//   with (this) { 
+//   with (this) {
 //     return _c('div', _l(
-//       [1, 2, 2], 
-//       function (item, index) { 
+//       [1, 2, 2],
+//       function (item, index) {
 //         return _c('div', { key: index }, [_v("\n" + _s(item) + "\n")])
 //       }
-//     ), 0) 
+//     ), 0)
 //   }
 // }

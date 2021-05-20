@@ -43,7 +43,7 @@ export function setActiveInstance(vm: Component) {
 export function initLifecycle(vm: Component) {
   const options = vm.$options
 
-  // locate first non-abstract parent  
+  // locate first non-abstract parent
   let parent = options.parent // 父类
   // 存在父组件，不是abstract（抽象组件一般不渲染真实dom,并且不出现在父子组件的路径上
   if (parent && !options.abstract) {
@@ -168,7 +168,9 @@ export function lifecycleMixin(Vue: Class<Component>) {
     }
   }
 }
-
+/***
+ * 安装组件
+ */
 export function mountComponent(
   vm: Component,
   el: ?Element,
@@ -337,7 +339,7 @@ function isInInactiveTree(vm) {
 /**
  * 使组件活跃 keep-alive中
  * @param {*} vm  组件实例
- * @param {*} direct 
+ * @param {*} direct
  */
 export function activateChildComponent(vm: Component, direct?: boolean) {
   if (direct) {
@@ -365,8 +367,8 @@ export function activateChildComponent(vm: Component, direct?: boolean) {
 
 /**
  * 使组件失去活跃
- * @param {*} vm 
- * @param {*} direct 
+ * @param {*} vm
+ * @param {*} direct
  */
 export function deactivateChildComponent(vm: Component, direct?: boolean) {
   // 直接失活

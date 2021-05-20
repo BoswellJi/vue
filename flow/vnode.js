@@ -80,7 +80,7 @@ declare type VNodeDirective = {
   oldArg?: string;
   // 修饰符
   modifiers?: ASTModifiers;
-  // 
+  //
   def?: Object;
 };
 

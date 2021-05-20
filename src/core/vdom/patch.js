@@ -11,7 +11,7 @@
  */
 
 
-/** 
+/**
 patchVnode的规则是这样的：
 
 1.如果新旧VNode都是静态的，同时它们的key相同（代表同一节点），并且新的VNode是clone或者是标记了once（标记v-once属性，只渲染一次），那么只需要替换elm以及componentInstance即可。
@@ -48,8 +48,8 @@ export const emptyNode = new VNode('', {}, [])
 const hooks = ['create', 'activate', 'update', 'remove', 'destroy']
 
 /**
- * @param {*} a 
- * @param {*} b 
+ * @param {*} a
+ * @param {*} b
  */
 function sameVnode(a, b) {
   return (
@@ -69,8 +69,8 @@ function sameVnode(a, b) {
 }
 
 /**
- * @param {*} a 
- * @param {*} b 
+ * @param {*} a
+ * @param {*} b
  */
 function sameInputType(a, b) {
   if (a.tag !== 'input') return true
@@ -119,8 +119,8 @@ export function createPatchFunction(backend) {
   }
 
   /**
-   * @param {*} childElm 
-   * @param {*} listeners 
+   * @param {*} childElm
+   * @param {*} listeners
    */
   function createRmCb(childElm, listeners) {
     function remove() {
@@ -138,15 +138,15 @@ export function createPatchFunction(backend) {
    */
   function removeNode(el) {
     const parent = nodeOps.parentNode(el)
-    // element may have already been removed due to v-html / v-text 
+    // element may have already been removed due to v-html / v-text
     if (isDef(parent)) {
       nodeOps.removeChild(parent, el)
     }
   }
 
   /**
-   * @param {*} vnode 
-   * @param {*} inVPre 
+   * @param {*} vnode
+   * @param {*} inVPre
    */
   function isUnknownElement(vnode, inVPre) {
     return (
@@ -167,15 +167,7 @@ export function createPatchFunction(backend) {
   let creatingElmInVPre = 0
 
   /**
-   * 创建真实DOM，插入文档中
-   * @param {*} vnode 
-   * @param {*} insertedVnodeQueue 
-   * @param {*} parentElm 
-   * @param {*} refElm 
-   * @param {*} nested 
-   * @param {*} ownerArray 
-   * @param {*} index 
-   * @returns 
+   * 通过vnode创建真实DOM，插入文档中
    */
   function createElm(
     vnode,
@@ -218,6 +210,7 @@ export function createPatchFunction(backend) {
         }
       }
 
+      // 创建占位符元素
       vnode.elm = vnode.ns
         ? nodeOps.createElementNS(vnode.ns, tag)
         : nodeOps.createElement(tag, vnode)
@@ -247,6 +240,7 @@ export function createPatchFunction(backend) {
         if (isDef(data)) {
           invokeCreateHooks(vnode, insertedVnodeQueue)
         }
+        // 真正将将节点插入父节点
         insert(parentElm, vnode.elm, refElm)
       }
 
@@ -437,7 +431,7 @@ export function createPatchFunction(backend) {
         // increase the listeners count
         rm.listeners += listeners
       } else {
-        // directly removing 
+        // directly removing
         rm = createRmCb(vnode.elm, listeners)
       }
       // recursively invoke hooks on child component root node
@@ -648,9 +642,9 @@ export function createPatchFunction(backend) {
   }
 
   function invokeInsertHook(vnode, queue, initial) {
-    // delay insert hooks for component root nodes, invoke them after the 
+    // delay insert hooks for component root nodes, invoke them after the
     // element is really inserted
-    // 
+    //
     if (isTrue(initial) && isDef(vnode.parent)) {
       vnode.parent.data.pendingInsert = queue
     } else {
@@ -819,7 +813,7 @@ export function createPatchFunction(backend) {
           oldVnode = emptyNodeAt(oldVnode)
         }
 
-        // replacing existing element 
+        // replacing existing element
         const oldElm = oldVnode.elm
         const parentElm = nodeOps.parentNode(oldElm)
 
@@ -864,7 +858,7 @@ export function createPatchFunction(backend) {
           }
         }
 
-        // destroy old node 
+        // destroy old node
         if (isDef(parentElm)) {
           removeVnodes([oldVnode], 0, 0)
         } else if (isDef(oldVnode.tag)) {

@@ -17,11 +17,11 @@ import VNode, { createEmptyVNode } from '../vdom/vnode'
 import { isUpdatingChildComponent } from './lifecycle'
 
 export function initRender (vm: Component) {
-  vm._vnode = null // the root of the child tree 
+  vm._vnode = null // the root of the child tree
   vm._staticTrees = null // v-once cached trees
-  const options = vm.$options  
+  const options = vm.$options
   const parentVnode = vm.$vnode = options._parentVnode // the placeholder node in parent tree
-  const renderContext = parentVnode && parentVnode.context 
+  const renderContext = parentVnode && parentVnode.context
   /**
    * { default:vnode,slotname:vnode }
    */
@@ -71,6 +71,10 @@ export function renderMixin (Vue: Class<Component>) {
     return nextTick(fn, this)
   }
 
+  /**
+   * 将组件渲染成vnode
+   * @returns
+   */
   Vue.prototype._render = function (): VNode {
     const vm: Component = this
     const { render, _parentVnode } = vm.$options
@@ -94,6 +98,8 @@ export function renderMixin (Vue: Class<Component>) {
       // when parent component is patched.
       currentRenderingInstance = vm
       /**
+       * 手写/编译生成
+       * 组件自生的render function, template会被编译为render function
        * vm.$createElement 是组件的render方法（自定义或者是编译后的）
        */
       vnode = render.call(vm._renderProxy, vm.$createElement)

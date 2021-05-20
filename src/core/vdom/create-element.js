@@ -43,13 +43,15 @@ export function createElement (
   }
   return _createElement(context, tag, data, children, normalizationType)
 }
-
+/***
+ * 创建组件的vnode
+ */
 export function _createElement (
   context: Component,
   tag?: string | Class<Component> | Function | Object,
   data?: VNodeData,
   children?: any,
-  normalizationType?: number
+  normalizationType?: number // render function是手写或是编译的参考
 ): VNode | Array<VNode> {
   if (isDef(data) && isDef((data: any).__ob__)) {
     process.env.NODE_ENV !== 'production' && warn(
@@ -87,9 +89,11 @@ export function _createElement (
     data.scopedSlots = { default: children[0] }
     children.length = 0
   }
-  if (normalizationType === ALWAYS_NORMALIZE) {
+  // 根据render function的类型不同，处理children
+  // 这里都会返回数组
+  if (normalizationType === ALWAYS_NORMALIZE) { // 手写
     children = normalizeChildren(children)
-  } else if (normalizationType === SIMPLE_NORMALIZE) {
+  } else if (normalizationType === SIMPLE_NORMALIZE) { // 编译生成
     children = simpleNormalizeChildren(children)
   }
   let vnode, ns
