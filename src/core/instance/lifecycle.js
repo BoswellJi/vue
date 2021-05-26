@@ -24,7 +24,6 @@ export let isUpdatingChildComponent: boolean = false
 
 /**
  * activeInstance 与 preActiveInstance是父子关系
- * @param {*} vm 组件实例
  */
 export function setActiveInstance(vm: Component) {
   // 上一个活跃的组件实例
@@ -75,7 +74,7 @@ export function lifecycleMixin(Vue: Class<Component>) {
     const prevEl = vm.$el
     const prevVnode = vm._vnode
 
-    // 设置当前组件为活跃实例
+    // 将当前组件设置为活跃组件实例
     const restoreActiveInstance = setActiveInstance(vm)
     // 重新添加新的虚拟节点 vm._vnode 与vm.$vnode 是父子级关系
     // vm._vnode.parent === vm.$vnode
@@ -89,7 +88,6 @@ export function lifecycleMixin(Vue: Class<Component>) {
       // updates
       vm.$el = vm.__patch__(prevVnode, vnode)
     }
-    // 更新完成 恢复
     restoreActiveInstance()
     // update __vue__ reference
     if (prevEl) {

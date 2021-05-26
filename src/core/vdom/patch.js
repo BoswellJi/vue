@@ -112,7 +112,6 @@ export function createPatchFunction(backend) {
 
   /**
    * 创建一个空节点的vnode
-   * @param {*} elm dom元素
    */
   function emptyNodeAt(elm) {
     return new VNode(nodeOps.tagName(elm).toLowerCase(), {}, [], undefined, elm)
@@ -256,10 +255,11 @@ export function createPatchFunction(backend) {
     }
   }
 
-  function createComponent(vnode, insertedVnodeQueue, parentElm, refElm) {
+  function  createComponent(vnode, insertedVnodeQueue, parentElm, refElm) {
     let i = vnode.data
     if (isDef(i)) {
       const isReactivated = isDef(vnode.componentInstance) && i.keepAlive
+      // 只有组件的vnode有hook
       if (isDef(i = i.hook) && isDef(i = i.init)) {
         i(vnode, false /* hydrating */)
       }
@@ -562,7 +562,7 @@ export function createPatchFunction(backend) {
   }
 
   /**
-   * 1. 新老节点相同，那就比对children
+   * diff
    */
   function patchVnode(
     oldVnode,
@@ -767,6 +767,7 @@ export function createPatchFunction(backend) {
   }
 
   return function patch(oldVnode, vnode, hydrating, removeOnly) {
+    // 没有定义vnode,销毁oldVnode
     if (isUndef(vnode)) {
       if (isDef(oldVnode)) invokeDestroyHook(oldVnode)
       return
@@ -775,15 +776,22 @@ export function createPatchFunction(backend) {
     let isInitialPatch = false
     const insertedVnodeQueue = []
 
+    /***
+     * 1. 没有oldVnode
+     * 2. 有oldVnode
+     * 2.1. oldVnode是真实DOM
+     * 2.2. oldVnode是非真实DOM
+     */
+
     if (isUndef(oldVnode)) {
       // empty mount (likely as component), create new root element
       isInitialPatch = true
       createElm(vnode, insertedVnodeQueue)
     } else {
-      // 真实DOM存在nodeType属性
+      // oldVnode有dom与vnode之分
       const isRealElement = isDef(oldVnode.nodeType)
       if (!isRealElement && sameVnode(oldVnode, vnode)) {
-        // patch existing root node
+        // patch existing root node /diff
         patchVnode(oldVnode, vnode, insertedVnodeQueue, null, null, removeOnly)
       } else {
         if (isRealElement) {
@@ -810,11 +818,13 @@ export function createPatchFunction(backend) {
           }
           // either not server-rendered, or hydration failed.
           // create an empty node and replace it
+          // 根据真实dom节点tag创建vnode
           oldVnode = emptyNodeAt(oldVnode)
         }
 
         // replacing existing element
         const oldElm = oldVnode.elm
+        // 这里获取当前节点的父节点
         const parentElm = nodeOps.parentNode(oldElm)
 
         // create new node

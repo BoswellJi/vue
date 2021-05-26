@@ -23,6 +23,16 @@ import {
 const SIMPLE_NORMALIZE = 1
 const ALWAYS_NORMALIZE = 2
 
+/***
+ * 创建元素vnode
+ *
+ * 组件创建从 const vm = new Vue({
+ *  render(h=createElement){
+ *    return h(App);
+ *  }
+ * });
+ * 开始
+ */
 // wrapper function for providing a more flexible interface
 // without getting yelled at by flow
 export function createElement (

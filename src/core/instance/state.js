@@ -55,7 +55,7 @@ export function proxy (target: Object, sourceKey: string, key: string) {
 
 /**
  * 这个方法在vue加载后在库的内部直接执行
- * @param {*} vm 
+ * @param {*} vm
  */
 export function initState (vm: Component) {
   vm._watchers = []
@@ -134,9 +134,9 @@ function initData (vm: Component) {
   let data = vm.$options.data
   // 这个typeof data的检查是有必要的，因为在beforeCreated钩子函数中可以， this.$options.data = {} 修改data的值
   data = vm._data = typeof data === 'function'
-    ? getData(data, vm)   
+    ? getData(data, vm)
     : data || {}
-  if (!isPlainObject(data)) { 
+  if (!isPlainObject(data)) {
     data = {}
     process.env.NODE_ENV !== 'production' && warn(
       'data functions should return an object:\n' +
@@ -165,7 +165,7 @@ function initData (vm: Component) {
         `Use prop default value instead.`,
         vm
       )
-    } else if (!isReserved(key)) { 
+    } else if (!isReserved(key)) {
       proxy(vm, `_data`, key)
     }
   }
@@ -175,6 +175,7 @@ function initData (vm: Component) {
 export function getData (data: Function, vm: Component): any {
   // #7573 disable dep collection when invoking data getters
   pushTarget()
+  // 这里是为了防止 this.data的赋值
   try {
     return data.call(vm, vm)
   } catch (e) {
@@ -274,7 +275,7 @@ export function defineComputed (
 
 /**
  * 创建计算getter
- * @param {*} key 键 
+ * @param {*} key 键
  */
 function createComputedGetter (key) {
   return function computedGetter () {
@@ -293,7 +294,7 @@ function createComputedGetter (key) {
 
 /**
  * 创建getter
- * @param {*} fn 
+ * @param {*} fn
  */
 function createGetterInvoker(fn) {
   return function computedGetter () {
@@ -334,7 +335,7 @@ function initWatch (vm: Component, watch: Object) {
     /**
      * watch:{
      *  a(val,oldVal){
-     *     
+     *
      *  },
      *  b:[
      *    ()=>{},
@@ -424,7 +425,7 @@ export function stateMixin (Vue: Class<Component>) {
 
 /**
  * Vue中添加监听器的几种情况：
- * 
+ *
  * 1. 组件实例化时候
  * 2. 手动watch:{name(){}}
  * 3. 组件原型方法$watch方法

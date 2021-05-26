@@ -30,7 +30,7 @@ export default class Dep {
    * 给属性的依赖对象添加监听器,每次有新属性收集依赖时
    * 1. 组件的Watcher
    * 2. 属性自身定义的Watch监听 ($watch,watch option)
-   * @param {*} sub 
+   * @param {*} sub
    */
   addSub(sub: Watcher) {
     this.subs.push(sub)
@@ -47,7 +47,7 @@ export default class Dep {
     }
   }
 
-  notify() {
+    notify() {
     // stabilize the subscriber list first
     const subs = this.subs.slice()
     if (process.env.NODE_ENV !== 'production' && !config.async) {

@@ -51,7 +51,7 @@ const _toString = Object.prototype.toString
 //[object Object]. -》 Object
 /**
  * 获取值的数据类型
- * @param {*} value 
+ * @param {*} value
  */
 export function toRawType (value: any): string {
   return _toString.call(value).slice(8, -1)
@@ -79,7 +79,7 @@ export function isValidArrayIndex (val: any): boolean {
 
 /**
  * 判断变量类型是否为Promise类型
- * @param {*} val 
+ * @param {*} val
  */
 export function isPromise (val: any): boolean {
   return (

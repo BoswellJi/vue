@@ -33,10 +33,8 @@ import {
 } from 'weex/runtime/recycle-list/render-component-template'
 
 // inline hooks to be invoked on component VNodes during patch
-// vnode暴露的钩子函数，给vdom进行patch的时候进行调用
 /**
  * 子组件的产生流程：
- * vnode节点暴露的钩子事件init
  * 组件的vnode的钩子函数
  * 1. 进行组件的实例化，Sub Vue的构造函数的子类，进行_init
  * 2. 组件进行安装$mount
@@ -112,12 +110,13 @@ const componentVNodeHooks = {
   }
 }
 
+// 预定义的vnode钩子函数
 const hooksToMerge = Object.keys(componentVNodeHooks)
 
 /**
- * Ctor vue组件可以时new Vue()，可以时根据子类，使用继承vue的全局继承方式创建组件
- * 1. 创建组件实例
- * 2. 创建组件vnode
+ * 1. 构造子类构造器函数
+ * 2. 安装组件的vnode钩子函数
+ * 3. 实例化vnode
  */
 export function createComponent (
   Ctor: Class<Component> | Function | Object | void,
@@ -134,7 +133,7 @@ export function createComponent (
 
   // plain options object: turn it into a constructor
   if (isObject(Ctor)) {
-    // 使用extend继承的方式创建子类构造函数，用来创建子组件
+    // 使用extend继承的方式创建子类构造函数
     Ctor = baseCtor.extend(Ctor)
   }
 
@@ -229,8 +228,6 @@ export function createComponent (
 
 /**
  * 通过vnode创建组件实例
- * @param {*} vnode 虚拟节点
- * @param {*} parent 父组件实例
  */
 export function createComponentInstanceForVnode (
   // we know it's MountedComponentVNode but flow doesn't
@@ -257,7 +254,7 @@ export function createComponentInstanceForVnode (
 }
 
 /***
- * 安装组件钩子
+ * 将组件vnode自定义钩子函数与预定义的钩子合并
  */
 function installComponentHooks (data: VNodeData) {
   const hooks = data.hook || (data.hook = {})
