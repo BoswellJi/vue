@@ -1,14 +1,13 @@
 /* @flow */
 
-// 给单个元素和组件提供过度支持
 // Provides transition support for a single element/component.
-// 支持的过度模式 渐出渐入/渐入渐出
 // supports transition mode (out-in / in-out)
 
 import { warn } from 'core/util/index'
 import { camelize, extend, isPrimitive } from 'shared/util'
 import {
   mergeVNodeHook,
+  isAsyncPlaceholder,
   getFirstComponentChild
 } from 'core/vdom/helpers/index'
 
@@ -90,7 +89,7 @@ function placeholder(h: Function, rawChild: VNode): ?VNode {
 
 /**
  * 父组件时过度组件
- * @param {*} vnode 
+ * @param {*} vnode
  */
 function hasParentTransition(vnode: VNode): ?boolean {
   while ((vnode = vnode.parent)) {
@@ -104,7 +103,6 @@ function isSameChild(child: VNode, oldChild: VNode): boolean {
   return oldChild.key === child.key && oldChild.tag === child.tag
 }
 
-// 不是文本节点
 const isNotTextNode = (c: VNode) => c.tag || isAsyncPlaceholder(c)
 
 // 指令实例的name判断，是否为show
@@ -119,14 +117,14 @@ export default {
   abstract: true,
 
   render(h: Function) {
-    // 获取插槽中组件.元素的vnode
+    // 获取插槽中组件.元素的vnode，没有vnode不处理
     let children: any = this.$slots.default
     if (!children) {
       return
     }
 
-    // 过滤空白字符,或者是纯字符
     // filter out text nodes (possible whitespaces)
+    // 只有文本节点，不处理
     children = children.filter(isNotTextNode)
     /* istanbul ignore if */
     if (!children.length) {
@@ -134,7 +132,6 @@ export default {
     }
 
     // warn multiple elements
-    // 只能放单个元素
     if (process.env.NODE_ENV !== 'production' && children.length > 1) {
       warn(
         '<transition> can only be used on a single element. Use ' +
@@ -145,7 +142,7 @@ export default {
 
     const mode: string = this.mode
 
-    // warn invalid mode 验证模式
+    // warn invalid mode
     if (process.env.NODE_ENV !== 'production' &&
       mode && mode !== 'in-out' && mode !== 'out-in'
     ) {
@@ -155,17 +152,15 @@ export default {
       )
     }
 
-    // 获取第一个组件的vnode
     const rawChild: VNode = children[0]
 
-    // 如果这是一个组件根节点并且组件的父容器节点页有transtion，跳过。
     // if this is a component root node and the component's
     // parent container node also has transition, skip.
+    // 父组件也有过度，子组件不要过度，只返回子组件本身vnode
     if (hasParentTransition(this.$vnode)) {
       return rawChild
     }
 
-    // 应用过渡数据到子节点，使用getRealChild()方法来忽略抽象组件，例如keep-alive
     // apply transition data to child
     // use getRealChild() to ignore abstract components e.g. keep-alive
     const child: ?VNode = getRealChild(rawChild)
@@ -174,20 +169,14 @@ export default {
       return rawChild
     }
 
-    // 正在离开
     if (this._leaving) {
-      // 获取展位节点
       return placeholder(h, rawChild)
     }
 
-    // 确保vnode类型和这个过渡组件实例有唯一的key
-    // 这个key被用来在 entering 期间 删除 pending leaving 节点
     // ensure a key that is unique to the vnode type and to this transition
     // component instance. This key will be used to remove pending leaving nodes
     // during entering.
-    // 唯一id
     const id: string = `__transition-${this._uid}-`
-    // 组件的key的设置
     child.key = child.key == null
       ? (child.isComment
         ? id + 'comment'
@@ -201,70 +190,49 @@ export default {
      * {
      *   transition:{name:''}
      * }
-     * 
+     *
      */
-    // 获取
+    // 这里给vnode添加transition属性
     const data: Object = (child.data || (child.data = {})).transition = extractTransitionData(this)
-    // 获取组件实例的vnode
     const oldRawChild: VNode = this._vnode
-    // 获取真实组件的vnode
     const oldChild: VNode = getRealChild(oldRawChild)
 
-    // mark v-show 标记 v-show
-    // 以至于过渡模块能够交出对指令的控制
+    // mark v-show
     // so that the transition module can hand over the control to the directive
     // 子节点存在指令 && 存在show指令
     /**
      * { name:'指令名v-name', rawName:'全称v-rawName', value:'表达式的值', expression:'表达式' }
      */
     if (child.data.directives && child.data.directives.some(isVShowDirective)) {
-      // 将子vnode标记为show
       child.data.show = true
     }
 
     if (
-      // old vnode
       oldChild &&
-      // old vnode的data属性
       oldChild.data &&
-      // 不同相同的vnode
       !isSameChild(child, oldChild) &&
-      // 不同的异步占位符
       !isAsyncPlaceholder(oldChild) &&
       // #6687 component root is a comment node
-      // 组件根是一个注释节点
-      // 非组件实例 && 非注释节点
       !(oldChild.componentInstance && oldChild.componentInstance._vnode.isComment)
     ) {
-      // 使用新鲜数据替换老的子vnode过渡数据
       // replace old child transition data with fresh one
-      // 动态过渡是重要的
       // important for dynamic transitions!
-      // 替换老过渡数据
       const oldData: Object = oldChild.data.transition = extend({}, data)
-      // 处理过渡模式
       // handle transition mode（渐入
       if (mode === 'out-in') {
-        // 返回占位符节点 和 当离开完成时的队列更新 
         // return placeholder node and queue update when leave finishes
         this._leaving = true
-        // 离开后
         mergeVNodeHook(oldData, 'afterLeave', () => {
           this._leaving = false
           this.$forceUpdate()
         })
-        // 占位符
         return placeholder(h, rawChild)
-        // 渐出
       } else if (mode === 'in-out') {
-        // 是异步占位符
         if (isAsyncPlaceholder(child)) {
           return oldRawChild
         }
         let delayedLeave
-        // 执行离开
         const performLeave = () => { delayedLeave() }
-        // 合并vnode钩子函数
         mergeVNodeHook(data, 'afterEnter', performLeave)
         mergeVNodeHook(data, 'enterCancelled', performLeave)
         mergeVNodeHook(oldData, 'delayLeave', leave => { delayedLeave = leave })

@@ -7,17 +7,13 @@ import { mergeVNodeHook } from 'core/vdom/helpers/index'
 /**
  * 指令的生命周期
  * {
- *  
+ *
  * }
  */
 export default {
-  // 创建指令
   create: updateDirectives,
-  // 更新指令
   update: updateDirectives,
-  // 销毁指令
   destroy: function unbindDirectives (vnode: VNodeWithData) {
-    // 将vnode更新为空vnode
     updateDirectives(vnode, emptyNode)
   }
 }
@@ -30,7 +26,7 @@ function updateDirectives (oldVnode: VNodeWithData, vnode: VNodeWithData) {
 }
 
 /**
- * 
+ *
  * @param {*} oldVnode 老vnode
  * @param {*} vnode 当前vnode
  */
@@ -88,7 +84,7 @@ function _update (oldVnode, vnode) {
     }
     // 第一次创建组件
     if (isCreate) {
-      // 
+      //
       mergeVNodeHook(vnode, 'insert', callInsert)
     } else {
       // 更新组件，开始调用
@@ -119,7 +115,7 @@ function _update (oldVnode, vnode) {
 const emptyModifiers = Object.create(null)
 
 /**
- * 
+ *
  * @param {*} dirs vnode上的指令
  * @param {*} vm 组件实例
  */
@@ -153,9 +149,9 @@ function normalizeDirectives (
   // $flow-disable-line
   /**
    * {
-   *   modifiers: 
+   *   modifiers:
    *   name:
-   *   def: 
+   *   def:
    * }
    */
   return res
@@ -172,10 +168,10 @@ function getRawDirName (dir: VNodeDirective): string {
 
 
 /**
- * 
+ *
  * @param {*} dir 指令
  * @param {*} hook 钩子函数
- * @param {*} vnode 
+ * @param {*} vnode
  * @param {*} oldVnode 老vnode
  * @param {*} isDestroy 是否被销毁
  */

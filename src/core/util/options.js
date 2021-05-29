@@ -194,7 +194,7 @@ LIFECYCLE_HOOKS.forEach(hook => {
  * When a vm is present (instance creation), we need to do
  * a three-way merge between constructor options, instance
  * options and parent options.
- * 
+ *
  * components,filters,directives的合并策略，值必须是纯对象
  */
 function mergeAssets(
@@ -266,7 +266,7 @@ strats.props =
     vm?: Component,
     key: string
   ): ?Object {
-    // 
+    //
     if (childVal && process.env.NODE_ENV !== 'production') {
       assertObjectType(key, childVal, vm)
     }
@@ -286,7 +286,7 @@ const defaultStrat = function (parentVal: any, childVal: any): any {
 }
 
 /**
- * Validate component names 
+ * Validate component names
  */
 function checkComponents(options: Object) {
   for (const key in options.components) {

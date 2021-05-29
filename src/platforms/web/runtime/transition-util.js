@@ -5,8 +5,7 @@ import { addClass, removeClass } from './class-util'
 import { remove, extend, cached } from 'shared/util'
 
 /**
- * 解析过渡
- * @param {*} def 组件上定义的属性 
+ * 为了生成css class
  */
 export function resolveTransition (def?: string | Object): ?Object {
   if (!def) {
@@ -15,12 +14,9 @@ export function resolveTransition (def?: string | Object): ?Object {
   /* istanbul ignore else */
   if (typeof def === 'object') {
     const res = {}
-    // 定义css样式
     if (def.css !== false) {
-      // 设置过渡样式
       extend(res, autoCssTransition(def.name || 'v'))
     }
-    // 合并组件的属性props
     extend(res, def)
     return res
   } else if (typeof def === 'string') {
@@ -28,9 +24,7 @@ export function resolveTransition (def?: string | Object): ?Object {
   }
 }
 
-// 自动样式过渡 
 const autoCssTransition: (name: string) => Object = cached(name => {
-  // 对应过程中的对应样式
   return {
     enterClass: `${name}-enter`,
     enterToClass: `${name}-enter-to`,
@@ -46,7 +40,6 @@ export const hasTransition = inBrowser && !isIE9
 const TRANSITION = 'transition'
 const ANIMATION = 'animation'
 
-// 过渡属性/事件嗅探
 // Transition property/event sniffing
 export let transitionProp = 'transition'
 export let transitionEndEvent = 'transitionend'
@@ -69,7 +62,6 @@ if (hasTransition) {
   }
 }
 
-// 绑定到窗口来使在ie严格模式下的热加载工作是必要到
 // binding to window is necessary to make hot reload work in IE in strict mode
 const raf = inBrowser
   ? window.requestAnimationFrame
@@ -85,74 +77,54 @@ export function nextFrame (fn: Function) {
 
 /**
  * 给dom元素添加过渡样式
- * @param {*} el dom对象
- * @param {*} cls 样式class
  */
 export function addTransitionClass (el: any, cls: string) {
-  // 获取dom过渡样式class 
   const transitionClasses = el._transitionClasses || (el._transitionClasses = [])
-  // 没有过渡类
   if (transitionClasses.indexOf(cls) < 0) {
-    // 添加进来，添加到 _transitionClasses 数组属性中
     transitionClasses.push(cls)
-    // 添加到dom上
     addClass(el, cls)
   }
 }
 
 /**
  * 移除样式class
- * @param {*} el dom 
- * @param {*} cls 样式class
  */
 export function removeTransitionClass (el: any, cls: string) {
-  // 存在样式类
   if (el._transitionClasses) {
-    // 从中删除成员
     remove(el._transitionClasses, cls)
   }
-  // 删除样式class
   removeClass(el, cls)
 }
 
 /**
  * 过渡结束
- * @param {*} el 
- * @param {*} expectedType 
- * @param {*} cb 
  */
 export function whenTransitionEnds (
   el: Element,
   expectedType: ?string,
   cb: Function
 ) {
-  // 获取过渡信息
   const { type, timeout, propCount } = getTransitionInfo(el, expectedType)
-  // 没有类型，直接回调
   if (!type) return cb()
-  // 根据动画类型，选择事件
   const event: string = type === TRANSITION ? transitionEndEvent : animationEndEvent
   let ended = 0
-  // 
   const end = () => {
     el.removeEventListener(event, onEnd)
     cb()
   }
   const onEnd = e => {
     if (e.target === el) {
-      // 
       if (++ended >= propCount) {
         end()
       }
     }
   }
   setTimeout(() => {
-    
+
     if (ended < propCount) {
       end()
     }
   }, timeout + 1)
-  // 给dom绑定事件
   el.addEventListener(event, onEnd)
 }
 
@@ -161,9 +133,7 @@ export function whenTransitionEnds (
 const transformRE = /\b(transform|all)(,|$)/
 
 /**
- * 获取过渡信息 
- * @param {*} el dom元素 
- * @param {*} expectedType 期待类型
+ * 获取过渡信息
  */
 export function getTransitionInfo (el: Element, expectedType?: ?string): {
   type: ?string; // 属性类型
@@ -217,10 +187,8 @@ export function getTransitionInfo (el: Element, expectedType?: ?string): {
         : animationDurations.length
       : 0
   }
-  // 是否是transform属性过渡
   const hasTransform: boolean =
     type === TRANSITION &&
-    // 过渡的属性（例：transform
     transformRE.test(styles[transitionProp + 'Property'])
   return {
     type,
@@ -232,8 +200,6 @@ export function getTransitionInfo (el: Element, expectedType?: ?string): {
 
 /**
  * 获取时间最长的，因为这保证了过渡动画都可以执行
- * @param {*} delays 延迟时间数组
- * @param {*} durations 过渡持续时间数组
  */
 function getTimeout (delays: Array<string>, durations: Array<string>): number {
   /* istanbul ignore next */
@@ -253,6 +219,5 @@ function getTimeout (delays: Array<string>, durations: Array<string>): number {
 // If comma（逗号[n]） is not replaced with a dot, the input will be rounded down (i.e. acting
 // as a floor function) causing unexpected behaviors
 function toMs (s: string): number {
-  // 去掉最后一个数字，使用 . 替换 ，
   return Number(s.slice(0, -1).replace(',', '.')) * 1000
 }
