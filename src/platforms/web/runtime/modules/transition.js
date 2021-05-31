@@ -152,7 +152,9 @@ export function enter (vnode: VNodeWithData, toggleDisplay: ?() => void) {
   if (expectsCSS) {
     addTransitionClass(el, startClass)
     addTransitionClass(el, activeClass)
+    // 浏览器的下一帧
     nextFrame(() => {
+      // 开始css tranistion
       removeTransitionClass(el, startClass)
       if (!cb.cancelled) {
         addTransitionClass(el, toClass)
@@ -261,6 +263,7 @@ export function leave (vnode: VNodeWithData, rm: Function) {
     }
     beforeLeave && beforeLeave(el)
     if (expectsCSS) {
+      // 从这里开始给DOM元素添加动画样式
       addTransitionClass(el, leaveClass)
       addTransitionClass(el, leaveActiveClass)
       nextFrame(() => {

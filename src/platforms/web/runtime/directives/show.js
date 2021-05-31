@@ -1,20 +1,15 @@
 /* @flow */
 
-// 过渡的 进入，离开
 import { enter, leave } from '../modules/transition'
 
-// 在根组件内部递归搜索可能的过渡定义
 // recursively search for possible transition defined inside the component root
 function locateNode (vnode: VNode): VNodeWithData {
-  // 组件实例 && 没有data || data对象中没有transition对象
   return vnode.componentInstance && (!vnode.data || !vnode.data.transition)
-  //
     ? locateNode(vnode.componentInstance._vnode)
     : vnode
 }
 
 export default {
-  // 首次指令绑定元素
   bind (el: any, { value }: VNodeDirective, vnode: VNodeWithData) {
     vnode = locateNode(vnode)
     const transition = vnode.data && vnode.data.transition
@@ -30,7 +25,6 @@ export default {
     }
   },
 
-  // 指令绑定的响应式对象属性发生变化
   update (el: any, { value, oldValue }: VNodeDirective, vnode: VNodeWithData) {
     /* istanbul ignore if */
     if (!value === !oldValue) return
@@ -52,7 +46,6 @@ export default {
     }
   },
 
-  // 解绑指令
   unbind (
     el: any,
     binding: VNodeDirective,

@@ -48,12 +48,12 @@
         </item>
       </transition-group> -->
 
-      <transition :duration="{enter:2000,leave:2000}" :css="true" :delay-leave="5000" name="fade" appear >
+      <transition :duration="{enter:2000,leave:2000}" :css="false" :delay-leave="5000" name="fade" appear >
         <!-- <template v-show="isShow">
           只有文本不处理
         </template> -->
         <div v-show="isShow">动画1</div>
-        <!-- <div v-if="isShow">动画2</div> -->
+        <div v-else>动画2</div>
       </transition>
 
       <div @click="switchFn">切换</div>
@@ -72,7 +72,7 @@
         components: {
           item: {
             props: ['msg'],
-            template: `<div>{{ msg }} <button @click="$emit('rm')">x</button></div>`
+            template: `<div>{{ msg }}<button @click="$emit('rm')">x</button></div>`
           }
         },
         methods: {

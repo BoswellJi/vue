@@ -30,19 +30,13 @@ export const transitionProps = {
   duration: [Number, String, Object]
 }
 
-// 在案例中,子类还是一个抽象组件,例如<keep-alive>
 // in case the child is also an abstract component, e.g. <keep-alive>
-// 我们想要递归检索真实的组件来渲染
 // we want to recursively retrieve the real component to be rendered
 function getRealChild(vnode: ?VNode): ?VNode {
-  // vnode && 组件的选项
   const compOptions: ?VNodeComponentOptions = vnode && vnode.componentOptions
-  // 存在 && 符组件也是抽象组件
   if (compOptions && compOptions.Ctor.options.abstract) {
-    // 重新获取真实的组件
     return getRealChild(getFirstComponentChild(compOptions.children))
   } else {
-    // 当前组件的vnode
     return vnode
   }
 }
@@ -124,7 +118,6 @@ export default {
     }
 
     // filter out text nodes (possible whitespaces)
-    // 只有文本节点，不处理
     children = children.filter(isNotTextNode)
     /* istanbul ignore if */
     if (!children.length) {
@@ -156,7 +149,6 @@ export default {
 
     // if this is a component root node and the component's
     // parent container node also has transition, skip.
-    // 父组件也有过度，子组件不要过度，只返回子组件本身vnode
     if (hasParentTransition(this.$vnode)) {
       return rawChild
     }
@@ -185,24 +177,13 @@ export default {
         ? (String(child.key).indexOf(id) === 0 ? child.key : id + child.key)
         : child.key)
 
-    //  子vnode的data，添加transtion过渡属性
-    /**
-     * {
-     *   transition:{name:''}
-     * }
-     *
-     */
-    // 这里给vnode添加transition属性
+
     const data: Object = (child.data || (child.data = {})).transition = extractTransitionData(this)
     const oldRawChild: VNode = this._vnode
     const oldChild: VNode = getRealChild(oldRawChild)
 
     // mark v-show
     // so that the transition module can hand over the control to the directive
-    // 子节点存在指令 && 存在show指令
-    /**
-     * { name:'指令名v-name', rawName:'全称v-rawName', value:'表达式的值', expression:'表达式' }
-     */
     if (child.data.directives && child.data.directives.some(isVShowDirective)) {
       child.data.show = true
     }
@@ -218,7 +199,7 @@ export default {
       // replace old child transition data with fresh one
       // important for dynamic transitions!
       const oldData: Object = oldChild.data.transition = extend({}, data)
-      // handle transition mode（渐入
+      // handle transition mode
       if (mode === 'out-in') {
         // return placeholder node and queue update when leave finishes
         this._leaving = true
