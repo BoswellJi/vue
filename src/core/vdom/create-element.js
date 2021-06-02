@@ -178,3 +178,4 @@ function registerDeepBindings (data) {
     traverse(data.class)
   }
 }
+

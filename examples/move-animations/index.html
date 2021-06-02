@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="utf-8">
+    <meta charset="utf-8" />
     <title>Move Animations</title>
     <style>
       .container {
@@ -16,11 +16,14 @@
         box-sizing: border-box;
       }
       /* 1. declare transition */
-      .fade-move, .fade-enter-active, .fade-leave-active {
-        transition: all .5s cubic-bezier(.55,0,.1,1);
+      .fade-move,
+      .fade-enter-active,
+      .fade-leave-active {
+        transition: all 0.5s cubic-bezier(0.55, 0, 0.1, 1);
       }
       /* 2. declare enter from and leave to state */
-      .fade-enter, .fade-leave-to {
+      .fade-enter,
+      .fade-leave-to {
         opacity: 0;
         transform: scaleY(0.01) translate(30px, 0);
       }
@@ -36,67 +39,95 @@
   </head>
   <body>
     <div id="el">
-      <button @click="insert">insert at random index</button>
+      <!-- <button @click="insert">insert at random index</button>
       <button @click="reset">reset</button>
-      <button @click="shuffle">shuffle</button>
+      <button @click="shuffle">shuffle</button> -->
       <!-- <transition-group tag="ul" name="fade" class="container">
-        <item v-for="item in items"
+        <item
+          v-for="item in items"
           class="item"
           :msg="item"
           :key="item"
-          @rm="remove(item)">
+          @rm="remove(item)"
+        >
         </item>
-      </transition-group> -->
+      </transition-group>
 
-      <transition :duration="{enter:2000,leave:2000}" :css="false" :delay-leave="5000" name="fade" appear >
-        <!-- <template v-show="isShow">
-          只有文本不处理
-        </template> -->
-        <div v-show="isShow">动画1</div>
+      <transition
+        :duration="{enter:2000,leave:2000}"
+        :delay-leave="5000"
+        name="fade"
+        appear
+      >
+        <template v-show="isShow"> 只有文本不处理,这里是错误的 </template>
+        <div v-if="isShow">动画1</div>
         <div v-else>动画2</div>
-      </transition>
-
-      <div @click="switchFn">切换</div>
+      </transition> -->
+      <div @click="switchFn">切换{{isShow}}</div>
+      <item msg="isShow"></item>
+      <comp-functional name="Boswell" @say="()=>{}">
+        <div>hhh</div>
+        <div>slot2</div>
+      </comp-functional>
     </div>
 
     <script>
-      var items = [1, 2, 3, 4, 5]
-      var id = items.length + 1
+      var items = [1, 2, 3, 4, 5];
+      var id = items.length + 1;
 
       var vm = new Vue({
-        el: '#el',
+        el: "#el",
         data: {
           items: items,
           isShow: true,
+          index:0
         },
         components: {
           item: {
-            props: ['msg'],
-            template: `<div>{{ msg }}<button @click="$emit('rm')">x</button></div>`
-          }
-        },
-        methods: {
-          switchFn(){
-            this.isShow = !this.isShow;
+            props: ["msg"],
+            render(h){
+              console.log('child comp');
+              return h('div',{},this.msg);
+            },
           },
-          insert () {
-            var i = Math.round(Math.random() * this.items.length)
-            this.items.splice(i, 0, id++)
-          },
-          reset () {
-            this.items = [1, 2, 3, 4, 5]
-          },
-          shuffle () {
-            this.items = _.shuffle(this.items)
-          },
-          remove (item) {
-            var i = this.items.indexOf(item)
-            if (i > -1) {
-              this.items.splice(i, 1)
+          compFunctional:{
+            functional:true,
+            render(h,context){
+              console.log('func',context.slots().default,context.children);
+              return h('div',{},'df');
             }
           }
-        }
-      })
+        },
+
+        // 只要有响应式属性变化（模板中使用的
+        beforeUpdate(){
+          console.log('beforeUpdate');
+        },
+        updated(){
+          console.log('updated');
+        },
+        methods: {
+          switchFn() {
+            this.isShow = !this.isShow;
+          },
+          insert() {
+            var i = Math.round(Math.random() * this.items.length);
+            this.items.splice(i, 0, id++);
+          },
+          reset() {
+            this.items = [1, 2, 3, 4, 5];
+          },
+          shuffle() {
+            this.items = _.shuffle(this.items);
+          },
+          remove(item) {
+            var i = this.items.indexOf(item);
+            if (i > -1) {
+              this.items.splice(i, 1);
+            }
+          },
+        },
+      });
     </script>
   </body>
 </html>

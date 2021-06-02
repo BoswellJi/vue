@@ -581,7 +581,6 @@ export function createPatchFunction(backend) {
       vnode = ownerArray[index] = cloneVNode(vnode)
     }
 
-    // 虚拟节点的挂载点
     const elm = vnode.elm = oldVnode.elm
 
     if (isTrue(oldVnode.isAsyncPlaceholder)) {
@@ -606,6 +605,9 @@ export function createPatchFunction(backend) {
       return
     }
 
+    /***
+     * 这里是更新组件的判断
+     */
     let i
     const data = vnode.data
     if (isDef(data) && isDef(i = data.hook) && isDef(i = i.prepatch)) {

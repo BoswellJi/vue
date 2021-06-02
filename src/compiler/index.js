@@ -18,20 +18,15 @@ export const createCompiler = createCompilerCreator(function baseCompile (
   template: string,
   options: CompilerOptions
 ): CompiledResult {
-  // 解析模板字符串生成ast
   const ast = parse(template.trim(), options)
-  // 优化ast
   if (options.optimize !== false) {
     optimize(ast, options)
   }
-  // 生成代码
   const code = generate(ast, options)
   return {
-    // 模板的抽象语法树
     ast,
     // 渲染函数，都是字符串形式的， 需要通过 new Function来创建 渲染函数
     render: code.render,
-    // 静态渲染
     staticRenderFns: code.staticRenderFns
   }
 })

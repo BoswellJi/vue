@@ -36,6 +36,7 @@ export default {
 
   beforeMount () {
     const update = this._update
+    // mountComponent中的_update
     this._update = (vnode, hydrating) => {
       const restoreActiveInstance = setActiveInstance(this)
       // force removing pass
@@ -54,6 +55,7 @@ export default {
   render (h: Function) {
     const tag: string = this.tag || this.$vnode.data.tag || 'span'
     const map: Object = Object.create(null)
+    // 这是在更新的时候
     const prevChildren: Array<VNode> = this.prevChildren = this.children
     const rawChildren: Array<VNode> = this.$slots.default || []
     const children: Array<VNode> = this.children = []

@@ -219,6 +219,7 @@ export function mountComponent(
       // measure(`vue ${name} patch`, startTag, endTag)
     }
   } else {
+    // 每个组件状态更新时
     updateComponent = () => {
       const vnode = vm._render()
       vm._update(vnode, hydrating)
@@ -328,7 +329,6 @@ export function updateChildComponent(
 }
 
 function isInInactiveTree(vm) {
-  // 从组件自身向上找
   while (vm && (vm = vm.$parent)) {
     if (vm._inactive) return true
   }
@@ -336,14 +336,10 @@ function isInInactiveTree(vm) {
 }
 /**
  * 使组件活跃 keep-alive中
- * @param {*} vm  组件实例
- * @param {*} direct
  */
 export function activateChildComponent(vm: Component, direct?: boolean) {
   if (direct) {
-    // 直接激活
     vm._directInactive = false
-    // 组件不活跃
     if (isInInactiveTree(vm)) {
       return
     }
