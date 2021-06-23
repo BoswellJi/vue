@@ -769,7 +769,6 @@ export function createPatchFunction(backend) {
   }
 
   return function patch(oldVnode, vnode, hydrating, removeOnly) {
-    // 没有定义vnode,销毁oldVnode
     if (isUndef(vnode)) {
       if (isDef(oldVnode)) invokeDestroyHook(oldVnode)
       return
@@ -777,13 +776,6 @@ export function createPatchFunction(backend) {
 
     let isInitialPatch = false
     const insertedVnodeQueue = []
-
-    /***
-     * 1. 没有oldVnode
-     * 2. 有oldVnode
-     * 2.1. oldVnode是真实DOM
-     * 2.2. oldVnode是非真实DOM
-     */
 
     if (isUndef(oldVnode)) {
       // empty mount (likely as component), create new root element
@@ -820,13 +812,11 @@ export function createPatchFunction(backend) {
           }
           // either not server-rendered, or hydration failed.
           // create an empty node and replace it
-          // 根据真实dom节点tag创建vnode
           oldVnode = emptyNodeAt(oldVnode)
         }
 
         // replacing existing element
         const oldElm = oldVnode.elm
-        // 这里获取当前节点的父节点
         const parentElm = nodeOps.parentNode(oldElm)
 
         // create new node
