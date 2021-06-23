@@ -44,10 +44,6 @@ function isObject (obj) {
  */
 var _toString = Object.prototype.toString;
 
-//[object Object]. -》 Object
-/**
- * @param {*} value 
- */
 function toRawType (value) {
   return _toString.call(value).slice(8, -1)
 }
@@ -97,18 +93,12 @@ var isBuiltInTag = makeMap('slot,component', true);
 var isReservedAttribute = makeMap('key,ref,slot,slot-scope,is');
 
 /**
- * 从数组中移除一个元素
  * Remove an item from an array.
- * @param {Array} 数组
- * @param {any} item 数组元素
  */
 function remove (arr, item) {
-  // 数组中有元素
   if (arr.length) {
-    // 找到元素在数组中的位置
     var index = arr.indexOf(item);
     if (index > -1) {
-      // 删除元素
       return arr.splice(index, 1)
     }
   }
@@ -117,7 +107,6 @@ function remove (arr, item) {
 /**
  * Check whether an object has the property.
  */
-// 保存方法的引用,缩短原型链查找带来的开销
 var hasOwnProperty = Object.prototype.hasOwnProperty;
 function hasOwn (obj, key) {
   return hasOwnProperty.call(obj, key)
@@ -126,15 +115,10 @@ function hasOwn (obj, key) {
 /**
  * Create a cached version of a pure function.
  */
-
 function cached (fn) {
-  // 创建一个哈希表,用来缓存属性
   var cache = Object.create(null);
-  // 
   return (function cachedFn (str) {
-    // 缓存中有就取出,没有就添加到缓存
     var hit = cache[str];
-    // 缓存的是否函数的返回值(省去函数调用开销)
     return hit || (cache[str] = fn(str))
   })
 }
@@ -142,7 +126,6 @@ function cached (fn) {
 /**
  * Camelize a hyphen-delimited string.
  */
-// 获取 aaa-baa 中的 -b =>  B,将连接线风格转换为小驼峰写法
 var camelizeRE = /-(\w)/g;
 var camelize = cached(function (str) {
   return str.replace(camelizeRE, function (_, c) { return c ? c.toUpperCase() : ''; })
@@ -151,7 +134,6 @@ var camelize = cached(function (str) {
 /**
  * Hyphenate a camelCase string.
  */
-// 将小驼峰写法改为 - 连接
 var hyphenateRE = /\B([A-Z])/g;
 var hyphenate = cached(function (str) {
   return str.replace(hyphenateRE, '-$1').toLowerCase()
@@ -191,11 +173,8 @@ var bind = Function.prototype.bind
 /**
  * Mix properties into target object.
  */
-// 混合式继承,潜复制
 function extend (to, _from) {
-  // 遍历对象
   for (var key in _from) {
-    // 将目标对象的属性复制给源对象上
     to[key] = _from[key];
   }
   return to
@@ -213,7 +192,6 @@ function noop (a, b, c) {}
 /**
  * Always return false.
  */
-// 总是say no
 var no = function (a, b, c) { return false; };
 
 /* eslint-enable no-unused-vars */
@@ -221,15 +199,12 @@ var no = function (a, b, c) { return false; };
 /**
  * Return the same value.
  */
-// 总是返回本身
 var identity = function (_) { return _; };
 
 /**
  * Generate a string containing static keys from compiler modules.
  */
-// 生成一个静态的属性
 function genStaticKeys (modules) {
-  // 模块中静态属性和合并到一个数组中,并使用,连接
   return modules.reduce(function (keys, m) {
     return keys.concat(m.staticKeys || [])
   }, []).join(',')
@@ -237,22 +212,18 @@ function genStaticKeys (modules) {
 
 /*  */
 
-// 非普通标签
 var isUnaryTag = makeMap(
   'area,base,br,col,embed,frame,hr,img,input,isindex,keygen,' +
   'link,meta,param,source,track,wbr'
 );
 
-// 
 // Elements that you can, intentionally, leave open
 // (and which close themselves)
 var canBeLeftOpenTag = makeMap(
   'colgroup,dd,dt,li,options,p,td,tfoot,th,thead,tr,source'
 );
 
-// html5标签
 // HTML5 tags https://html.spec.whatwg.org/multipage/indices.html#elements-3
-// 
 // Phrasing Content https://html.spec.whatwg.org/multipage/dom.html#phrasing-content
 var isNonPhrasingTag = makeMap(
   'address,article,aside,base,blockquote,body,caption,col,colgroup,dd,' +
@@ -265,19 +236,14 @@ var isNonPhrasingTag = makeMap(
 /*  */
 
 /**
- * unicode字母用于解析html标签,组件名,和属性路径
  * unicode letters used for parsing html tags, component names and property paths.
  * using https://www.w3.org/TR/html53/semantics-scripting.html#potentialcustomelementname
  * skipping \u10000-\uEFFFF due to it freezing up PhantomJS
  */
-// unioncode 正则表达式,匹配unioncode数值字符的模式
 var unicodeRegExp = /a-zA-Z\u00B7\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u037D\u037F-\u1FFF\u200C-\u200D\u203F-\u2040\u2070-\u218F\u2C00-\u2FEF\u3001-\uD7FF\uF900-\uFDCF\uFDF0-\uFFFD/;
 
 /**
  * Define a property.
- * 给对象定义一个属性,使用defineProperty
- * 对象, 属性, 值, 可枚举
- * 设置是否可枚举类型属性（突出枚举
  */
 function def (obj, key, val, enumerable) {
   Object.defineProperty(obj, key, {
@@ -293,36 +259,16 @@ function def (obj, key, val, enumerable) {
  */
 
 // Regular Expressions for parsing tags and attributes
-/**
- * \s*: 0或多个空白格
- * 
- * ([^\s"'<>\/=]+): 非,\s,",',<,>,/,=一个或多个字符
- * 
- * (?:| |)): 
- * 
- * \s*(=)\s*"([^"]*)"+ : = 一个或多个"非零个或多个"字符"
- * 
- * '([^']*)'+ : 零个或多个'非'字符'
- * 
- * ([^\s"'=<>`]+)
- */
 var attribute = /^\s*([^\s"'<>\/=]+)(?:\s*(=)\s*(?:"([^"]*)"+|'([^']*)'+|([^\s"'=<>`]+)))?/;
-// 动态参数属性
-var dynamicArgAttribute = /^\s*((?:v-[\w-]+:|@|:|#)\[[^=]+\][^\s"'<>\/=]*)(?:\s*(=)\s*(?:"([^"]*)"+|'([^']*)'+|([^\s"'=<>`]+)))?/;
+var dynamicArgAttribute = /^\s*((?:v-[\w-]+:|@|:|#)\[[^=]+?\][^\s"'<>\/=]*)(?:\s*(=)\s*(?:"([^"]*)"+|'([^']*)'+|([^\s"'=<>`]+)))?/;
 var ncname = "[a-zA-Z_][\\-\\.0-9_a-zA-Z" + (unicodeRegExp.source) + "]*";
 var qnameCapture = "((?:" + ncname + "\\:)?" + ncname + ")";
 var startTagOpen = new RegExp(("^<" + qnameCapture));
-
-// ' />' ' >'
 var startTagClose = /^\s*(\/?)>/;
 var endTag = new RegExp(("^<\\/" + qnameCapture + "[^>]*>"));
-
-// <!DOCTYPE 134>
 var doctype = /^<!DOCTYPE [^>]+>/i;
 // #7298: escape - to avoid being passed as HTML comment when inlined in page
-// <!--
 var comment = /^<!\--/;
-// <![
 var conditionalComment = /^<!\[/;
 
 // Special Elements (can contain anything)
@@ -338,12 +284,10 @@ var decodingMap = {
   '&#9;': '\t',
   '&#39;': "'"
 };
-// &it; &gt; &quot; 
 var encodedAttr = /&(?:lt|gt|quot|amp|#39);/g;
-// 使用新行 编码属性
 var encodedAttrWithNewLines = /&(?:lt|gt|quot|amp|#39|#10|#9);/g;
 
-// #5992 忽略换行的标签
+// #5992
 var isIgnoreNewlineTag = makeMap('pre,textarea', true);
 var shouldIgnoreFirstNewline = function (tag, html) { return tag && isIgnoreNewlineTag(tag) && html[0] === '\n'; };
 
@@ -613,7 +557,6 @@ var replaceRE = /./g;
 var isSpecialTag = makeMap('script,style,template', true);
 
 /**
- * 解析一个单文件组件.vue文件到一个sfc描述对象
  * Parse a single-file component (*.vue) file into an SFC Descriptor Object.
  */
 function parseComponent (
@@ -622,7 +565,6 @@ function parseComponent (
 ) {
   if ( options === void 0 ) options = {};
 
-  // sfc描述器
   var sfc = {
     template: null,
     script: null,
@@ -704,7 +646,6 @@ function parseComponent (
     }
   }
 
-  // 结尾
   function end (tag, start) {
     if (depth === 1 && currentBlock) {
       currentBlock.end = start;
@@ -750,29 +691,18 @@ function parseComponent (
 // can we use __proto__?
 var hasProto = '__proto__' in {};
 
-// Browser environment sniffing（嗅探）
-// 是否在浏览器中
+// Browser environment sniffing
 var inBrowser = typeof window !== 'undefined';
-// weex平台
 var inWeex = typeof WXEnvironment !== 'undefined' && !!WXEnvironment.platform;
 var weexPlatform = inWeex && WXEnvironment.platform.toLowerCase();
-// 浏览器的用户代理
 var UA = inBrowser && window.navigator.userAgent.toLowerCase();
-// ie 
 var isIE = UA && /msie|trident/.test(UA);
-// ie9
 var isIE9 = UA && UA.indexOf('msie 9.0') > 0;
-// edge
 var isEdge = UA && UA.indexOf('edge/') > 0;
-// android
 var isAndroid = (UA && UA.indexOf('android') > 0) || (weexPlatform === 'android');
-// ios 
 var isIOS = (UA && /iphone|ipad|ipod|ios/.test(UA)) || (weexPlatform === 'ios');
-// chrome 正则: chrome/123
 var isChrome = UA && /chrome\/\d+/.test(UA) && !isEdge;
-// phantomjs
 var isPhantomJS = UA && /phantomjs/.test(UA);
-// firefox  正则: firefox/1123
 var isFF = UA && UA.match(/firefox\/(\d+)/);
 
 // Firefox has a "watch" function on Object.prototype...
@@ -788,15 +718,12 @@ if (inBrowser) {
   } catch (e) {}
 }
 
-// 这个需要延迟执行，因为vue-server-renderer能设置VUE_ENV之前，vue可能需要
 // this needs to be lazy-evaled because vue may be required before
 // vue-server-renderer can set VUE_ENV
 var _isServer;
 var isServerRendering = function () {
-  // _isServer变量没有被初始化
   if (_isServer === undefined) {
     /* istanbul ignore if */
-    // 非浏览器 && 非wexx && global不为undefined（node的global为对象）
     if (!inBrowser && !inWeex && typeof global !== 'undefined') {
       // detect presence of vue-server-renderer and avoid
       // Webpack shimming the process
@@ -809,7 +736,6 @@ var isServerRendering = function () {
 };
 
 // detect devtools
-// 在浏览器中 && 浏览器有vue devtools插件工具
 var devtools = inBrowser && window.__VUE_DEVTOOLS_GLOBAL_HOOK__;
 
 /* istanbul ignore next */
@@ -846,14 +772,12 @@ if (typeof Set !== 'undefined' && isNative(Set)) {
   }());
 }
 
-// 资源类型，组件，指令，过滤器
 var ASSET_TYPES = [
   'component',
   'directive',
   'filter'
 ];
 
-// 组件生命周期，组件创建之前，组件创建之后（），组件安装之前
 var LIFECYCLE_HOOKS = [
   'beforeCreate',
   'created',
@@ -946,7 +870,6 @@ var config = ({
 
   /**
    * Parse the real tag name for the specific platform.
-   * 返回标签本身
    */
   parsePlatformTagName: identity,
 
@@ -975,15 +898,11 @@ var tip = noop;
 var generateComponentTrace = (noop); // work around flow check
 var formatComponentName = (noop);
 
-// 开发中
 if (process.env.NODE_ENV !== 'production') {
-  // 全局对象console不为undefined
   var hasConsole = typeof console !== 'undefined';
-  // 正则: 3434 -3434 _3434
   var classifyRE = /(?:^|[-_])(\w)/g;
   var classify = function (str) { return str
     .replace(classifyRE, function (c) { return c.toUpperCase(); })
-    // 正则: -_ 字符
     .replace(/[-_]/g, ''); };
 
   warn = function (msg, vm) {
@@ -1002,23 +921,18 @@ if (process.env.NODE_ENV !== 'production') {
     }
   };
 
-  // 组件实例
   formatComponentName = function (vm, includeFile) {
-    // 组件的$root属性是本身
     if (vm.$root === vm) {
       return '<Root>'
     }
-    // vm是函数 cid属性不为null,返回组件选项
     var options = typeof vm === 'function' && vm.cid != null
       ? vm.options
       : vm._isVue
         ? vm.$options || vm.constructor.options
         : vm;
-        // 获取组件的名称
     var name = options.name || options._componentTag;
     var file = options.__file;
     if (!name && file) {
-      // 正则: 非/,\一个或者多个.vue  非/.vue \.vue
       var match = file.match(/([^/\\]+)\.vue$/);
       name = match && match[1];
     }
@@ -1032,11 +946,8 @@ if (process.env.NODE_ENV !== 'production') {
   var repeat = function (str, n) {
     var res = '';
     while (n) {
-      // n除以2余数为1的时候 res加一个str
       if (n % 2 === 1) { res += str; }
-      // n>1 str+str
       if (n > 1) { str += str; }
-      // n向右移动一个位（？
       n >>= 1;
     }
     return res
@@ -1077,7 +988,6 @@ if (process.env.NODE_ENV !== 'production') {
 var uid = 0;
 
 /**
- * 一个依赖是一个能够有多个指令订阅它的可观察对象
  * A dep is an observable that can have multiple
  * directives subscribing to it.
  */
@@ -1086,12 +996,6 @@ var Dep = function Dep () {
   this.subs = [];
 };
 
-/**
- * 给属性的依赖对象添加监听器
- * 1. 组件的Watcher
- * 2. 属性自身定义的Watch监听 ($watch,watch option)
- * @param {*} sub 
- */
 Dep.prototype.addSub = function addSub (sub) {
   this.subs.push(sub);
 };
@@ -1100,65 +1004,33 @@ Dep.prototype.removeSub = function removeSub (sub) {
   remove(this.subs, sub);
 };
 
-/**
- * 添加依赖
- */
 Dep.prototype.depend = function depend () {
-  // Dep的静态属性target存在，值为 Dep的实例
   if (Dep.target) {
-    // 依赖的实例（对象属性中创建的依赖容器）
-    // 把依赖对象添加到组件的Watcher中，（每个属性的依赖对象
     Dep.target.addDep(this);
   }
 };
 
 Dep.prototype.notify = function notify () {
-  // 首先,稳定订阅者列表
   // stabilize the subscriber list first
   var subs = this.subs.slice();
   if (process.env.NODE_ENV !== 'production' && !config.async) {
-    // 如果不运行异步订阅者在调度器中被排序
     // subs aren't sorted in scheduler if not running async
-    // 我们需要对他们进行排序,确保以正确的顺序对他们进行触发
     // we need to sort them now to make sure they fire in correct
     // order
     subs.sort(function (a, b) { return a.id - b.id; });
   }
-  // 调用订阅者更新函数
   for (var i = 0, l = subs.length; i < l; i++) {
     subs[i].update();
   }
 };
 
-// 正在被计算的当前目标观察者
 // The current target watcher being evaluated.
-// 这个是全局唯一的，因为一次只能有一个观察者能够被计算
 // This is globally unique because only one watcher
 // can be evaluated at a time.
 Dep.target = null;
 
 /*  */
 
-/**
- * 进制转换
- * 2进制小数,转换为10进制, 小数点开始,从左向右,第一位乘上 1/2, 第二位乘上 1/4 ...
- * 每个数都计算下去,相加,就是小数部分的十进制的值;
- * 
- * 10进制的小数,转换为2进制,小数部分乘以2,每次取整数部分,一直乘下去,知道结果为1(每次取结果的小数继续乘
- */
-
-/**
- * vnode 种类
- * html
- * svg
- * 普通有状态组件
- * 需要被keepAlive的有状态组件
- * 已经被keepAlive的有状态组件
- * 函数式
- * 纯文本
- * Fragment
- * Portal
- */
 var VNode = function VNode (
   tag,
   data,
@@ -1196,18 +1068,15 @@ var VNode = function VNode (
 
 var prototypeAccessors = { child: { configurable: true } };
 
-// 废弃： 组件实例的别名用来向后兼容
 // DEPRECATED: alias for componentInstance for backwards compat.
 /* istanbul ignore next */
 prototypeAccessors.child.get = function () {
-  // 组件实例
   return this.componentInstance
 };
 
 Object.defineProperties( VNode.prototype, prototypeAccessors );
 
 /*
- * 这个文件没有类型检查,因为flow不能处理的很好在数组原型上的动态访问的方法
  * not type checking this file because flow doesn't play well with
  * dynamically accessing methods on Array prototype
  */
@@ -1215,122 +1084,91 @@ Object.defineProperties( VNode.prototype, prototypeAccessors );
 var arrayProto = Array.prototype;
 var arrayMethods = Object.create(arrayProto);
 
-// 可以触发数组变更检测的方法
-// 修改数组本身的方法
 var methodsToPatch = [
-          // 返回值
-  'push', // 添加的元素
-  'pop',  // 删除的元素
-  'shift', // 删除的头部元素
-  'unshift', // 添加的头部元素
-  'splice', // 截取的元素
-  'sort', // 排序后的元素
-  'reverse' // 反序后的元素
+  'push',
+  'pop',
+  'shift',
+  'unshift',
+  'splice',
+  'sort',
+  'reverse'
 ];
 
 /**
- * 拦截修改方法和发射事件
  * Intercept mutating methods and emit events
  */
-// 遍历方法
 methodsToPatch.forEach(function (method) {
-  // 缓存原始方法
   // cache original method
   var original = arrayProto[method];
-  // 给对象,重新定义需要拦截的方法
   def(arrayMethods, method, function mutator () {
     var args = [], len = arguments.length;
     while ( len-- ) args[ len ] = arguments[ len ];
 
-    // 调用原始方法处理数组
     var result = original.apply(this, args);
-    // 获取对象的观察者对象(this,指得是响应式对象,因为这些方法都会被重新定义到响应式对象上)
     var ob = this.__ob__;
     var inserted;
-    // 只有着三个方法会添加元素
     switch (method) {
       case 'push':
       case 'unshift':
-        // args是修改后的数组
         inserted = args;
         break
       case 'splice':
-        // splice方法参数,从第2位索引开始,才是添加数据,所以要获取添加的数据
         inserted = args.slice(2);
         break
     }
-    // 元素存在,进行数据监听,将添加的数据进行观察
     if (inserted) { ob.observeArray(inserted); }
-    // 通知改变
     // notify change
     ob.dep.notify();
-    
     return result
   });
 });
 
 /*  */
 
-// 获取对象自身的属性名称
 var arrayKeys = Object.getOwnPropertyNames(arrayMethods);
 
 /**
- * 在一些案例中,我们可能想要禁用观察在组件的更新计算中
  * In some cases we may want to disable observation inside a component's
  * update computation.
  */
 var shouldObserve = true;
 
 /**
- * 观察者类，被依附到每一个被观察者对象
  * Observer class that is attached to each observed
- * 一旦依附，观察者转换目标对象的属性key到getter/setter收集依赖和触发更新
  * object. Once attached, the observer converts the target
  * object's property keys into getter/setters that
  * collect dependencies and dispatch updates.
  */
 var Observer = function Observer (value) {
-  // 数组或者对象
   this.value = value;
-  //对象或者数组的依赖
   this.dep = new Dep();
   this.vmCount = 0;
-  // 给对象定义__ob__属性标记
   def(value, '__ob__', this);
-  // 这个对象是数组,非数组
   if (Array.isArray(value)) {
-    // 对象上有__proto__原型属性
     if (hasProto) {
       protoAugment(value, arrayMethods);
     } else {
       copyAugment(value, arrayMethods, arrayKeys);
     }
-    // 观测数组
     this.observeArray(value);
   } else {
-    // 对象
     this.walk(value);
   }
 };
 
 /**
- * 遍历所有属性，并且转换他们到getter/setter
  * Walk through all properties and convert them into
- * 只有当值是Object类型时，方法才应该被调用
  * getter/setters. This method should only be called when
  * value type is Object.
  */
 Observer.prototype.walk = function walk (obj) {
   var keys = Object.keys(obj);
-  // 每个键， 响应式对象都会生成一个依赖数据对象
   for (var i = 0; i < keys.length; i++) {
-    // 给对象的属性定义访问器属性
     defineReactive$$1(obj, keys[i]);
   }
 };
 
 /**
- * 观察数组项目列表
  * Observe a list of Array items.
  */
 Observer.prototype.observeArray = function observeArray (items) {
@@ -1342,160 +1180,87 @@ Observer.prototype.observeArray = function observeArray (items) {
 // helpers
 
 /**
- * 通过使用__proto__拦截原型链，来扩充目标对象或者数组
  * Augment a target Object or Array by intercepting
  * the prototype chain using __proto__
  */
 function protoAugment (target, src) {
   /* eslint-disable no-proto */
-  // 将对象的内部原型属性指向新对象(原型继承)
   target.__proto__ = src;
   /* eslint-enable no-proto */
 }
 
 /**
- * 通过定义隐藏属性，来扩充目标对象或者数组
  * Augment a target Object or Array by defining
  * hidden properties.
  */
 /* istanbul ignore next */
-/**
- * 拷贝参数
- * @param {*} target 目标对象
- * @param {*} src 源对象
- * @param {*} keys key集合
- */
 function copyAugment (target, src, keys) {
   for (var i = 0, l = keys.length; i < l; i++) {
     var key = keys[i];
-    // 给对象定义指定属性,将src上的属性定义到目标对象上(需要观察的对象)
     def(target, key, src[key]);
   }
 }
 
 /**
- * 尝试给一个值创建一个观察者实例
  * Attempt to create an observer instance for a value,
- * 如果成功观察，返回新的观察者
  * returns the new observer if successfully observed,
- * 或者如果一个值已经是的化，返回现存的观察者
  * or the existing observer if the value already has one.
  */
-/**
- * 1. 依赖收集
- * 2. 避免重复收集依赖
- * 3. 特殊情况的处理， 数组变更怎么触发依赖更新
- * 
- * 1. $watch(观察者是知道正在观察的是哪个字段的)
- * 
- * 观察，在初始化vue的响应式数据系统
- * @param {*} value 组件实例的data属性的值
- * @param {*} asRootData 作为根数据
- */
 function observe (value, asRootData) {
-  // 不是(非null的对象) || 是VNode
   if (!isObject(value) || value instanceof VNode) {
     return
   }
   var ob;
-  // 有__ob__属性,已经是响应式对象 && __ob__ 属性值为 Observer 实例
   if (hasOwn(value, '__ob__') && value.__ob__ instanceof Observer) {
-    // 获取观察者对象
     ob = value.__ob__;
   } else if (
-    // 是否可观测的开关
     shouldObserve &&
-    // 非服务端渲染
     !isServerRendering() &&
-    // 数组 || 普通对象
     (Array.isArray(value) || isPlainObject(value)) &&
-    // 可扩展对象
     Object.isExtensible(value) &&
-    // 不是Vue实例，_isVue为Vue实例属性
     !value._isVue
   ) {
-    // 创建一个观察者
-    // 组件的 data 对象
     ob = new Observer(value);
   }
-  // 观察者对象
   if (asRootData && ob) {
     ob.vmCount++;
   }
-  // 观察者对象
   return ob
 }
 
 /**
  * Define a reactive property on an Object.
- * 对象的响应式原理是：设置对象属性的 get set,对对象的属性进行监听
- * 给对象的属性设置get set，这个是可观察者，会有依赖进行监听
  */
 function defineReactive$$1 (
   obj,
   key,
   val,
-  customSetter,  // 用户自定义的setter访问器
+  customSetter,
   shallow
 ) {
-  // 给这个响应式对象属性,添加依赖对象,通过闭包缓存依赖
-  // 每个数据字段都会有一个 依赖 的框
   var dep = new Dep();
 
-  // 获取当前这个属性描述
   var property = Object.getOwnPropertyDescriptor(obj, key);
-  // 属性必须是可配置的，否则不可作为响应式属性
   if (property && property.configurable === false) {
     return
   }
 
-  // 保存当前属性的get set 访问器
   // cater for pre-defined getter/setters
   var getter = property && property.get;
   var setter = property && property.set;
-  
-  /**
-   * 存在getter访问器属性，就不会获取 对象的属性
-   * 之后的val就会使undefined
-   * 
-   * 为什么属性拥有自己的getter时，就不会对其进行深度观测：
-   * 1.属性存在getter时，在深度观测之前不会取值，所以，在深度观测语句执行之前取不到属性值，无法深度观测；
-   * 2. 之所以在深度观测之前不取值，是因为属性原本的getter是用户定义，用户可能在getter中做任何想不到的事情；
-   * 
-   * 
-   * 1.当数据属性只有getter访问器时，在个属性不会被深度检测，但是defineReactive函数处理之后，该属性将拥有get,set，新值将会被观测，这时候就矛盾了
-   * 2.拥有setter的属性，即使拥有getter也要获取属性值并观测之
-   * 
-   */
-  // 没有getter 或者只有setter 当前函数参数只有2个，将对象属性值赋给val
   if ((!getter || setter) && arguments.length === 2) {
-    // 没有直接传入val,所以需要从对象的属性上进行获取
     val = obj[key];
   }
 
-  // 属性值为对象，进行观察 shallow（浅的）表示对象是否是深度观测的
-  // 子集下的观察者对象
   var childOb = !shallow && observe(val);
-
-  // 重新定义对象属性的描述符  ，设置 getter setter访问器
-  // 在get获取的是否收集依赖（这个对象的属性的依赖）
   Object.defineProperty(obj, key, {
     enumerable: true,
     configurable: true,
-    /**
-     * 1. 正确的返回属性值
-     * 2. 收集这个数据字段下的依赖
-     */
     get: function reactiveGetter () {
-      // 获取之前访问器中的值， 不能存在的，直接返回当前值
       var value = getter ? getter.call(obj) : val;
-      // 依赖的目标，观察者对象（组件的监听器
       if (Dep.target) {
-        // 添加依赖，将观察者添加到依赖中
         dep.depend();
-        // 子观察者
         if (childOb) {
-          // 子观察者中的依赖 dep属性
           childOb.dep.depend();
           if (Array.isArray(value)) {
             dependArray(value);
@@ -1504,16 +1269,9 @@ function defineReactive$$1 (
       }
       return value
     },
-    /**
-     * 1. 正确给属性设置新值
-     * 2. 触发对应的依赖
-     * @param {*} newVal 
-     */
     set: function reactiveSetter (newVal) {
-      // 获取旧值
       var value = getter ? getter.call(obj) : val;
       /* eslint-disable no-self-compare */
-      // 新值等于旧值 || 新值不等于新值 && 旧值不等于旧值
       if (newVal === value || (newVal !== newVal && value !== value)) {
         return
       }
@@ -1521,28 +1279,20 @@ function defineReactive$$1 (
       if (process.env.NODE_ENV !== 'production' && customSetter) {
         customSetter();
       }
-      // 这个属性没有setter访问器，
       // #7981: for accessor properties without setter
       if (getter && !setter) { return }
-      // 存在setter
       if (setter) {
-        // watch
-        // 调用
         setter.call(obj, newVal);
       } else {
-        // 不存在，直接赋值
         val = newVal;
       }
-      // 新值是否需要深度观测
       childOb = !shallow && observe(newVal);
-      // 对应响应式属性的依赖容器
       dep.notify();
     }
   });
 }
 
 /**
- * 设置一个属性给对象，如果这个属性已经不存在，添加新属性并且触发变更通知
  * Set a property on an object. Adds the new property and
  * triggers change notification if the property doesn't
  * already exist.
@@ -1596,7 +1346,6 @@ function dependArray (value) {
 /*  */
 
 /**
- * Option重写策略是处理如何合并一个父(构造函数的options)option值和一个子option值到最终值得函数
  * Option overwriting strategies are functions that handle
  * how to merge a parent option value and a child option
  * value into the final value.
@@ -1604,64 +1353,43 @@ function dependArray (value) {
 var strats = config.optionMergeStrategies;
 
 /**
- * options的限制
  * Options with restrictions
  */
 if (process.env.NODE_ENV !== 'production') {
-  /**
-   * el
-   * propsData
-   * 只能在new Vue({
-   *  el:'#app',
-   * propsData:{}
-   * })实例化的时候才能使用
-   */
   strats.el = strats.propsData = function (parent, child, vm, key) {
-    // 没有vm实例
     if (!vm) {
-      // option的key只能被使用,在实例使用new关键字创建期间
       warn(
         "option \"" + key + "\" can only be used during instance " +
         'creation with the `new` keyword.'
       );
     }
-    // 返回默认策略
     return defaultStrat(parent, child)
   };
 }
 
-
-/**
- * 合并options中的各项的策略，  (合并父类的静态options和自身实例的options)
- * 
- data,beforeCreate,created,beforeMount,mounted,beforeUpdate,updated,beforeDestroy,destroyed,activated,deactivated,errorCaptured,serverPrefetch,filter,directive,component,watch,props,methods,inject,computed,provide
- */
-
 /**
  * Helper that recursively merges two data objects together.
  */
-function mergeData(to, from) {
+function mergeData (to, from) {
   if (!from) { return to }
   var key, toVal, fromVal;
 
   var keys = hasSymbol
     ? Reflect.ownKeys(from)
-    : Object.keys(from);  // 获取对象那个key，返回数组 ['a','b']
+    : Object.keys(from);
 
   for (var i = 0; i < keys.length; i++) {
     key = keys[i];
     // in case the object is already observed...
     if (key === '__ob__') { continue }
-
     toVal = to[key];
     fromVal = from[key];
-    // to 对象没有此实例属性
     if (!hasOwn(to, key)) {
       set(to, key, fromVal);
     } else if (
       toVal !== fromVal &&
-      isPlainObject(toVal) && // 纯对象
-      isPlainObject(fromVal)  // 纯对象
+      isPlainObject(toVal) &&
+      isPlainObject(fromVal)
     ) {
       mergeData(toVal, fromVal);
     }
@@ -1672,7 +1400,7 @@ function mergeData(to, from) {
 /**
  * Data
  */
-function mergeDataOrFn(
+function mergeDataOrFn (
   parentVal,
   childVal,
   vm
@@ -1690,14 +1418,14 @@ function mergeDataOrFn(
     // merged result of both functions... no need to
     // check if parentVal is a function here because
     // it has to be a function to pass previous merges.
-    return function mergedDataFn() {
+    return function mergedDataFn () {
       return mergeData(
         typeof childVal === 'function' ? childVal.call(this, this) : childVal,
         typeof parentVal === 'function' ? parentVal.call(this, this) : parentVal
       )
     }
   } else {
-    return function mergedInstanceDataFn() {
+    return function mergedInstanceDataFn () {
       // instance merge
       var instanceData = typeof childVal === 'function'
         ? childVal.call(vm, vm)
@@ -1719,8 +1447,6 @@ strats.data = function (
   childVal,
   vm
 ) {
-  // 子组件中没有vm，global-api/extend.js中调用的options合并方法
-  // 组件的data必须是函数
   if (!vm) {
     if (childVal && typeof childVal !== 'function') {
       process.env.NODE_ENV !== 'production' && warn(
@@ -1741,7 +1467,7 @@ strats.data = function (
 /**
  * Hooks and props are merged as arrays.
  */
-function mergeHook(
+function mergeHook (
   parentVal,
   childVal
 ) {
@@ -1757,7 +1483,7 @@ function mergeHook(
     : res
 }
 
-function dedupeHooks(hooks) {
+function dedupeHooks (hooks) {
   var res = [];
   for (var i = 0; i < hooks.length; i++) {
     if (res.indexOf(hooks[i]) === -1) {
@@ -1777,10 +1503,8 @@ LIFECYCLE_HOOKS.forEach(function (hook) {
  * When a vm is present (instance creation), we need to do
  * a three-way merge between constructor options, instance
  * options and parent options.
- * 
- * components,filters,directives的合并策略，值必须是纯对象
  */
-function mergeAssets(
+function mergeAssets (
   parentVal,
   childVal,
   vm,
@@ -1789,7 +1513,6 @@ function mergeAssets(
   var res = Object.create(parentVal || null);
   if (childVal) {
     process.env.NODE_ENV !== 'production' && assertObjectType(key, childVal, vm);
-    // 进行继承
     return extend(res, childVal)
   } else {
     return res
@@ -1805,7 +1528,6 @@ ASSET_TYPES.forEach(function (type) {
  *
  * Watchers hashes should not overwrite one
  * another, so we merge them as arrays.
- * watch 必须是纯对象
  */
 strats.watch = function (
   parentVal,
@@ -1827,11 +1549,9 @@ strats.watch = function (
   for (var key$1 in childVal) {
     var parent = ret[key$1];
     var child = childVal[key$1];
-    // 父实例中的option存在不是数组，规范化为数组
     if (parent && !Array.isArray(parent)) {
       parent = [parent];
     }
-    // watch key可以为数组
     ret[key$1] = parent
       ? parent.concat(child)
       : Array.isArray(child) ? child : [child];
@@ -1841,45 +1561,37 @@ strats.watch = function (
 
 /**
  * Other object hashes.
- * props,methods,inject，computed 的值必须是纯对象
  */
 strats.props =
-  strats.methods =
-  strats.inject =
-  strats.computed = function (
-    parentVal,
-    childVal,
-    vm,
-    key
-  ) {
-    // 
-    if (childVal && process.env.NODE_ENV !== 'production') {
-      assertObjectType(key, childVal, vm);
-    }
-    // 判断是否存在继承父类，否则直接返回组件本身定义
-    if (!parentVal) { return childVal }
-    var ret = Object.create(null);
-    extend(ret, parentVal);
-    if (childVal) { extend(ret, childVal); }
-    return ret
-  };
+strats.methods =
+strats.inject =
+strats.computed = function (
+  parentVal,
+  childVal,
+  vm,
+  key
+) {
+  if (childVal && process.env.NODE_ENV !== 'production') {
+    assertObjectType(key, childVal, vm);
+  }
+  if (!parentVal) { return childVal }
+  var ret = Object.create(null);
+  extend(ret, parentVal);
+  if (childVal) { extend(ret, childVal); }
+  return ret
+};
 strats.provide = mergeDataOrFn;
 
 /**
- * 默认策略
  * Default strategy.
- * @param {} parentVal 组件构造函数的options的指定key的值
- * @param {} childVal 组件的options的指定key的值
  */
 var defaultStrat = function (parentVal, childVal) {
-  // 组件的option，值，不存在，返回父级的
   return childVal === undefined
     ? parentVal
     : childVal
 };
 
-// 是否为原生对象类型 object
-function assertObjectType(name, value, vm) {
+function assertObjectType (name, value, vm) {
   if (!isPlainObject(value)) {
     warn(
       "Invalid value for option \"" + name + "\": expected an Object, " +
@@ -1895,36 +1607,23 @@ function assertObjectType(name, value, vm) {
 
 /*  */
 
-// nextTick的回调函数数组
 var callbacks = [];
 
-/**
- * 刷新回调函数
- */
 function flushCallbacks () {
   var copies = callbacks.slice(0);
   callbacks.length = 0;
   for (var i = 0; i < copies.length; i++) {
-    // 顺序执行
     copies[i]();
   }
 }
 
-// nextTick行为覆盖了微任务队列，能够既能够通过Promise.then访问，又能通过MutationObserver访问
 // The nextTick behavior leverages the microtask queue, which can be accessed
 // via either native Promise.then or MutationObserver.
-// MutationObserver（突变观察者）广泛的支持了，但是当在在ios大于9.3.3的UIwebview中触发touch事件处理器，有严重的bug
 // MutationObserver has wider support, however it is seriously bugged in
 // UIWebView in iOS >= 9.3.3 when triggered in touch event handlers. It
-// 触发几次后它完全停止工作，所以，如果promise可以使用的话，我们将使用它
 // completely stops working after triggering a few times... so, if native
 // Promise is available, we will use it:
 /* istanbul ignore next, $flow-disable-line */
-
-
-// 处理异步的兼容性
-
-// 1. Promise对象是否存在
 if (typeof Promise !== 'undefined' && isNative(Promise)) ; else if (!isIE && typeof MutationObserver !== 'undefined' && (
   isNative(MutationObserver) ||
   // PhantomJS and iOS 7.x
@@ -1934,15 +1633,11 @@ if (typeof Promise !== 'undefined' && isNative(Promise)) ; else if (!isIE && typ
   // e.g. PhantomJS, iOS7, Android 4.4
   // (#6466 MutationObserver is unreliable in IE11)
   var counter = 1;
-  // 异步执行
   var observer = new MutationObserver(flushCallbacks);
   var textNode = document.createTextNode(String(counter));
-  // 观察者，观察textNode节点
   observer.observe(textNode, {
     characterData: true
   });
-
-  // 3. setImmediate
 } else if (typeof setImmediate !== 'undefined' && isNative(setImmediate)) ;
 
 /*  */
@@ -1951,11 +1646,9 @@ if (typeof Promise !== 'undefined' && isNative(Promise)) ; else if (!isIE && typ
 
 // these are reserved for web because they are directly compiled away
 // during template compilation
-// 是否是保留属性
 var isReservedAttr = makeMap('style,class');
 
 // attributes that should be using props for binding
-// 接收值的标签
 var acceptValue = makeMap('input,textarea,option,select,progress');
 var mustUseProp = function (tag, type, attr) {
   return (
@@ -1966,12 +1659,10 @@ var mustUseProp = function (tag, type, attr) {
   )
 };
 
-// 
 var isEnumeratedAttr = makeMap('contenteditable,draggable,spellcheck');
 
 var isValidContentEditableValue = makeMap('events,caret,typing,plaintext-only');
 
-// 值为boolean值得属性
 var isBooleanAttr = makeMap(
   'allowfullscreen,async,autofocus,autoplay,checked,compact,controls,declare,' +
   'default,defaultchecked,defaultmuted,defaultselected,defer,disabled,' +
@@ -1985,7 +1676,6 @@ var isBooleanAttr = makeMap(
 
 /*  */
 
-// html标签
 var isHTMLTag = makeMap(
   'html,body,base,head,link,meta,style,title,' +
   'address,article,aside,footer,header,h1,h2,h3,h4,h5,h6,hgroup,nav,section,' +
@@ -2002,38 +1692,30 @@ var isHTMLTag = makeMap(
 
 // this map is intentionally selective, only covering SVG elements that may
 // contain child elements.
-// 可用的svg标签
 var isSVG = makeMap(
   'svg,animate,circle,clippath,cursor,defs,desc,ellipse,filter,font-face,' +
-  'foreignObject,g,glyph,image,line,marker,mask,missing-glyph,path,pattern,' +
+  'foreignobject,g,glyph,image,line,marker,mask,missing-glyph,path,pattern,' +
   'polygon,polyline,rect,switch,symbol,text,textpath,tspan,use,view',
   true
 );
 
-// 保留格式标签
 var isPreTag = function (tag) { return tag === 'pre'; };
 
-// 被保留的标签(自定义组件不能使用)(w3c规范)
 var isReservedTag = function (tag) {
-  // 判断标签是html还是svg
   return isHTMLTag(tag) || isSVG(tag)
 };
 
-// 获取命名空间,svg标签,根节点为svg
 function getTagNamespace (tag) {
-  // 是svg标签(是一种描述图形的标签)
   if (isSVG(tag)) {
     return 'svg'
   }
   // basic support for MathML
   // note it doesn't support other MathML elements being component roots
-  // math数学公式,数学根节点为math(用于描述数学公式,符号的一种xml标记)
   if (tag === 'math') {
     return 'math'
   }
 }
 
-// 判断判断标签是否为当前输入框中的一种
 var isTextInputType = makeMap('text,number,password,search,email,tel,url');
 
 /*  */
@@ -2458,20 +2140,13 @@ var klass = {
 
 /*  */
 
-/**
- * 解析样式文本
- * @param {String} cssText css样式文本
- */
 var parseStyleText = cached(function (cssText) {
   var res = {};
   var listDelimiter = /;(?![^(]*\))/g;
   var propertyDelimiter = /:(.+)/;
-  // 根据规则分割样式文本
   cssText.split(listDelimiter).forEach(function (item) {
     if (item) {
-      // 
       var tmp = item.split(propertyDelimiter);
-      // 获取样式的值添加给 res对象，res对象以样式的key作为res对象的key
       tmp.length > 1 && (res[tmp[0].trim()] = tmp[1].trim());
     }
   });
@@ -2687,7 +2362,7 @@ var modifierRE = /\.[^.\]]+(?=[^\]]*$)/g;
 var slotRE = /^v-slot(:|$)|^#/;
 
 var lineBreakRE = /[\r\n]/;
-var whitespaceRE = /\s+/g;
+var whitespaceRE = /[ \f\t\r\n]+/g;
 
 var invalidAttributeRE = /[\s"'<>\/=]/;
 
@@ -2735,8 +2410,12 @@ function parse (
   platformMustUseProp = options.mustUseProp || no;
   platformGetTagNamespace = options.getTagNamespace || no;
   var isReservedTag = options.isReservedTag || no;
-  maybeComponent = function (el) { return !!el.component || !isReservedTag(el.tag); };
-
+  maybeComponent = function (el) { return !!(
+    el.component ||
+    el.attrsMap[':is'] ||
+    el.attrsMap['v-bind:is'] ||
+    !(el.attrsMap.is ? isReservedTag(el.attrsMap.is) : isReservedTag(el.tag))
+  ); };
   transforms = pluckModuleFunction(options.modules, 'transformNode');
   preTransforms = pluckModuleFunction(options.modules, 'preTransformNode');
   postTransforms = pluckModuleFunction(options.modules, 'postTransformNode');
@@ -2850,9 +2529,6 @@ function parse (
     }
   }
 
-  /**
-   * 返回dom tree
-   */
   parseHTML(template, {
     warn: warn$1,
     expectHTML: options.expectHTML,
@@ -3898,18 +3574,17 @@ var directives = {
 
 /*  */
 
-// 编译器基础参数 baseOptions
 var baseOptions = {
   expectHTML: true,
   modules: modules,
   directives: directives,
-  isPreTag: isPreTag, // 查看标签名是否为pre
-  isUnaryTag: isUnaryTag, // 查看标签名是否是一元的
-  mustUseProp: mustUseProp, // 一个属性在标签中是否要使用props进行绑定
-  canBeLeftOpenTag: canBeLeftOpenTag, // 查看标签虽然不是一元标签，但是可以自己补全闭合
-  isReservedTag: isReservedTag, // 标签是否是保留标签
-  getTagNamespace: getTagNamespace, // 获取元素标签的命名空间
-  staticKeys: genStaticKeys(modules) //生成静态键字符串
+  isPreTag: isPreTag,
+  isUnaryTag: isUnaryTag,
+  mustUseProp: mustUseProp,
+  canBeLeftOpenTag: canBeLeftOpenTag,
+  isReservedTag: isReservedTag,
+  getTagNamespace: getTagNamespace,
+  staticKeys: genStaticKeys(modules)
 };
 
 /*  */
@@ -4253,7 +3928,8 @@ function generate (
   options
 ) {
   var state = new CodegenState(options);
-  var code = ast ? genElement(ast, state) : '_c("div")';
+  // fix #11483, Root level <script> tags should not be rendered.
+  var code = ast ? (ast.tag === 'script' ? 'null' : genElement(ast, state)) : '_c("div")';
   return {
     render: ("with(this){return " + code + "}"),
     staticRenderFns: state.staticRenderFns
@@ -4718,7 +4394,7 @@ function genComment (comment) {
 function genSlot (el, state) {
   var slotName = el.slotName || '"default"';
   var children = genChildren(el, state);
-  var res = "_t(" + slotName + (children ? ("," + children) : '');
+  var res = "_t(" + slotName + (children ? (",function(){return " + children + "}") : '');
   var attrs = el.attrs || el.dynamicAttrs
     ? genProps((el.attrs || []).concat(el.dynamicAttrs || []).map(function (attr) { return ({
         // slot props are camelized
@@ -4795,7 +4471,6 @@ var unaryOperatorsRE = new RegExp('\\b' + (
 ).split(',').join('\\s*\\([^\\)]*\\)|\\b') + '\\s*\\([^\\)]*\\)');
 
 // strip strings in expressions
-// 在表达式中的带状字符串 '\ER' | "\RT" | `\DF${ | }\df`  `sd${
 var stripStringRE = /'(?:[^'\\]|\\.)*'|"(?:[^"\\]|\\.)*"|`(?:[^`\\]|\\.)*\$\{|\}(?:[^`\\]|\\.)*`|`(?:[^`\\]|\\.)*`/g;
 
 // detect problematic expressions in a template
@@ -4909,12 +4584,6 @@ function checkFunctionParameterExpression (exp, text, warn, range) {
 
 var range = 2;
 
-/**
- * 生成代码帧
- * @param {*} source 源代码
- * @param {*} start 开始位置
- * @param {*} end 结束位置
- */
 function generateCodeFrame (
   source,
   start,
@@ -4923,17 +4592,12 @@ function generateCodeFrame (
   if ( start === void 0 ) start = 0;
   if ( end === void 0 ) end = source.length;
 
-  // \r?\n  回车符?换行符 ,进行切割为数组
   var lines = source.split(/\r?\n/);
   var count = 0;
   var res = [];
-  // 遍历数组
   for (var i = 0; i < lines.length; i++) {
-    // 总共有多少个字符 + 1（换行符）
     count += lines[i].length + 1;
-    // 总数大于开始
     if (count >= start) {
-      // 
       for (var j = i - range; j <= i + range || end > count; j++) {
         if (j < 0 || j >= lines.length) { continue }
         res.push(("" + (j + 1) + (repeat$1(" ", 3 - String(j + 1).length)) + "|  " + (lines[j])));
@@ -4983,37 +4647,21 @@ function createFunction (code, errors) {
   }
 }
 
-/**
- * 创建编译到函数的函数
- * @param {*} compile 
- */
 function createCompileToFunctionFn (compile) {
-  // 缓存编译结果
   var cache = Object.create(null);
 
-  /**
-   * 将template 编译为 渲染函数 render
-   */
   return function compileToFunctions (
     template,
     options,
     vm
   ) {
-    // 继承对象
     options = extend({}, options);
-    // 检查选项参数中是否包含warn, 没有使用 baseWarn
     var warn$$1 = options.warn || warn;
-    // 将warn属性，删除
     delete options.warn;
 
     /* istanbul ignore if */
     if (process.env.NODE_ENV !== 'production') {
-      // CSP: 内容安全策略
-      // 将template 编译为 render function,需要依赖 new Function()
       // detect possible CSP restriction
-
-      // 1. 放宽你的csp策略
-      // 2. 预编译： 因为在运行时编译，会被注入其他代码进行污染
       try {
         new Function('return 1');
       } catch (e) {
@@ -5029,8 +4677,7 @@ function createCompileToFunctionFn (compile) {
       }
     }
 
-    // check cache 检查缓存，防止重复编译
-    // 生成缓存key
+    // check cache
     var key = options.delimiters
       ? String(options.delimiters) + template
       : template;
@@ -5041,9 +4688,8 @@ function createCompileToFunctionFn (compile) {
     // compile
     var compiled = compile(template, options);
 
-    // check compilation errors/tips 检查编译（n）错误或者提示
+    // check compilation errors/tips
     if (process.env.NODE_ENV !== 'production') {
-      // errors tips都是数组类型
       if (compiled.errors && compiled.errors.length) {
         if (options.outputSourceRange) {
           compiled.errors.forEach(function (e) {
@@ -5073,22 +4719,16 @@ function createCompileToFunctionFn (compile) {
     // turn code into functions
     var res = {};
     var fnGenErrors = [];
-    // 最终的组件的render函数  参数： 字符串形实的函数体  错误信息
     res.render = createFunction(compiled.render, fnGenErrors);
-    // staticRenderFns主要用于渲染优化
     res.staticRenderFns = compiled.staticRenderFns.map(function (code) {
       return createFunction(code, fnGenErrors)
     });
 
-    // 检查函数生成错误，
     // check function generation errors.
-    // 这个只应该发生在编译器自身有bug时
     // this should only happen if there is a bug in the compiler itself.
-    // 大部分是为了 代码生成 开发使用
     // mostly for codegen development use
     /* istanbul ignore if */
     if (process.env.NODE_ENV !== 'production') {
-      // 打印生成渲染函数过程中的错误
       if ((!compiled.errors || !compiled.errors.length) && fnGenErrors.length) {
         warn$$1(
           "Failed to generate render function:\n\n" +
@@ -5107,48 +4747,22 @@ function createCompileToFunctionFn (compile) {
   }
 }
 
-
-/**
- * 1. 缓存编译结果
- * 2. 调用complie函数将模板字符串转换为函数字符串
- * 3. 调用createFunction函数将渲染函数字符串转换为真正的渲染函数
- * 4. 打印编译错误， 模板字符串=》渲染函数字符，渲染函数字符=》渲染函数
- */
-
 /*  */
 
-
-/**
- * 
- * @param {*} baseCompile 基础编译器
- */
 function createCompilerCreator (baseCompile) {
-  /**
-   * 创建编译器
-   * @param {} 编译器配置
-   */
   return function createCompiler (baseOptions) {
-    /**
-     * 编译函数
-     * @param {*} template 字符串模板
-     * @param {*} options 选项参数
-     */
     function compile (
       template,
       options
     ) {
-      // 最终的编译器选项参数，创建了以baseOptions为原型的 finalOptions常量对象
       var finalOptions = Object.create(baseOptions);
       var errors = [];
       var tips = [];
 
-      // 提示，或者时 错误
       var warn = function (msg, range, tip) {
         (tip ? tips : errors).push(msg);
       };
 
-      // 用户定制选项参数，于默认参数进行合并
-      // baseOptins 是编译器的默认选项参数， options是提供的定制能力的扩展选项
       if (options) {
         if (process.env.NODE_ENV !== 'production' && options.outputSourceRange) {
           // $flow-disable-line
@@ -5157,7 +4771,6 @@ function createCompilerCreator (baseCompile) {
           warn = function (msg, range, tip) {
             var data = { msg: msg };
             if (range) {
-              // 开始，结束
               if (range.start != null) {
                 data.start = range.start + leadingSpaceLength;
               }
@@ -5190,13 +4803,10 @@ function createCompilerCreator (baseCompile) {
 
       finalOptions.warn = warn;
 
-      // 调用baseCompile函数进行对字符串模板的编译
       var compiled = baseCompile(template.trim(), finalOptions);
       if (process.env.NODE_ENV !== 'production') {
-        // 通过抽象语法树检查模板中存在的错误表达式
         detectErrors(compiled.ast, warn);
       }
-      // 将收集到的错误提示添加到compiled对象的errors，tips属性上
       compiled.errors = errors;
       compiled.tips = tips;
       return compiled
@@ -5209,43 +4819,22 @@ function createCompilerCreator (baseCompile) {
   }
 }
 
-/**
- * 基于高级语法到低级语法的编译系统：
- * 将高级，先进，甚至是私有语法，编译为当前浏览器规范内容；最终的产物都是基于平台实现的功能代码；
- * 
- * 基于操作系统的编译系统(原生代码):
- * 将用户代码，编译为二进制，直接使用，cpu的指令集
- * 
- * 1. 生成最终编译器选项参数 finalOptions
- * 2. 对错误的收集
- * 3. 调用baseCompile编译模板字符串
- */
-
 /*  */
 
-// 创建编译器创建器 允许创建编译器使用 解析器/优化器/代码生成器 替换，例如：ssr 优化编译器，这里我们只导出一个默认的编译器作为默认部分
 // `createCompilerCreator` allows creating compilers that use alternative
 // parser/optimizer/codegen, e.g the SSR optimizing compiler.
 // Here we just export a default compiler using the default parts.
-/**
- * @param {} template 模板字符串
- * @param {} options 编译器的选项参数
- */
 var createCompiler = createCompilerCreator(function baseCompile (
   template,
   options
 ) {
-  // 解析模板字符串生成ast
   var ast = parse(template.trim(), options);
-  // 优化ast
   if (options.optimize !== false) {
     optimize(ast, options);
   }
-  // 生成代码
   var code = generate(ast, options);
   return {
     ast: ast,
-    // 渲染函数，都是字符串形式的， 需要通过 new Function来创建 渲染函数
     render: code.render,
     staticRenderFns: code.staticRenderFns
   }
