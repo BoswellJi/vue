@@ -133,7 +133,6 @@ export function createComponent (
 
   // plain options object: turn it into a constructor
   if (isObject(Ctor)) {
-    // 使用extend继承的方式创建子类构造函数
     Ctor = baseCtor.extend(Ctor)
   }
 
@@ -226,9 +225,6 @@ export function createComponent (
   return vnode
 }
 
-/**
- * 通过vnode创建组件实例
- */
 export function createComponentInstanceForVnode (
   // we know it's MountedComponentVNode but flow doesn't
   vnode: any,
@@ -246,7 +242,7 @@ export function createComponentInstanceForVnode (
     options.render = inlineTemplate.render
     options.staticRenderFns = inlineTemplate.staticRenderFns
   }
-  // 子组件实例化开始 vnode.componentOptions.Ctor == Sub 子组件的构造函数
+  // 子组件实例化开始 vnode.componentOptions.Ctor === Sub 子组件的构造函数
   // 实例化内部进行_init调用  Vue.prototype._init方法的初始化
   // vm.$options进行初始化
 
@@ -283,21 +279,13 @@ function mergeHook (f1: any, f2: any): Function {
 
 // transform component v-model info (value and callback) into
 // prop and event handler respectively.
-// 转换双向数据绑定
 function transformModel (options, data: any) {
-  // 选项有model属性， model有prop属性
   const prop = (options.model && options.model.prop) || 'value'
-  // 选项有event
   const event = (options.model && options.model.event) || 'input'
-  //
   ;(data.attrs || (data.attrs = {}))[prop] = data.model.value
-  // 获取事件
   const on = data.on || (data.on = {})
-  // 获取组件的事件
   const existing = on[event]
-  // 获取组件的回调
   const callback = data.model.callback
-  // 存在
   if (isDef(existing)) {
     if (
       Array.isArray(existing)

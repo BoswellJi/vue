@@ -162,12 +162,10 @@ export function defineReactive(
   const setter = property && property.set
 
   /**
-   * 存在getter访问器属性，就不会获取 对象的属性
-   * 之后的val就会使undefined
    *
    * 为什么属性拥有自己的getter时，就不会对其进行深度观测：
    * 1.属性存在getter时，在深度观测之前不会取值，所以，在深度观测语句执行之前取不到属性值，无法深度观测；
-   * 2. 之所以在深度观测之前不取值，是因为属性原本的getter是用户定义，用户可能在getter中做任何想不到的事情；
+   * 2.之所以在深度观测之前不取值，是因为属性原本的getter是用户定义，用户可能在getter中做任何想不到的事情；
    *
    * 1.当数据属性只有getter访问器时，在个属性不会被深度检测，但是defineReactive函数处理之后，该属性将拥有get,set，新值将会被观测，这时候就矛盾了
    * 2.拥有setter的属性，即使拥有getter也要获取属性值并观测之
@@ -177,7 +175,6 @@ export function defineReactive(
   }
 
   // 属性值为对象，进行观察 shallow（浅的）表示对象是否是深度观测的
-  // 子集下的观察者对象
   let childOb = !shallow && observe(val)
 
   Object.defineProperty(obj, key, {
@@ -186,7 +183,6 @@ export function defineReactive(
     get: function reactiveGetter() {
       const value = getter ? getter.call(obj) : val
       if (Dep.target) {
-        // 将dep添加到watcher中
         dep.depend()
         if (childOb) {
           childOb.dep.depend()
@@ -197,9 +193,6 @@ export function defineReactive(
       }
       return value
     },
-    /**
-     * @param {*} newVal
-     */
     set: function reactiveSetter(newVal) {
       const value = getter ? getter.call(obj) : val
       /* eslint-disable no-self-compare */

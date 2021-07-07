@@ -45,7 +45,7 @@ export default class Watcher {
 
   constructor (
     vm: Component,
-    expOrFn: string | Function,
+    expOrFn: string | Function, // 更新组件的函数
     cb: Function,
     options?: ?Object,
     isRenderWatcher?: boolean

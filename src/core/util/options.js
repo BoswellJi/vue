@@ -32,14 +32,6 @@ const strats = config.optionMergeStrategies
  * Options with restrictions
  */
 if (process.env.NODE_ENV !== 'production') {
-  /**
-   * el
-   * propsData
-   * 只能在new Vue({
-   *  el:'#app',
-   * propsData:{}
-   * })实例化的时候才能使用
-   */
   strats.el = strats.propsData = function (parent, child, vm, key) {
     if (!vm) {
       warn(

@@ -10,7 +10,7 @@
       <div ref="dataId" data-id="1">{{age}}</div>
       <button @click="clickHandle">按钮</button>
 
-      <component2 :type="'2'">
+      <component2 :type="'2'" v-model="age">
         <template v-slot:default>
           <div>按钮slot1</div>
         </template>

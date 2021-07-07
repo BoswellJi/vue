@@ -68,11 +68,13 @@ export default class Dep {
 Dep.target = null
 const targetStack = []
 
+// 当前进行依赖收集的Watcher
 export function pushTarget(target: ?Watcher) {
   targetStack.push(target)
   Dep.target = target
 }
 
+// 结束当前依赖收集的Watcher
 export function popTarget() {
   targetStack.pop()
   Dep.target = targetStack[targetStack.length - 1]

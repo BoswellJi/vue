@@ -210,7 +210,6 @@ export function mountComponent(
 
       // mark(startTag)
       const vnode = vm._render()
-      console.log(vnode,'vnode');
       // mark(endTag)
       // measure(`vue ${name} render`, startTag, endTag)
       // mark(startTag)

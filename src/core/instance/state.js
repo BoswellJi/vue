@@ -54,8 +54,6 @@ export function proxy (target: Object, sourceKey: string, key: string) {
 }
 
 /**
- * 这个方法在vue加载后在库的内部直接执行
- * @param {*} vm
  */
 export function initState (vm: Component) {
   vm._watchers = []

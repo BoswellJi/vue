@@ -24,9 +24,8 @@ const SIMPLE_NORMALIZE = 1
 const ALWAYS_NORMALIZE = 2
 
 /***
- * 创建元素vnode
- *
- * 组件创建从 const vm = new Vue({
+ * 组件创建从 
+ * const vm = new Vue({
  *  render(h=createElement){
  *    return h(App);
  *  }
@@ -53,9 +52,7 @@ export function createElement (
   }
   return _createElement(context, tag, data, children, normalizationType)
 }
-/***
- * 创建组件的vnode
- */
+
 export function _createElement (
   context: Component,
   tag?: string | Class<Component> | Function | Object,
@@ -100,7 +97,6 @@ export function _createElement (
     children.length = 0
   }
   // 根据render function的类型不同，处理children
-  // 这里都会返回数组
   if (normalizationType === ALWAYS_NORMALIZE) { // 手写
     children = normalizeChildren(children)
   } else if (normalizationType === SIMPLE_NORMALIZE) { // 编译生成
@@ -122,6 +118,8 @@ export function _createElement (
         config.parsePlatformTagName(tag), data, children,
         undefined, undefined, context
       )
+
+      // 获取组件实例中components选项中是否存在这个key;
     } else if ((!data || !data.pre) && isDef(Ctor = resolveAsset(context.$options, 'components', tag))) {
       // component
       vnode = createComponent(Ctor, data, context, children, tag)

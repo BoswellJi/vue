@@ -10,6 +10,10 @@ const component2 = {
       <div @click="click">点击2</div>
     </div>
   `,
+  model:{
+    prop:'age',
+    event:'ok'
+  },
   props: ["type", "type1"],
   data() {
     return {
@@ -19,7 +23,7 @@ const component2 = {
   },
   methods: {
     click() {
-      this.name = this.i++;
+      this.$emit('ok',this.i++);
     },
   },
 };
