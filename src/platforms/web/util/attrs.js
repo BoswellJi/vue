@@ -43,18 +43,13 @@ export const isBooleanAttr = makeMap(
 export const xlinkNS = 'http://www.w3.org/1999/xlink'
 
 export const isXlink = (name: string): boolean => {
-  // 字符串的第5位索引为 : ,并且从第0位索引到第5位索引,左闭,右开
   return name.charAt(5) === ':' && name.slice(0, 5) === 'xlink'
 }
 
-
 export const getXlinkProp = (name: string): string => {
-  // 获取字符串从第6位索引开始的剩余的所有字符串
   return isXlink(name) ? name.slice(6, name.length) : ''
 }
 
-// 是否是假值
 export const isFalsyAttrValue = (val: any): boolean => {
-  // 值为null,undefined 或者false
   return val == null || val === false
 }

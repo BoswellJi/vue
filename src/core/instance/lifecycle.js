@@ -35,16 +35,11 @@ export function setActiveInstance(vm: Component) {
   }
 }
 
-/**
- * 初始化组件生命周期
- * @param {} vm 组件实例
- */
 export function initLifecycle(vm: Component) {
   const options = vm.$options
 
   // locate first non-abstract parent
-  let parent = options.parent // 父类
-  // 存在父组件，不是abstract（抽象组件一般不渲染真实dom,并且不出现在父子组件的路径上
+  let parent = options.parent 
   if (parent && !options.abstract) {
     while (parent.$options.abstract && parent.$parent) {
       parent = parent.$parent
@@ -53,7 +48,6 @@ export function initLifecycle(vm: Component) {
   }
 
   vm.$parent = parent
-  // 第一个组件为根组件
   vm.$root = parent ? parent.$root : vm
 
   vm.$children = []
@@ -383,15 +377,9 @@ export function deactivateChildComponent(vm: Component, direct?: boolean) {
   }
 }
 
-/**
- * 调用钩子函数
- * @param {*} vm 组件实例
- * @param {*} hook 钩子函数名称
- */
 export function callHook(vm: Component, hook: string) {
   // #7573 disable dep collection when invoking lifecycle hooks
   pushTarget()
-  // 组件的选项定义的钩子函数
   const handlers = vm.$options[hook]
   const info = `${hook} hook`
 

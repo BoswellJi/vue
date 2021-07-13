@@ -29,7 +29,6 @@ export function addClass (el: HTMLElement, cls: ?string) {
 }
 
 /**
- * 因为classList在IE的svg元素中不被支持，所以移除类使用svg兼容的
  * Remove class with compatibility for SVG since classList is not supported on
  * SVG elements in IE
  */

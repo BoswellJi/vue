@@ -10,9 +10,9 @@ const component2 = {
       <div @click="click">点击2</div>
     </div>
   `,
-  model:{
-    prop:'age',
-    event:'ok'
+  model: {
+    prop: 'age',
+    event: 'ok'
   },
   props: ["type", "type1"],
   data() {
@@ -23,7 +23,7 @@ const component2 = {
   },
   methods: {
     click() {
-      this.$emit('ok',this.i++);
+      this.$emit('ok', this.i++);
     },
   },
 };
@@ -50,6 +50,9 @@ const component4 = {
       name: "c4",
     };
   },
+  inject:{
+    name:'Boswell'
+  },
   methods: {
     clickHandle() {
       this.name = "cc4";
@@ -64,14 +67,20 @@ const vm = new Vue({
     component3,
     component4,
   },
+  provide:{
+    Boswell:'Boswell'
+  },
   data: {
     index: 1,
     name: "component4",
     test: "a",
     age: 21,
+    currentBranch:1
   },
   watch: {
-    currentBranch() {},
+    currentBranch(newVal,oldVal) { 
+      return newVal;
+    },
   },
   filters: {
     truncate: function (v) {
@@ -82,10 +91,18 @@ const vm = new Vue({
       return v.replace(/T|Z/g, " ");
     },
   },
+  computed: {
+    ageName: {
+      get() {
+        return this.age + this.name;
+      },
+    }
+  },
   methods: {
     clickHandle() {
       this.index = this.index == 1 ? 2 : 1;
-      this.name = this.name == "component4" ? "component3" : "component4";;
+      this.name = this.name == "component4" ? "component3" : "component4";
+      this.currentBranch = this.currentBranch == 1 ? 2 : 1
     },
   },
 });

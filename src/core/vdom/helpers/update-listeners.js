@@ -57,15 +57,6 @@ export function createFnInvoker (fns: Function | Array<Function>, vm: ?Component
   return invoker
 }
 
-/**
- * 更新监听器
- * @param {*} on 
- * @param {*} oldOn 
- * @param {*} add 
- * @param {*} remove 
- * @param {*} createOnceHandler 
- * @param {*} vm 
- */
 export function updateListeners (
   on: Object,
   oldOn: Object,

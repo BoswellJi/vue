@@ -52,18 +52,6 @@ export function initMixin(Vue: Class<Component>) {
     }
     // expose real self
     vm._self = vm
-    /**
-     * lifecycle
-     * events
-     * render
-     *
-     * beforeCreate
-     * injections
-     * state(reactivity)
-     * provide
-     * created
-     *
-     */
     initLifecycle(vm)
     initEvents(vm)
     initRender(vm)

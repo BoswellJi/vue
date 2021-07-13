@@ -46,10 +46,6 @@ if (process.env.NODE_ENV !== 'production') {
 
 
 /**
- data,beforeCreate,created,beforeMount,mounted,beforeUpdate,updated,beforeDestroy,destroyed,activated,deactivated,errorCaptured,serverPrefetch,filter,directive,component,watch,props,methods,inject,computed,provide
- */
-
-/**
  * Helper that recursively merges two data objects together.
  */
 function mergeData(to: Object, from: ?Object): Object {
@@ -258,7 +254,6 @@ strats.props =
     vm?: Component,
     key: string
   ): ?Object {
-    //
     if (childVal && process.env.NODE_ENV !== 'production') {
       assertObjectType(key, childVal, vm)
     }

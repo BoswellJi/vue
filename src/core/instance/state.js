@@ -36,12 +36,6 @@ const sharedPropertyDefinition = {
   set: noop
 }
 
-/**
- * 对象代理函数
- * @param {*} target 对象
- * @param {*} sourceKey _data,_prop
- * @param {*} key 对象属性
- */
 export function proxy (target: Object, sourceKey: string, key: string) {
   sharedPropertyDefinition.get = function proxyGetter () {
     return this[sourceKey][key]
@@ -49,20 +43,15 @@ export function proxy (target: Object, sourceKey: string, key: string) {
   sharedPropertyDefinition.set = function proxySetter (val) {
     this[sourceKey][key] = val
   }
-  // 在对象实例上，定义与_data对象相同的属性，但是值还是从_data对象上获取，所以target代理了_data对象
   Object.defineProperty(target, key, sharedPropertyDefinition)
 }
 
-/**
- */
 export function initState (vm: Component) {
   vm._watchers = []
   const opts = vm.$options
-  // props的初始化早于data，所以可以使用props来初始化data的值
   if (opts.props) initProps(vm, opts.props)
   if (opts.methods) initMethods(vm, opts.methods)
   if (opts.data) {
-    // data的初始化在，props，methods之后，在computed,watch之前
     initData(vm)
   } else {
     /**
@@ -130,7 +119,6 @@ function initProps (vm: Component, propsOptions: Object) {
 
 function initData (vm: Component) {
   let data = vm.$options.data
-  // 这个typeof data的检查是有必要的，因为在beforeCreated钩子函数中可以， this.$options.data = {} 修改data的值
   data = vm._data = typeof data === 'function'
     ? getData(data, vm)
     : data || {}
@@ -173,7 +161,6 @@ function initData (vm: Component) {
 export function getData (data: Function, vm: Component): any {
   // #7573 disable dep collection when invoking data getters
   pushTarget()
-  // 这里是为了防止 this.data的赋值
   try {
     return data.call(vm, vm)
   } catch (e) {
@@ -194,15 +181,6 @@ function initComputed (vm: Component, computed: Object) {
 
   for (const key in computed) {
     const userDef = computed[key]
-    /**
-     * computed:{
-     *    attr1:{
-     *        get(){}
-     *    },
-     *    attr2:(){}
-     * }
-     */
-    // 获取计算属性的值为函数， 直接返回， 不为函数，返回get方法
     const getter = typeof userDef === 'function' ? userDef : userDef.get
     if (process.env.NODE_ENV !== 'production' && getter == null) {
       warn(
@@ -227,7 +205,6 @@ function initComputed (vm: Component, computed: Object) {
     if (!(key in vm)) {
       defineComputed(vm, key, userDef)
     } else if (process.env.NODE_ENV !== 'production') {
-      // 判断是否被定义过
       if (key in vm.$data) {
         warn(`The computed property "${key}" is already defined in data.`, vm)
       } else if (vm.$options.props && key in vm.$options.props) {
@@ -244,7 +221,6 @@ export function defineComputed (
   key: string,
   userDef: Object | Function
 ) {
-  // 非服务端渲染，可以缓存计算属性
   const shouldCache = !isServerRendering()
   if (typeof userDef === 'function') {
     sharedPropertyDefinition.get = shouldCache
@@ -271,10 +247,6 @@ export function defineComputed (
   Object.defineProperty(target, key, sharedPropertyDefinition)
 }
 
-/**
- * 创建计算getter
- * @param {*} key 键
- */
 function createComputedGetter (key) {
   return function computedGetter () {
     const watcher = this._computedWatchers && this._computedWatchers[key]
@@ -290,10 +262,6 @@ function createComputedGetter (key) {
   }
 }
 
-/**
- * 创建getter
- * @param {*} fn
- */
 function createGetterInvoker(fn) {
   return function computedGetter () {
     return fn.call(this, this)
@@ -330,20 +298,6 @@ function initMethods (vm: Component, methods: Object) {
 
 function initWatch (vm: Component, watch: Object) {
   for (const key in watch) {
-    /**
-     * watch:{
-     *  a(val,oldVal){
-     *
-     *  },
-     *  b:[
-     *    ()=>{},
-     *  ],
-     *  c:{
-     *    handler:()=>{}
-     *  },
-     *  d:'b'
-     * }
-     */
     const handler = watch[key]
     if (Array.isArray(handler)) {
       for (let i = 0; i < handler.length; i++) {

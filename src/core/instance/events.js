@@ -71,7 +71,6 @@ export function eventsMixin(Vue: Class<Component>) {
     return vm
   }
 
-  // 只绑定一次
   Vue.prototype.$once = function (event: string, fn: Function): Component {
     const vm: Component = this
     function on() {
@@ -100,17 +99,14 @@ export function eventsMixin(Vue: Class<Component>) {
     }
     // specific event
     const cbs = vm._events[event]
-    // 不存在这个自定义事件
     if (!cbs) {
       return vm
     }
-    // 不能存在解绑后的回调，直接取消
     if (!fn) {
       vm._events[event] = null
       return vm
     }
     // specific handler
-    // 指定的自定义事件，有多个订阅，指定解绑方法的取消
     let cb
     let i = cbs.length
     while (i--) {
@@ -123,7 +119,6 @@ export function eventsMixin(Vue: Class<Component>) {
     return vm
   }
 
-  // 触发事件
   Vue.prototype.$emit = function (event: string): Component {
     const vm: Component = this
     if (process.env.NODE_ENV !== 'production') {
@@ -138,15 +133,12 @@ export function eventsMixin(Vue: Class<Component>) {
         )
       }
     }
-    // 获取自定义事件的订阅方法
     let cbs = vm._events[event]
-    // 存在
     if (cbs) {
       cbs = cbs.length > 1 ? toArray(cbs) : cbs
       const args = toArray(arguments, 1)
       const info = `event handler for "${event}"`
       for (let i = 0, l = cbs.length; i < l; i++) {
-        // 触发定义的回调
         invokeWithErrorHandling(cbs[i], vm, args, vm, info)
       }
     }
