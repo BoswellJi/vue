@@ -13,9 +13,6 @@ import { extend, mergeOptions, formatComponentName } from '../util/index'
 let uid = 0
 
 export function initMixin(Vue: Class<Component>) {
-  /**
-   * @param {Object} options
-   */
   Vue.prototype._init = function (options?: Object) {
     const vm: Component = this
     vm._uid = uid++
@@ -108,7 +105,6 @@ export function resolveConstructorOptions(Ctor: Class<Component>) {
       if (modifiedOptions) {
         extend(Ctor.extendOptions, modifiedOptions)
       }
-      // 将superOptions与extendOptions进行合并
       options = Ctor.options = mergeOptions(superOptions, Ctor.extendOptions)
       if (options.name) {
         options.components[options.name] = Ctor
@@ -130,6 +126,5 @@ function resolveModifiedOptions(Ctor: Class<Component>): ?Object {
       modified[key] = latest[key]
     }
   }
-  // 找出options被修改的部分
   return modified
 }

@@ -17,14 +17,7 @@ import {
   validateProp
 } from '../util/index'
 
-/**
- * 函数式渲染上下文
- * @param {*} data vnode的data
- * @param {*} props 
- * @param {*} children 子vnode
- * @param {*} parent 父组件
- * @param {*} Ctor 
- */
+
 export function FunctionalRenderContext (
   data: VNodeData,
   props: Object,
@@ -144,7 +137,6 @@ function cloneAndMarkFunctionalResult (vnode, data, contextVm, options, renderCo
   // #7817 clone node before setting fnContext, otherwise if the node is reused
   // (e.g. it was from a cached normal slot) the fnContext causes named slots
   // that should not be matched to match.
-  // 克隆vnode
   const clone = cloneVNode(vnode)
   clone.fnContext = contextVm
   clone.fnOptions = options
@@ -157,15 +149,9 @@ function cloneAndMarkFunctionalResult (vnode, data, contextVm, options, renderCo
   return clone
 }
 
-/**
- * 合并属性
- * @param {*} to 
- * @param {*} from 
- */
+
 function mergeProps (to, from) {
-  // 遍历目标对象
   for (const key in from) {
-    // 添加到源对象上
     to[camelize(key)] = from[key]
   }
 }

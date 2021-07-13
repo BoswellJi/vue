@@ -10,7 +10,7 @@
       <div ref="dataId" data-id="1">{{age}}</div>
       <button @click="clickHandle">按钮</button>
 
-      <component2 :type="'2'" v-model="age">
+      <!-- <component2 :type="'2'" v-model="age">
         <template v-slot:default>
           <div>按钮slot1</div>
         </template>
@@ -18,23 +18,23 @@
           <div>按钮 header{{scope.obj}}</div>
         </template>
         不在v-slot中的内容
-      </component2>
+      </component2> -->
       
-      <keep-alive>
+      <!-- <keep-alive>
         <component3 v-if="index==1"></component3>
         <component4 v-if="index==2"></component4>
         <div>alive1</div>
         <div>alive2</div>
-      </keep-alive>
+      </keep-alive> -->
 
       <component :is="name"></component>
 
-      <keep-alive>
+      <!-- <keep-alive>
         <component :is="name"></component>
       </keep-alive>
 
       {{ageName}}
-      {{currentBranch}}
+      {{currentBranch}} -->
     </div>
     <script src="mock.js"></script>
     <script src="app.js"></script>

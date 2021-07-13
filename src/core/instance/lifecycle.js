@@ -18,17 +18,11 @@ import {
   invokeWithErrorHandling
 } from '../util/index'
 
-// options.parent 的值
 export let activeInstance: any = null
 export let isUpdatingChildComponent: boolean = false
 
-/**
- * activeInstance 与 preActiveInstance是父子关系
- */
 export function setActiveInstance(vm: Component) {
-  // 上一个活跃的组件实例
   const prevActiveInstance = activeInstance
-  // 新的组件实例
   activeInstance = vm
   return () => {
     activeInstance = prevActiveInstance
@@ -68,9 +62,7 @@ export function lifecycleMixin(Vue: Class<Component>) {
     const prevEl = vm.$el
     const prevVnode = vm._vnode
 
-    // 将当前组件设置为活跃组件实例
     const restoreActiveInstance = setActiveInstance(vm)
-    // 重新添加新的虚拟节点 vm._vnode 与vm.$vnode 是父子级关系
     // vm._vnode.parent === vm.$vnode
     vm._vnode = vnode
     // Vue.prototype.__patch__ is injected in entry points
@@ -116,24 +108,18 @@ export function lifecycleMixin(Vue: Class<Component>) {
     vm._isBeingDestroyed = true
     // remove self from parent
     const parent = vm.$parent
-    // 父组件实例存在，父组件不是正在被销毁，组件的选项中没有abstract属性
     if (parent && !parent._isBeingDestroyed && !vm.$options.abstract) {
-      // 从父组件中删除，父组件下的所有子组件，vm,组件实例应用
       remove(parent.$children, vm)
     }
     // teardown watchers
-    // 卸载watchers,child components listeners
     if (vm._watcher) {
       vm._watcher.teardown()
     }
-    // 组件的观察者数量
     let i = vm._watchers.length
     while (i--) {
-      // 将没有给观察者卸载
       vm._watchers[i].teardown()
     }
     // remove reference from data ob
-    // 冻结对象，不能有观察者
     // frozen object may not have observer.
     if (vm._data.__ob__) {
       vm._data.__ob__.vmCount--
@@ -143,26 +129,20 @@ export function lifecycleMixin(Vue: Class<Component>) {
     // invoke destroy hooks on current rendered tree
     vm.__patch__(vm._vnode, null)
     // fire destroyed hook
-    // 触发组件销毁完成钩子函数
     callHook(vm, 'destroyed')
     // turn off all instance listeners.
-    // 组件关闭所有自定义监听函数
     vm.$off()
     // remove __vue__ reference
-    // 移除引用
     if (vm.$el) {
       vm.$el.__vue__ = null
     }
-    // 释放循环引用
     // release circular reference (#6759)
     if (vm.$vnode) {
       vm.$vnode.parent = null
     }
   }
 }
-/***
- * 安装组件
- */
+
 export function mountComponent(
   vm: Component,
   el: ?Element,
@@ -194,7 +174,6 @@ export function mountComponent(
 
   let updateComponent
   /* istanbul ignore if */
-  // render + update 是同步操作
   if (process.env.NODE_ENV !== 'production' && config.performance && mark) {
     updateComponent = () => {
       const name = vm._name
@@ -212,7 +191,6 @@ export function mountComponent(
       // measure(`vue ${name} patch`, startTag, endTag)
     }
   } else {
-    // 每个组件状态更新时
     updateComponent = () => {
       const vnode = vm._render()
       vm._update(vnode, hydrating)
@@ -327,9 +305,7 @@ function isInInactiveTree(vm) {
   }
   return false
 }
-/**
- * 使组件活跃 keep-alive中
- */
+
 export function activateChildComponent(vm: Component, direct?: boolean) {
   if (direct) {
     vm._directInactive = false
@@ -365,9 +341,7 @@ export function deactivateChildComponent(vm: Component, direct?: boolean) {
       return
     }
   }
-  // 非失活组件
   if (!vm._inactive) {
-    // 设置失活
     vm._inactive = true
 
     for (let i = 0; i < vm.$children.length; i++) {

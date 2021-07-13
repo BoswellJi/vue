@@ -13,17 +13,11 @@ export default {
 }
 
 function updateDirectives (oldVnode: VNodeWithData, vnode: VNodeWithData) {
-  // 老vnode的指令存在 或者 新vnode的指令是否存在
   if (oldVnode.data.directives || vnode.data.directives) {
     _update(oldVnode, vnode)
   }
 }
 
-/**
- *
- * @param {*} oldVnode 老vnode
- * @param {*} vnode 当前vnode
- */
 function _update (oldVnode, vnode) {
   // 获取一个空vnode，老vnode为空vnode,说明第一次创建
   const isCreate = oldVnode === emptyNode
@@ -160,15 +154,6 @@ function getRawDirName (dir: VNodeDirective): string {
   return dir.rawName || `${dir.name}.${Object.keys(dir.modifiers || {}).join('.')}`
 }
 
-
-/**
- *
- * @param {*} dir 指令
- * @param {*} hook 钩子函数
- * @param {*} vnode
- * @param {*} oldVnode 老vnode
- * @param {*} isDestroy 是否被销毁
- */
 function callHook (dir, hook, vnode, oldVnode, isDestroy) {
   // 指令中定义的钩子函数
   const fn = dir.def && dir.def[hook]

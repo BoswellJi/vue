@@ -91,10 +91,6 @@ function createKeyToOldIdx(children, beginIdx, endIdx) {
   return map
 }
 
-/**
- * 创建补丁函数
- * @param {*} backend 后端
- */
 export function createPatchFunction(backend) {
   let i, j
   const cbs = {}
@@ -110,17 +106,10 @@ export function createPatchFunction(backend) {
     }
   }
 
-  /**
-   * 创建一个空节点的vnode
-   */
   function emptyNodeAt(elm) {
     return new VNode(nodeOps.tagName(elm).toLowerCase(), {}, [], undefined, elm)
   }
 
-  /**
-   * @param {*} childElm
-   * @param {*} listeners
-   */
   function createRmCb(childElm, listeners) {
     function remove() {
       if (--remove.listeners === 0) {
@@ -131,10 +120,6 @@ export function createPatchFunction(backend) {
     return remove
   }
 
-  /**
-   * 移除节点
-   * @param {*} el dom节点对象
-   */
   function removeNode(el) {
     const parent = nodeOps.parentNode(el)
     // element may have already been removed due to v-html / v-text
@@ -143,10 +128,6 @@ export function createPatchFunction(backend) {
     }
   }
 
-  /**
-   * @param {*} vnode
-   * @param {*} inVPre
-   */
   function isUnknownElement(vnode, inVPre) {
     return (
       !inVPre &&
@@ -166,7 +147,7 @@ export function createPatchFunction(backend) {
   let creatingElmInVPre = 0
 
   /**
-   * 通过vnode创建真实DOM，插入文档中
+   * 通过vnode创建真实DOM
    */
   function createElm(
     vnode,
@@ -194,6 +175,7 @@ export function createPatchFunction(backend) {
     const data = vnode.data
     const children = vnode.children
     const tag = vnode.tag
+    // 元素/组件，注释，文本
     if (isDef(tag)) {
       if (process.env.NODE_ENV !== 'production') {
         if (data && data.pre) {
@@ -209,7 +191,6 @@ export function createPatchFunction(backend) {
         }
       }
 
-      // 创建占位符元素
       vnode.elm = vnode.ns
         ? nodeOps.createElementNS(vnode.ns, tag)
         : nodeOps.createElement(tag, vnode)
@@ -239,7 +220,6 @@ export function createPatchFunction(backend) {
         if (isDef(data)) {
           invokeCreateHooks(vnode, insertedVnodeQueue)
         }
-        // 真正将将节点插入父节点
         insert(parentElm, vnode.elm, refElm)
       }
 
@@ -259,7 +239,7 @@ export function createPatchFunction(backend) {
     let i = vnode.data
     if (isDef(i)) {
       const isReactivated = isDef(vnode.componentInstance) && i.keepAlive
-      // 只有组件的vnode有hook
+      // 只有组件vnode（tag:'comp1'）有hook
       if (isDef(i = i.hook) && isDef(i = i.init)) {
         i(vnode, false /* hydrating */)
       }
@@ -768,6 +748,9 @@ export function createPatchFunction(backend) {
     }
   }
 
+  /***
+   * 开始安装组件vnode
+   */
   return function patch(oldVnode, vnode, hydrating, removeOnly) {
     if (isUndef(vnode)) {
       if (isDef(oldVnode)) invokeDestroyHook(oldVnode)

@@ -8,7 +8,6 @@ let uid = 0
 
 
 /**
- * 一个依赖是一个可观察对象，它有多个订阅他的指令
  * A dep is an observable that can have multiple
  * directives subscribing to it.
  */
@@ -41,13 +40,12 @@ export default class Dep {
   }
 
   depend() {
-    // 将对象属性的依赖收集对象dep添加到watcher中
     if (Dep.target) {
       Dep.target.addDep(this)
     }
   }
 
-    notify() {
+  notify() {
     // stabilize the subscriber list first
     const subs = this.subs.slice()
     if (process.env.NODE_ENV !== 'production' && !config.async) {
@@ -68,13 +66,11 @@ export default class Dep {
 Dep.target = null
 const targetStack = []
 
-// 当前进行依赖收集的Watcher
 export function pushTarget(target: ?Watcher) {
   targetStack.push(target)
   Dep.target = target
 }
 
-// 结束当前依赖收集的Watcher
 export function popTarget() {
   targetStack.pop()
   Dep.target = targetStack[targetStack.length - 1]

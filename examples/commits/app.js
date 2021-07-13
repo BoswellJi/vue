@@ -50,8 +50,8 @@ const component4 = {
       name: "c4",
     };
   },
-  inject:{
-    name:'Boswell'
+  inject: {
+    name: 'Boswell'
   },
   methods: {
     clickHandle() {
@@ -67,18 +67,18 @@ const vm = new Vue({
     component3,
     component4,
   },
-  provide:{
-    Boswell:'Boswell'
+  provide: {
+    Boswell: 'Boswell'
   },
   data: {
     index: 1,
     name: "component4",
     test: "a",
     age: 21,
-    currentBranch:1
+    currentBranch: 1
   },
   watch: {
-    currentBranch(newVal,oldVal) { 
+    currentBranch(newVal, oldVal) {
       return newVal;
     },
   },

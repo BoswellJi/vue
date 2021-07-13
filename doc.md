@@ -19,13 +19,16 @@
   - virtual dom系统
 
 * 平台运行时
-  - 
 
-## diff
+## patch
 
 * 核心逻辑为vnode的同层比较；
 * 完全相同的vnode才会去深度比较内部vnode;
 * diff的核心逻辑updateChildren;
+* 期间vnode为component时，会调用vnode的init hook，的vm.$mount;
+* createElm（元素，注释，文本
+  - 组件/元素createChildren
+    - 遍历child vnode创建createElm
 
 ## 响应式
 

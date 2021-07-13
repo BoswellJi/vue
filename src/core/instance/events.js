@@ -15,7 +15,6 @@ export function initEvents(vm: Component) {
   // init parent attached events
   const listeners = vm.$options._parentListeners
 
-  // 这里我想到的是，用script标签引入时，创建的Vue构造函数的子构造函数来创建组件时
   if (listeners) {
     updateComponentListeners(vm, listeners)
   }

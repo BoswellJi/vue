@@ -33,16 +33,7 @@ import {
 } from 'weex/runtime/recycle-list/render-component-template'
 
 // inline hooks to be invoked on component VNodes during patch
-/**
- * 子组件的产生流程：
- * 组件的vnode的钩子函数
- * 1. 进行组件的实例化，Sub Vue的构造函数的子类，进行_init
- * 2. 组件进行安装$mount
- * 3. 调用mountComponent方法
- * 4. 进行将组件生成vnode操作  vm._render
- * 5. vm._update
- * 6. vm._patch 中进行diff ,并生成真实dom,并插入父节点
- */
+// **组件vnode/组件节点** 上被调用的内联钩子
 const componentVNodeHooks = {
   init (vnode: VNodeWithData, hydrating: boolean): ?boolean {
     if (
@@ -58,9 +49,6 @@ const componentVNodeHooks = {
         vnode,
         activeInstance
       )
-
-      // 调用 mountComponent , vm._render() ,vm.__patch__
-      // 这里有组件本身初始化时进行安装，不在Vue.prototype._init函数中进行安装
       child.$mount(hydrating ? vnode.elm : undefined, hydrating)
     }
   },
@@ -81,7 +69,6 @@ const componentVNodeHooks = {
     const { context, componentInstance } = vnode
     if (!componentInstance._isMounted) {
       componentInstance._isMounted = true
-      // 子组件的安装完成生命周期
       callHook(componentInstance, 'mounted')
     }
     if (vnode.data.keepAlive) {
@@ -110,14 +97,8 @@ const componentVNodeHooks = {
   }
 }
 
-// 预定义的vnode钩子函数
 const hooksToMerge = Object.keys(componentVNodeHooks)
 
-/**
- * 1. 构造子类构造器函数
- * 2. 安装组件的vnode钩子函数
- * 3. 实例化vnode
- */
 export function createComponent (
   Ctor: Class<Component> | Function | Object | void,
   data: ?VNodeData,
@@ -242,16 +223,10 @@ export function createComponentInstanceForVnode (
     options.render = inlineTemplate.render
     options.staticRenderFns = inlineTemplate.staticRenderFns
   }
-  // 子组件实例化开始 vnode.componentOptions.Ctor === Sub 子组件的构造函数
-  // 实例化内部进行_init调用  Vue.prototype._init方法的初始化
-  // vm.$options进行初始化
 
   return new vnode.componentOptions.Ctor(options)
 }
 
-/***
- * 将组件vnode自定义钩子函数与预定义的钩子合并
- */
 function installComponentHooks (data: VNodeData) {
   const hooks = data.hook || (data.hook = {})
   for (let i = 0; i < hooksToMerge.length; i++) {
@@ -264,9 +239,6 @@ function installComponentHooks (data: VNodeData) {
   }
 }
 
-/**
- * 合并钩子函数
- */
 function mergeHook (f1: any, f2: any): Function {
   const merged = (a, b) => {
     // flow complains about extra args which is why we use any
