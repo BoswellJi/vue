@@ -174,7 +174,6 @@ export function defineReactive(
     val = obj[key]
   }
 
-  // 属性值为对象，进行观察 shallow（浅的）表示对象是否是深度观测的
   let childOb = !shallow && observe(val)
 
   Object.defineProperty(obj, key, {

@@ -71,10 +71,12 @@ export function initMixin(Vue: Class<Component>) {
   }
 }
 
+/***
+ * 处理组件vnode
+ */
 export function initInternalComponent(vm: Component, options: InternalComponentOptions) {
   const opts = vm.$options = Object.create(vm.constructor.options)
   // doing this because it's faster than dynamic enumeration.
-
   const parentVnode = options._parentVnode
   opts.parent = options.parent
   opts._parentVnode = parentVnode
@@ -90,9 +92,12 @@ export function initInternalComponent(vm: Component, options: InternalComponentO
   }
 }
 
+/***
+ * 解析组件构造函数(组件的类)的options
+ */
 export function resolveConstructorOptions(Ctor: Class<Component>) {
   let options = Ctor.options
-  if (Ctor.super) {
+  if (Ctor.super) { //Vue
     const superOptions = resolveConstructorOptions(Ctor.super)
     const cachedSuperOptions = Ctor.superOptions
     if (superOptions !== cachedSuperOptions) {
@@ -114,6 +119,9 @@ export function resolveConstructorOptions(Ctor: Class<Component>) {
   return options
 }
 
+/***
+ * 对比组件的options,是否被修改
+ */
 function resolveModifiedOptions(Ctor: Class<Component>): ?Object {
   let modified
   // options

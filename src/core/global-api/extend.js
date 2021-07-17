@@ -14,7 +14,6 @@ export function initExtend (Vue: GlobalAPI) {
   let cid = 1
 
   /**
-   * 在编译器+运行时的版本中进行使用的特性
    * Class inheritance
    * @param {Object} extendOptions 
    */

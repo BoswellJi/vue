@@ -30,7 +30,7 @@ const component2 = {
 
 const component3 = {
   template: `
-    <div id="component2">
+    <div id="component3">
       component3
     </div>
   `,

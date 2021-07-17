@@ -47,10 +47,6 @@ export const emptyNode = new VNode('', {}, [])
 
 const hooks = ['create', 'activate', 'update', 'remove', 'destroy']
 
-/**
- * @param {*} a
- * @param {*} b
- */
 function sameVnode(a, b) {
   return (
     a.key === b.key &&
@@ -68,14 +64,9 @@ function sameVnode(a, b) {
   )
 }
 
-/**
- * @param {*} a
- * @param {*} b
- */
 function sameInputType(a, b) {
   if (a.tag !== 'input') return true
   let i
-  // data的attrs的type都存在,都相等,或者都不存在 或者 都是文本输入框
   const typeA = isDef(i = a.data) && isDef(i = i.attrs) && i.type
   const typeB = isDef(i = b.data) && isDef(i = i.attrs) && i.type
   return typeA === typeB || isTextInputType(typeA) && isTextInputType(typeB)
@@ -94,7 +85,6 @@ function createKeyToOldIdx(children, beginIdx, endIdx) {
 export function createPatchFunction(backend) {
   let i, j
   const cbs = {}
-
   const { modules, nodeOps } = backend
 
   for (i = 0; i < hooks.length; ++i) {
@@ -168,10 +158,12 @@ export function createPatchFunction(backend) {
     }
     vnode.isRootInsert = !nested // for transition enter check
 
+    // 组件vnode，创建成功直接返回
     if (createComponent(vnode, insertedVnodeQueue, parentElm, refElm)) {
       return
     }
 
+    // html元素创建
     const data = vnode.data
     const children = vnode.children
     const tag = vnode.tag
@@ -239,7 +231,6 @@ export function createPatchFunction(backend) {
     let i = vnode.data
     if (isDef(i)) {
       const isReactivated = isDef(vnode.componentInstance) && i.keepAlive
-      // 只有组件vnode（tag:'comp1'）有hook
       if (isDef(i = i.hook) && isDef(i = i.init)) {
         i(vnode, false /* hydrating */)
       }
@@ -431,6 +422,9 @@ export function createPatchFunction(backend) {
     }
   }
 
+  /***
+   * 对vnode的child vnode进行比较更新 diff
+   */
   function updateChildren(parentElm, oldCh, newCh, insertedVnodeQueue, removeOnly) {
     let oldStartIdx = 0
     let newStartIdx = 0
@@ -542,7 +536,12 @@ export function createPatchFunction(backend) {
   }
 
   /**
-   * diff
+   * old vnode与 new vnode 对比
+   * 1. new vnode不是text vnode
+   *  1.1. child vnode 不相同 updateChildren
+   *  1.2 old child vnode不存在，
+   * 
+   * 2. 是text vnode直接更新
    */
   function patchVnode(
     oldVnode,
@@ -585,9 +584,6 @@ export function createPatchFunction(backend) {
       return
     }
 
-    /***
-     * 这里是更新组件的判断
-     */
     let i
     const data = vnode.data
     if (isDef(data) && isDef(i = data.hook) && isDef(i = i.prepatch)) {
@@ -626,7 +622,6 @@ export function createPatchFunction(backend) {
   function invokeInsertHook(vnode, queue, initial) {
     // delay insert hooks for component root nodes, invoke them after the
     // element is really inserted
-    //
     if (isTrue(initial) && isDef(vnode.parent)) {
       vnode.parent.data.pendingInsert = queue
     } else {
@@ -750,6 +745,10 @@ export function createPatchFunction(backend) {
 
   /***
    * 开始安装组件vnode
+   * 
+   * 1. oldVnode不存在，直接重新创建
+   * 2. oldVnode是真实dom或者oldVnode与newVnode不同,直接创建
+   * 3. oldVnode不是是真实dom,oldVnode与newVnode相同,进行补丁计算
    */
   return function patch(oldVnode, vnode, hydrating, removeOnly) {
     if (isUndef(vnode)) {
@@ -765,7 +764,6 @@ export function createPatchFunction(backend) {
       isInitialPatch = true
       createElm(vnode, insertedVnodeQueue)
     } else {
-      // oldVnode有dom与vnode之分
       const isRealElement = isDef(oldVnode.nodeType)
       if (!isRealElement && sameVnode(oldVnode, vnode)) {
         // patch existing root node /diff

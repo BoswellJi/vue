@@ -8,30 +8,17 @@
  * 10进制的小数,转换为2进制,小数部分乘以2,每次取整数部分,一直乘下去,直到结果为1(每次取结果的小数继续乘
  */
 
-/**
- * vnode 种类
- * html
- * svg
- * 普通有状态组件
- * 需要被keepAlive的有状态组件
- * 已经被keepAlive的有状态组件
- * 函数式
- * 纯文本
- * Fragment
- * Portal
- *
- * create/createElement vnode -> diff->  patch （vnode-> dom
- */
+
 export default class VNode {
-  tag: string | void; // 标签
+  tag: string | void; 
   data: VNodeData | void; // 相关数据：属性，事件，样式等
-  children: ?Array<VNode>; // 子节点
-  text: string | void;  // 文本节点的文本
-  elm: Node | void; // 真实DOM对象
-  ns: string | void; // 元素的命名空间
+  children: ?Array<VNode>; 
+  text: string | void;  
+  elm: Node | void; 
+  ns: string | void; 
   context: Component | void; // rendered in this component's scope，
-  key: string | number | void; // 节点的key，value
-  componentOptions: VNodeComponentOptions | void; // 组件options
+  key: string | number | void; // :key="item.id"
+  componentOptions: VNodeComponentOptions | void; 
   componentInstance: Component | void; // component instance
   parent: VNode | void; // component placeholder node
 
@@ -43,8 +30,8 @@ export default class VNode {
   isCloned: boolean; // is a cloned node?
   isOnce: boolean; // is a v-once node?
   asyncFactory: Function | void; // async component factory function
-  asyncMeta: Object | void; // 异步元数据
-  isAsyncPlaceholder: boolean; // 是否为异步占位符
+  asyncMeta: Object | void; 
+  isAsyncPlaceholder: boolean; 
   fnContext: Component | void; // real context vm for functional nodes
   fnOptions: ?ComponentOptions; // for SSR caching
   devtoolsMeta: ?Object; // used to store functional render context for devtools

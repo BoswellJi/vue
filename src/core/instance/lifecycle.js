@@ -315,26 +315,16 @@ export function activateChildComponent(vm: Component, direct?: boolean) {
   } else if (vm._directInactive) {
     return
   }
-  // 是不活跃组件
   if (vm._inactive || vm._inactive === null) {
-    // 改为false
     vm._inactive = false
-    // 获取子组件，对子组件进行激活
     for (let i = 0; i < vm.$children.length; i++) {
       activateChildComponent(vm.$children[i])
     }
-    // 已被激活
     callHook(vm, 'activated')
   }
 }
 
-/**
- * 使组件失去活跃
- * @param {*} vm
- * @param {*} direct
- */
 export function deactivateChildComponent(vm: Component, direct?: boolean) {
-  // 直接失活
   if (direct) {
     vm._directInactive = true
     if (isInInactiveTree(vm)) {

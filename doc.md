@@ -26,16 +26,21 @@
 * 完全相同的vnode才会去深度比较内部vnode;
 * diff的核心逻辑updateChildren;
 * 期间vnode为component时，会调用vnode的init hook，的vm.$mount;
-* createElm（元素，注释，文本
-  - 组件/元素createChildren
-    - 遍历child vnode创建createElm
+
+* createElm
+  - createComponent
+  - createElement
+
+* patchVnode
+  - updateChildren: vnode的child vnode不同，需要再进行比对
+  - addVnodes：oldVnodeChild不存在，直接添加
+  - removeVnodes：newVnodeChild不存在，直接删除
 
 ## 响应式
 
-- 组件中响应式属性发生变化时，会通知响应式属性的 watcher,会重新渲染 vnode,也就是执行 render,patch 函数;
-- 一次只有一个 watcher 被执行；
-- 一个组件模板中多个响应式属性的 dep 的 Watcher 都是同一个；
+- **一个组件模板中多个响应式属性的 dep 的 Watcher 都是同一个**；
 - 一个 watcher 有多个响应式属性的 Dep 实例(组件本身响应式属性；
+- **一个响应式属性的依赖可能存在多个Watcher中，每个依赖就是一个Watcher**;
 
 ## 组件化
 
@@ -50,3 +55,4 @@
 
 ## computed option
 
+* 会new Watcher对computed中的响应式属性进行监听，没有变化就会使用上次缓存的值，变化了重新执行并缓存下来；

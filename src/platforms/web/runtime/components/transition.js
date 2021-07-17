@@ -41,25 +41,16 @@ function getRealChild(vnode: ?VNode): ?VNode {
   }
 }
 
-/**
- * 提取过渡数据
- * @param {*} comp 组件实例
- * 获取transition组件的属性和监听函数
- */
 export function extractTransitionData(comp: Component): Object {
   const data = {}
-  // 获取组件的选项
   const options: ComponentOptions = comp.$options
   // props 获取属性对象，组件出入的属性 {name:'',css:'',mode:''}
   for (const key in options.propsData) {
     data[key] = comp[key]
   }
   // events.
-  // 提取事件监听器并且通过他们直接来过渡方法
   // extract listeners and pass them directly to the transition methods
-  // 获取父vnode监听器函数集合,父组件中，定义的 绑定事件 @click="clickFn"
   const listeners: ?Object = options._parentListeners
-  // 将监听对象添加到过渡数据中
   for (const key in listeners) {
     data[camelize(key)] = listeners[key]
   }
