@@ -8,9 +8,6 @@ import { pushTarget, popTarget } from '../observer/dep'
 
 /**
  * 错误处理
- * @param {*} err 错误实例
- * @param {*} vm 组件实例
- * @param {*} info 错误信息
  */
 export function handleError(err: Error, vm: any, info: string) {
   // Deactivate deps tracking while processing error handler to avoid possible infinite rendering.
@@ -42,11 +39,6 @@ export function handleError(err: Error, vm: any, info: string) {
 
 /**
  * 带有try...catch的函数中调用函数
- * @param {*} handler 函数
- * @param {*} context 上下文
- * @param {*} args 参数
- * @param {*} vm 组件实例
- * @param {*} info 钩子函数
  */
 export function invokeWithErrorHandling(
   handler: Function,
@@ -73,9 +65,6 @@ export function invokeWithErrorHandling(
 
 /**
  * 全局异常处理
- * @param {Error} err 错误对象
- * @param {*} vm 组件实例
- * @param {*} info 自定义错误信息
  */
 function globalHandleError(err, vm, info) {
   if (config.errorHandler) {
@@ -94,9 +83,6 @@ function globalHandleError(err, vm, info) {
 
 /**
  * 错误日志
- * @param {*} err 错误对象
- * @param {*} vm 组件实例
- * @param {*} info 自定义错误信息
  */
 function logError(err, vm, info) {
   if (process.env.NODE_ENV !== 'production') {

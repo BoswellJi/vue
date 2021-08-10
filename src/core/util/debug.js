@@ -35,19 +35,15 @@ if (process.env.NODE_ENV !== 'production') {
     }
   }
 
-  // 组件实例
   formatComponentName = (vm, includeFile) => {
-    // 组件的$root属性是本身
     if (vm.$root === vm) {
       return '<Root>'
     }
-    // vm是函数 cid属性不为null,返回组件选项
     const options = typeof vm === 'function' && vm.cid != null
       ? vm.options
       : vm._isVue
         ? vm.$options || vm.constructor.options
         : vm
-        // 获取组件的名称
     let name = options.name || options._componentTag
     const file = options.__file
     if (!name && file) {
@@ -65,19 +61,13 @@ if (process.env.NODE_ENV !== 'production') {
   const repeat = (str, n) => {
     let res = ''
     while (n) {
-      // n除以2余数为1的时候 res加一个str
       if (n % 2 === 1) res += str
-      // n>1 str+str
       if (n > 1) str += str
-      // n向右移动一个位（？
       n >>= 1
     }
     return res
   }
 
-  /**
-   * 生成组件追踪
-   */
   generateComponentTrace = vm => {
     if (vm._isVue && vm.$parent) {
       const tree = []

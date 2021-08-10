@@ -4,12 +4,10 @@
 export const hasProto = '__proto__' in {}
 
 // Browser environment sniffing（嗅探）
-// 是否在浏览器中
 export const inBrowser = typeof window !== 'undefined'
-// weex平台
+// weex
 export const inWeex = typeof WXEnvironment !== 'undefined' && !!WXEnvironment.platform
 export const weexPlatform = inWeex && WXEnvironment.platform.toLowerCase()
-// 浏览器的用户代理
 export const UA = inBrowser && window.navigator.userAgent.toLowerCase()
 // ie 
 export const isIE = UA && /msie|trident/.test(UA)
@@ -63,7 +61,6 @@ export const isServerRendering = () => {
 }
 
 // detect devtools
-// 在浏览器中 && 浏览器有vue devtools插件工具
 export const devtools = inBrowser && window.__VUE_DEVTOOLS_GLOBAL_HOOK__
 
 /* istanbul ignore next */

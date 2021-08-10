@@ -12,14 +12,6 @@
           - Vue.extend()
           - 创建vue-component-id-name的vnode
 
-## Vue的运行时
-
-* 核心运行时
-  - 依赖收集与更新系统
-  - virtual dom系统
-
-* 平台运行时
-
 ## patch
 
 * 核心逻辑为vnode的同层比较；
@@ -36,8 +28,9 @@
   - addVnodes：oldVnodeChild不存在，直接添加
   - removeVnodes：newVnodeChild不存在，直接删除
 
-## 响应式
+## 双向数据绑定（MVVM模式
 
+- 只能通过修改model来更新view,触发view事件来修改model
 - **一个组件模板中多个响应式属性的 dep 的 Watcher 都是同一个**；
 - 一个 watcher 有多个响应式属性的 Dep 实例(组件本身响应式属性；
 - **一个响应式属性的依赖可能存在多个Watcher中，每个依赖就是一个Watcher**;
@@ -56,3 +49,14 @@
 ## computed option
 
 * 会new Watcher对computed中的响应式属性进行监听，没有变化就会使用上次缓存的值，变化了重新执行并缓存下来；
+
+## nextTick
+
+## keep-alive
+
+## transition
+
+## transition-group
+
+
+
