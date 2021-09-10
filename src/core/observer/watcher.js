@@ -54,6 +54,7 @@ export default class Watcher {
     if (isRenderWatcher) {
       vm._watcher = this
     }
+    // 组件实例的_watchers属性
     vm._watchers.push(this)
     // options
     if (options) {

@@ -61,7 +61,6 @@ const component4 = {
 };
 
 const vm = new Vue({
-  el: "#demo",
   components: {
     component2,
     component3,
@@ -106,3 +105,5 @@ const vm = new Vue({
     },
   },
 });
+
+vm.$mount('#demo');

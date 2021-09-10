@@ -119,16 +119,3 @@ export function cloneVNode(vnode: VNode): VNode {
   cloned.isCloned = true
   return cloned
 }
-
-
-// function anonymous(
-// ) {
-//   with (this) {
-//     return _c('div', _l(
-//       [1, 2, 2],
-//       function (item, index) {
-//         return _c('div', { key: index }, [_v("\n" + _s(item) + "\n")])
-//       }
-//     ), 0)
-//   }
-// }

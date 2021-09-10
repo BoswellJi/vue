@@ -231,6 +231,7 @@ export function createPatchFunction(backend) {
     let i = vnode.data
     if (isDef(i)) {
       const isReactivated = isDef(vnode.componentInstance) && i.keepAlive
+      // 这里组件实例创建完成后，会有componentInstance属性
       if (isDef(i = i.hook) && isDef(i = i.init)) {
         i(vnode, false /* hydrating */)
       }

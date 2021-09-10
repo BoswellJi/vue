@@ -181,14 +181,14 @@ export function mountComponent(
       const startTag = `vue-perf-start:${id}`
       const endTag = `vue-perf-end:${id}`
 
-      // mark(startTag)
+      mark(startTag)
       const vnode = vm._render()
-      // mark(endTag)
-      // measure(`vue ${name} render`, startTag, endTag)
-      // mark(startTag)
+      mark(endTag)
+      measure(`vue ${name} render`, startTag, endTag)
+      mark(startTag)
       vm._update(vnode, hydrating)
-      // mark(endTag)
-      // measure(`vue ${name} patch`, startTag, endTag)
+      mark(endTag)
+      measure(`vue ${name} patch`, startTag, endTag)
     }
   } else {
     updateComponent = () => {
@@ -206,6 +206,7 @@ export function mountComponent(
         callHook(vm, 'beforeUpdate')
       }
     },
+   
   }, true /* isRenderWatcher */)
   hydrating = false
 
