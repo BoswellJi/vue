@@ -294,6 +294,13 @@ Funds donated via Patreon go directly to support Evan You's full-time work on Vu
         </a>
       </td>
     </tr><tr></tr>
+    <tr>
+      <td align="center" valign="middle">
+        <a href="https://ww.emqx.com" target="_blank">
+          <img width="148px" src="https://raw.githubusercontent.com/vuejs/vuejs.org/master/themes/vue/source/images/emq.png">
+        </a>
+      </td>
+    </tr><tr></tr>
   </tbody>
 </table>
 <!--gold end-->
@@ -355,6 +362,11 @@ Funds donated via Patreon go directly to support Evan You's full-time work on Vu
       <td align="center" valign="middle">
         <a href="https://www.takt.io" target="_blank">
           <img width="148px" src="https://raw.githubusercontent.com/vuejs/vuejs.org/master/themes/vue/source/images/takt.png">
+        </a>
+      </td>
+      <td align="center" valign="middle">
+        <a href="https://technology.doximity.com/" target="_blank">
+          <img width="148px" src="https://raw.githubusercontent.com/vuejs/vuejs.org/master/themes/vue/source/images/doximity.png">
         </a>
       </td>
     </tr><tr></tr>
@@ -458,7 +470,7 @@ Funds donated via Patreon go directly to support Evan You's full-time work on Vu
 
 <!--10 start-->
 - Felix Mok
-- Jeffrey Rennie
+- Keisuke Kita
 - Meinhard Dam
 - Роман Латкин
 - Alex Riviere
@@ -488,7 +500,7 @@ Funds donated via Patreon go directly to support Evan You's full-time work on Vu
 - Peter Matkovsky
 - 龙腾道 
 - Nick Dandakis
-- Yusuke Kawabata
+- Jeffrey Rennie
 - Shawn Wildermuth
 - Elon Hung
 - Juan Bermudez
@@ -519,7 +531,7 @@ Funds donated via Patreon go directly to support Evan You's full-time work on Vu
 - Wen-Tien Chang
 - Stephen Hartley
 - Victor Tolbert
-- Keisuke Kita
+- Yusuke Kawabata
 <!--10 end-->
 
 <h2 align="center">Backers via OpenCollective</h2>
