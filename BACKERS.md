@@ -296,8 +296,13 @@ Funds donated via Patreon go directly to support Evan You's full-time work on Vu
     </tr><tr></tr>
     <tr>
       <td align="center" valign="middle">
-        <a href="https://ww.emqx.com" target="_blank">
+        <a href="https://www.emqx.com" target="_blank">
           <img width="148px" src="https://raw.githubusercontent.com/vuejs/vuejs.org/master/themes/vue/source/images/emq.png">
+        </a>
+      </td>
+      <td align="center" valign="middle">
+        <a href="https://www.tatvasoft.com/software-development-technology/vue-js-development-services" target="_blank">
+          <img width="148px" src="https://raw.githubusercontent.com/vuejs/vuejs.org/master/themes/vue/source/images/tatvasoft.png">
         </a>
       </td>
     </tr><tr></tr>
@@ -462,26 +467,27 @@ Funds donated via Patreon go directly to support Evan You's full-time work on Vu
 - Yoshitaka M
 - Peter Imburg
 - Johnny Ray Austin
-- errorrik 
 - Wasim Khamlichi
 <!--50 end-->
 
 <h2 align="center">Backers via Patreon</h2>
 
 <!--10 start-->
-- Felix Mok
+- Kevin López Brante
 - Keisuke Kita
+- Mok Wang Quan
+- Jeffrey Rennie
 - Meinhard Dam
 - Роман Латкин
 - Alex Riviere
 - WhereJuly
 - Fontis 
 - Jack 
+- Artur Bańka
 - Traversy Media
 - Pierre Baron
 - Donghai Gai
 - Aleksander Figiel
-- Dennis Zanetti
 - wickedwei 
 - Sunny Yuen
 - Jules 
@@ -492,6 +498,7 @@ Funds donated via Patreon go directly to support Evan You's full-time work on Vu
 - Roy Segall
 - Allan McKernan
 - Diana Bergholz
+- Philip John Basile
 - Riki Fridrich
 - Alfonso Herrera
 - Bichinger Software & Consulting
@@ -499,8 +506,8 @@ Funds donated via Patreon go directly to support Evan You's full-time work on Vu
 - Pierre Lebrun
 - Peter Matkovsky
 - 龙腾道 
-- Nick Dandakis
-- Jeffrey Rennie
+- Theo Ephraim
+- Yusuke Kawabata
 - Shawn Wildermuth
 - Elon Hung
 - Juan Bermudez
@@ -531,7 +538,7 @@ Funds donated via Patreon go directly to support Evan You's full-time work on Vu
 - Wen-Tien Chang
 - Stephen Hartley
 - Victor Tolbert
-- Yusuke Kawabata
+- Nick Dandakis
 <!--10 end-->
 
 <h2 align="center">Backers via OpenCollective</h2>
