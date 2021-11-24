@@ -67,11 +67,6 @@ Funds donated via Patreon go directly to support Evan You's full-time work on Vu
           <img width="222px" src="https://raw.githubusercontent.com/vuejs/vuejs.org/master/themes/vue/source/images/nuxt.png">
         </a>
       </td>
-      <td align="center" valign="middle">
-        <a href="https://www.daskeyboard.com/?utm_source=vuejs&utm_medium=sponsorship" target="_blank">
-          <img width="222px" src="https://raw.githubusercontent.com/vuejs/vuejs.org/master/themes/vue/source/images/das_keyboard.png">
-        </a>
-      </td>
     </tr><tr></tr>
   </tbody>
 </table>
@@ -305,6 +300,33 @@ Funds donated via Patreon go directly to support Evan You's full-time work on Vu
           <img width="148px" src="https://raw.githubusercontent.com/vuejs/vuejs.org/master/themes/vue/source/images/tatvasoft.png">
         </a>
       </td>
+      <td align="center" valign="middle">
+        <a href="https://www.aceonlinecasino.co.uk" target="_blank">
+          <img width="148px" src="https://raw.githubusercontent.com/vuejs/vuejs.org/master/themes/vue/source/images/onyx_gaming_limited.svg?sanitize=true">
+        </a>
+      </td>
+      <td align="center" valign="middle">
+        <a href="http://www.lendio.com" target="_blank">
+          <img width="148px" src="https://raw.githubusercontent.com/vuejs/vuejs.org/master/themes/vue/source/images/lendio.png">
+        </a>
+      </td>
+      <td align="center" valign="middle">
+        <a href="https://flowdash.com/?utm_source=vue&utm_medium=sponsor&utm_campaign=open-source" target="_blank">
+          <img width="148px" src="https://raw.githubusercontent.com/vuejs/vuejs.org/master/themes/vue/source/images/flowdash.png">
+        </a>
+      </td>
+      <td align="center" valign="middle">
+        <a href="https://www.fenetre.nl/english/" target="_blank">
+          <img width="148px" src="https://raw.githubusercontent.com/vuejs/vuejs.org/master/themes/vue/source/images/fen_tre_online_solutions.png">
+        </a>
+      </td>
+    </tr><tr></tr>
+    <tr>
+      <td align="center" valign="middle">
+        <a href="https://finclip.com/?from=vue" target="_blank">
+          <img width="148px" src="https://raw.githubusercontent.com/vuejs/vuejs.org/master/themes/vue/source/images/finclip.png">
+        </a>
+      </td>
     </tr><tr></tr>
   </tbody>
 </table>
@@ -372,6 +394,11 @@ Funds donated via Patreon go directly to support Evan You's full-time work on Vu
       <td align="center" valign="middle">
         <a href="https://technology.doximity.com/" target="_blank">
           <img width="148px" src="https://raw.githubusercontent.com/vuejs/vuejs.org/master/themes/vue/source/images/doximity.png">
+        </a>
+      </td>
+      <td align="center" valign="middle">
+        <a href="https://www.empiricus.com.br/" target="_blank">
+          <img width="148px" src="https://raw.githubusercontent.com/vuejs/vuejs.org/master/themes/vue/source/images/empiricus.png">
         </a>
       </td>
     </tr><tr></tr>
@@ -466,16 +493,14 @@ Funds donated via Patreon go directly to support Evan You's full-time work on Vu
 <!--50 start-->
 - Yoshitaka M
 - Peter Imburg
-- Johnny Ray Austin
 - Wasim Khamlichi
 <!--50 end-->
 
 <h2 align="center">Backers via Patreon</h2>
 
 <!--10 start-->
-- Kevin López Brante
+- Theo Ephraim
 - Keisuke Kita
-- Mok Wang Quan
 - Jeffrey Rennie
 - Meinhard Dam
 - Роман Латкин
@@ -502,12 +527,11 @@ Funds donated via Patreon go directly to support Evan You's full-time work on Vu
 - Riki Fridrich
 - Alfonso Herrera
 - Bichinger Software & Consulting
-- username
 - Pierre Lebrun
 - Peter Matkovsky
 - 龙腾道 
-- Theo Ephraim
-- Yusuke Kawabata
+- Nick Dandakis
+- Mok Wang Quan
 - Shawn Wildermuth
 - Elon Hung
 - Juan Bermudez
@@ -538,7 +562,7 @@ Funds donated via Patreon go directly to support Evan You's full-time work on Vu
 - Wen-Tien Chang
 - Stephen Hartley
 - Victor Tolbert
-- Nick Dandakis
+- Yusuke Kawabata
 <!--10 end-->
 
 <h2 align="center">Backers via OpenCollective</h2>
