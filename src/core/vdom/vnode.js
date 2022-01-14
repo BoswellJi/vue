@@ -10,15 +10,15 @@
 
 
 export default class VNode {
-  tag: string | void; 
-  data: VNodeData | void; // 相关数据：属性，事件，样式等
-  children: ?Array<VNode>; 
-  text: string | void;  
-  elm: Node | void; 
-  ns: string | void; 
+  tag: string | void;
+  data: VNodeData | void;
+  children: ?Array<VNode>;
+  text: string | void;
+  elm: Node | void;
+  ns: string | void;
   context: Component | void; // rendered in this component's scope，
   key: string | number | void; // :key="item.id"
-  componentOptions: VNodeComponentOptions | void; 
+  componentOptions: VNodeComponentOptions | void;
   componentInstance: Component | void; // component instance
   parent: VNode | void; // component placeholder node
 
@@ -30,8 +30,8 @@ export default class VNode {
   isCloned: boolean; // is a cloned node?
   isOnce: boolean; // is a v-once node?
   asyncFactory: Function | void; // async component factory function
-  asyncMeta: Object | void; 
-  isAsyncPlaceholder: boolean; 
+  asyncMeta: Object | void;
+  isAsyncPlaceholder: boolean;
   fnContext: Component | void; // real context vm for functional nodes
   fnOptions: ?ComponentOptions; // for SSR caching
   devtoolsMeta: ?Object; // used to store functional render context for devtools

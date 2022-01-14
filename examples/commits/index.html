@@ -21,24 +21,37 @@
         </template>
         不在v-slot中的内容
       </component2> -->
-      
+
       <!-- <keep-alive>
         <component3 v-if="index==1"></component3>
         <component4 v-if="index==2"></component4>
         <div>alive1</div>
         <div>alive2</div>
       </keep-alive> -->
-
       <!-- <component :is="name"></component>-->
 
-      <component3></component3> 
+      <comp1></comp1>
+      <comp2></comp2>
 
-      <!-- <keep-alive>
-        <component :is="name"></component>
+      <input type="text" v-model="index" />
+
+      <div v-for="item of arr" :key="item">
+        {{item}}
+      </div>
+
+      <keep-alive>
+        <comp1></comp1>
+        <div>{{name}}</div>
+        <div>{{test}}</div>
       </keep-alive>
 
-      {{ageName}}
-      {{currentBranch}} -->
+      <component :is="name"></component>
+
+      <comp3></comp3>
+
+      <comp4></comp4>
+
+      <comp5></comp5>
     </div>
     <script src="mock.js"></script>
     <script src="app.js"></script>

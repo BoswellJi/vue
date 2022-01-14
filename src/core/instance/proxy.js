@@ -60,8 +60,8 @@ if (process.env.NODE_ENV !== 'production') {
         继承属性查询: foo in Object.create(proxy)
         with 检查: with(proxy) { (foo); }
         Reflect.has()
-     * @param {*} target 
-     * @param {*} key 
+     * @param {*} target
+     * @param {*} key
      */
     // 主要是在with语句中触发，with是 编译后的render function中获取 实例属性时候触发
     // 手写的render function 不会被包裹在with语句中
@@ -80,7 +80,6 @@ if (process.env.NODE_ENV !== 'production') {
     }
   }
 
-  // get拦截
   const getHandler = {
     get(target, key) {
       if (typeof key === 'string' && !(key in target)) {
@@ -93,12 +92,11 @@ if (process.env.NODE_ENV !== 'production') {
 
   initProxy = function initProxy(vm) {
     if (hasProxy) {
-      // determine which proxy handler to use  
+      // determine which proxy handler to use
       const options = vm.$options
       const handlers = options.render && options.render._withStripped
         ? getHandler
         : hasHandler
-        // 组件对象的代理对象
       vm._renderProxy = new Proxy(vm, handlers)
     } else {
       vm._renderProxy = vm

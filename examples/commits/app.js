@@ -1,34 +1,6 @@
 /* global Vue */
 
-var apiURL = "https://api.github.com/repos/vuejs/vue/commits?per_page=3&sha=";
-
-const component2 = {
-  template: `
-    <div id="component2">
-      <slot></slot>
-      <slot name="header" :obj="name"></slot>
-      <div @click="click">点击2</div>
-    </div>
-  `,
-  model: {
-    prop: 'age',
-    event: 'ok'
-  },
-  props: ["type", "type1"],
-  data() {
-    return {
-      name: "jjj",
-      i: 0,
-    };
-  },
-  methods: {
-    click() {
-      this.$emit('ok', this.i++);
-    },
-  },
-};
-
-const component3 = {
+const comp1 = {
   template: `
     <div id="component3">
       component3
@@ -39,45 +11,64 @@ const component3 = {
   },
 };
 
-const component4 = {
-  template: `
-    <div id="component4" @click="clickHandle">
-      component4{{name}}
-    </div>
-  `,
-  data() {
-    return {
-      name: "c4",
-    };
-  },
-  inject: {
-    name: 'Boswell'
-  },
-  methods: {
-    clickHandle() {
-      this.name = "cc4";
-    },
-  },
+const comp2 = {
+  functional: true,
+  render(h) {
+    return h('div', 'comp2');
+  }
 };
+
+const comp3 = () => new Promise((reslove) => {
+  setTimeout(() => {
+    reslove({
+      template: `<div>comp3</div>`
+    });
+  }, 1000);
+});
+
+const comp4 = () => ({
+  component: new Promise((reslove) => {
+    setTimeout(() => {
+      reslove({
+        template: `<div>comp4</div>`
+      });
+    }, 2000);
+  }),
+  loading: comp2,
+  error: comp1,
+  delay: 200,
+  timeout: 3000
+});
+
+const comp5 = (reslove) => {
+  setTimeout(() => {
+    reslove({
+      template: `<div>comp5</div>`
+    });
+  }, 1000);
+}
 
 const vm = new Vue({
   components: {
-    component2,
-    component3,
-    component4,
+    comp1,
+    comp2,
+    comp3,
+    comp4,
+    comp5
   },
   provide: {
     Boswell: 'Boswell'
   },
   data: {
     index: 1,
-    name: "component4",
+    name: "comp2",
     test: "a",
     age: 21,
-    currentBranch: 1
+    currentBranch: 1,
+    arr: [1, 2, 3]
   },
   watch: {
-    currentBranch(newVal, oldVal) {
+    currentBranch(newVal) {
       return newVal;
     },
   },

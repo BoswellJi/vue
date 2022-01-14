@@ -44,9 +44,6 @@ export function createElement (
   return _createElement(context, tag, data, children, normalizationType)
 }
 
-/**
- * 创建vnode元素
- */
 export function _createElement (
   context: Component,
   tag?: string | Class<Component> | Function | Object,
@@ -54,12 +51,12 @@ export function _createElement (
   children?: any,
   normalizationType?: number // render function是手写或是编译的参考
 ): VNode | Array<VNode> {
-  if (isDef(data) && isDef((data: any).__ob__)) {
-    process.env.NODE_ENV !== 'production' && warn(
-      `Avoid using observed data object as vnode data: ${JSON.stringify(data)}\n` +
-      'Always create fresh vnode data objects in each render!',
-      context
-    )
+  if (isDef(data) && isDef((data || {}).__ob__)) {
+    // process.env.NODE_ENV !== 'production' && warn(
+    //   `Avoid using observed data object as vnode data: ${JSON.stringify(data)}\n` +
+    //   'Always create fresh vnode data objects in each render!',
+    //   context
+    // )
     return createEmptyVNode()
   }
   // object syntax in v-bind
@@ -113,7 +110,6 @@ export function _createElement (
         undefined, undefined, context
       )
 
-      // 获取组件实例中components选项中是否存在这个key;
     } else if ((!data || !data.pre) && isDef(Ctor = resolveAsset(context.$options, 'components', tag))) {
       // component
       vnode = createComponent(Ctor, data, context, children, tag)
