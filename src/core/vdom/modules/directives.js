@@ -19,63 +19,43 @@ function updateDirectives (oldVnode: VNodeWithData, vnode: VNodeWithData) {
 }
 
 function _update (oldVnode, vnode) {
-  // 获取一个空vnode，老vnode为空vnode,说明第一次创建
   const isCreate = oldVnode === emptyNode
-  // 新vnode为空vnode,说明组件被销毁
   const isDestroy = vnode === emptyNode
-  // 老的vnode指令
   const oldDirs = normalizeDirectives(oldVnode.data.directives, oldVnode.context)
-  // 当前vnode的指令
   const newDirs = normalizeDirectives(vnode.data.directives, vnode.context)
 
-  // 指令插入
   const dirsWithInsert = []
   const dirsWithPostpatch = []
 
-  // 指令对象key, 老vnode的指令，保存指令
   let key, oldDir, dir
-  // 遍历vnode的新指令
   for (key in newDirs) {
-    // 老vnode的指令
     oldDir = oldDirs[key]
-    // vnode的指令
     dir = newDirs[key]
-    // 老指令不存在
     if (!oldDir) {
-      // new directive, bind（第一次绑定
       callHook(dir, 'bind', vnode, oldVnode)
-      // 当前指令有inserted钩子函数
       if (dir.def && dir.def.inserted) {
-        // 添加到列表
         dirsWithInsert.push(dir)
       }
     } else {
-      // existing directive, update （更新绑定
+      // existing directive, update
       dir.oldValue = oldDir.value
       dir.oldArg = oldDir.arg
-      // 调用vnode的指令更新，方法
       callHook(dir, 'update', vnode, oldVnode)
-      // 当前指令有componentUpdated钩子函数
       if (dir.def && dir.def.componentUpdated) {
         dirsWithPostpatch.push(dir)
       }
     }
   }
 
-  // 第一次加入的指令
   if (dirsWithInsert.length) {
-    // 调用指令的inserted钩子函数
     const callInsert = () => {
       for (let i = 0; i < dirsWithInsert.length; i++) {
         callHook(dirsWithInsert[i], 'inserted', vnode, oldVnode)
       }
     }
-    // 第一次创建组件
     if (isCreate) {
-      //
-      mergeVNodeHook(vnode, 'insert', callInsert)
+       (vnode, 'insert', callInsert)
     } else {
-      // 更新组件，开始调用
       callInsert()
     }
   }
@@ -99,7 +79,6 @@ function _update (oldVnode, vnode) {
   }
 }
 
-// 创建一个空的修饰符对象
 const emptyModifiers = Object.create(null)
 
 /**
@@ -159,7 +138,6 @@ function callHook (dir, hook, vnode, oldVnode, isDestroy) {
   const fn = dir.def && dir.def[hook]
   if (fn) {
     try {
-      // 调用钩子函数，这些事传参
       fn(vnode.elm, dir, vnode, oldVnode, isDestroy)
     } catch (e) {
       handleError(e, vnode.context, `directive ${dir.name} ${hook} hook`)
