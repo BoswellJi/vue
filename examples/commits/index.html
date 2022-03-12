@@ -30,16 +30,21 @@
       </keep-alive> -->
       <!-- <component :is="name"></component>-->
 
-      <comp1></comp1>
-      <comp2></comp2>
+      <!-- <comp1></comp1>
+      <comp2></comp2> -->
 
-      <input type="text" v-model="index" />
+      <!-- <input type="text" v-model="index" /> -->
 
-      <div v-for="item of arr" :key="item">
-        {{item}}
+      <div v-for="item of arr" :key="item">{{item}}</div>
+
+      <button @click="diffOldVnodeChildren">diffOldVnodeChildren</button>
+
+      <!-- <div>
+        <div key="3">1</div>
       </div>
+      <ul key="4">2</ul> -->
 
-      <keep-alive>
+      <!-- <keep-alive>
         <comp1></comp1>
         <div>{{name}}</div>
         <div>{{test}}</div>
@@ -51,7 +56,7 @@
 
       <comp4></comp4>
 
-      <comp5></comp5>
+      <comp5></comp5> -->
     </div>
     <script src="mock.js"></script>
     <script src="app.js"></script>

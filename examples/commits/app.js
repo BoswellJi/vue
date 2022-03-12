@@ -94,6 +94,9 @@ const vm = new Vue({
       this.name = this.name == "component4" ? "component3" : "component4";
       this.currentBranch = this.currentBranch == 1 ? 2 : 1
     },
+    diffOldVnodeChildren(){
+      this.arr = [];
+    }
   },
 });
 
