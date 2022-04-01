@@ -263,7 +263,6 @@ export function leave (vnode: VNodeWithData, rm: Function) {
     }
     beforeLeave && beforeLeave(el)
     if (expectsCSS) {
-      // 从这里开始给DOM元素添加动画样式
       addTransitionClass(el, leaveClass)
       addTransitionClass(el, leaveActiveClass)
       nextFrame(() => {
@@ -331,9 +330,6 @@ function getHookArgumentsLength (fn: Function): boolean {
   }
 }
 
-/**
- * 进入
- */
 function _enter (_: any, vnode: VNodeWithData) {
   if (vnode.data.show !== true) {
     enter(vnode)

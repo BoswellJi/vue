@@ -131,7 +131,7 @@ function getValue (option) {
 
 /**
  * 开始组合,合成
- * @param {*} e 
+ * @param {*} e
  */
 function onCompositionStart (e) {
   e.target.composing = true
@@ -139,7 +139,7 @@ function onCompositionStart (e) {
 
 /**
  * 合成结束
- * @param {*} e 
+ * @param {*} e
  */
 function onCompositionEnd (e) {
   // prevent triggering an input event for no reason

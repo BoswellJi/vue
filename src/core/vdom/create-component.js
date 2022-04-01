@@ -98,9 +98,6 @@ const componentVNodeHooks = {
 
 const hooksToMerge = Object.keys(componentVNodeHooks)
 
-/**
- * 创建组件vnode
- */
 export function createComponent (
   Ctor: Class<Component> | Function | Object | void,
   data: ?VNodeData,
@@ -209,7 +206,7 @@ export function createComponent (
 }
 
 /**
- * 创建组件实例
+ * 通过组件vnode来创建组件实例
  */
 export function createComponentInstanceForVnode (
   // we know it's MountedComponentVNode but flow doesn't

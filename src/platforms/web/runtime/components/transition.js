@@ -65,7 +65,6 @@ export function extractTransitionData(comp: Component): Object {
 function placeholder(h: Function, rawChild: VNode): ?VNode {
   // 组件的tag:  7-keep-alive
   if (/\d-keep-alive$/.test(rawChild.tag)) {
-    // 创建keep-alive组件vnode
     return h('keep-alive', {
       props: rawChild.componentOptions.propsData
     })
@@ -73,7 +72,7 @@ function placeholder(h: Function, rawChild: VNode): ?VNode {
 }
 
 /**
- * 父组件时过度组件
+ * 父组件过渡
  * @param {*} vnode
  */
 function hasParentTransition(vnode: VNode): ?boolean {
@@ -102,7 +101,6 @@ export default {
   abstract: true,
 
   render(h: Function) {
-    // 获取插槽中组件.元素的vnode，没有vnode不处理
     let children: any = this.$slots.default
     if (!children) {
       return

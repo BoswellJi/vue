@@ -3,7 +3,7 @@
 const comp1 = {
   template: `
     <div id="component3">
-      component3
+      <slot name="slotone"></slot>
     </div>
   `,
   data() {
@@ -12,73 +12,43 @@ const comp1 = {
 };
 
 const comp2 = {
-  functional: true,
-  render(h) {
-    return h('div', 'comp2');
+  props:{
+    arg: Object
+  },
+  template: `
+    <div id="component3" >
+      <button @click="change">com2-change</button>
+      <input v-model="arg.name" />
+    </div>
+  `,
+  data() {
+    return {};
+  },
+  methods:{
+    change(){
+      this.$emit('update:arg',!this.arg);
+    }
   }
 };
-
-const comp3 = () => new Promise((reslove) => {
-  setTimeout(() => {
-    reslove({
-      template: `<div>comp3</div>`
-    });
-  }, 1000);
-});
-
-const comp4 = () => ({
-  component: new Promise((reslove) => {
-    setTimeout(() => {
-      reslove({
-        template: `<div>comp4</div>`
-      });
-    }, 2000);
-  }),
-  loading: comp2,
-  error: comp1,
-  delay: 200,
-  timeout: 3000
-});
-
-const comp5 = (reslove) => {
-  setTimeout(() => {
-    reslove({
-      template: `<div>comp5</div>`
-    });
-  }, 1000);
-}
 
 const vm = new Vue({
   components: {
     comp1,
-    comp2,
-    comp3,
-    comp4,
-    comp5
+    comp2
+  },
+  filters: {
+
   },
   provide: {
     Boswell: 'Boswell'
   },
   data: {
-    index: 1,
-    name: "comp2",
-    test: "a",
-    age: 21,
-    currentBranch: 1,
+    name: {name:22},
     arr: [1, 2, 3]
   },
   watch: {
     currentBranch(newVal) {
       return newVal;
-    },
-  },
-  filters: {
-    truncate: function (v) {
-      var newline = v.indexOf("\n");
-      return newline > 0 ? v.slice(0, newline) : v;
-    },
-    formatDate: function (v) {
-      return v.replace(/T|Z/g, " ");
     },
   },
   computed: {
@@ -89,13 +59,12 @@ const vm = new Vue({
     }
   },
   methods: {
-    clickHandle() {
-      this.index = this.index == 1 ? 2 : 1;
-      this.name = this.name == "component4" ? "component3" : "component4";
-      this.currentBranch = this.currentBranch == 1 ? 2 : 1
+    diffOldVnodeChildren() {
+      // 先插入vnode的dom，再删除oldVnode的dom
+      this.arr = this.arr.reverse();
     },
-    diffOldVnodeChildren(){
-      this.arr = [];
+    change() {
+      this.name = !this.name;
     }
   },
 });

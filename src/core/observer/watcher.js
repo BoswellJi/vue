@@ -165,6 +165,7 @@ export default class Watcher {
    */
   update () {
     /* istanbul ignore else */
+    // computed：等待render function触发getter
     if (this.lazy) {
       this.dirty = true
     } else if (this.sync) {
@@ -204,7 +205,7 @@ export default class Watcher {
 
   /**
    * Evaluate the value of the watcher.
-   * This only gets called for lazy watchers.
+   * This only gets called for lazy watchers. computed调用时触发
    */
   evaluate () {
     this.value = this.get()

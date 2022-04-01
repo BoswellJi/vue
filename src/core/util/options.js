@@ -404,7 +404,7 @@ export function mergeOptions(
   if (typeof child === 'function') {
     child = child.options
   }
-  
+
   normalizeProps(child, vm)
   normalizeInject(child, vm)
   normalizeDirectives(child)

@@ -97,6 +97,9 @@ export default {
     }
   },
 
+  /**
+   * 在安装之后和更新之后进行缓存
+   */
   mounted () {
     this.cacheVNode()
     this.$watch('include', val => {

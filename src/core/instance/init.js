@@ -50,6 +50,7 @@ export function initMixin(Vue: Class<Component>) {
     // expose real self
     vm._self = vm
     initLifecycle(vm)
+    // 发布订阅系统初始化
     initEvents(vm)
     initRender(vm)
     callHook(vm, 'beforeCreate')

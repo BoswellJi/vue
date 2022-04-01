@@ -71,7 +71,13 @@ function sameInputType(a, b) {
   const typeB = isDef(i = b.data) && isDef(i = i.attrs) && i.type
   return typeA === typeB || isTextInputType(typeA) && isTextInputType(typeB)
 }
-
+/**
+ * 创建oldVnode children的key与索引映射
+ * @param {*} children
+ * @param {*} beginIdx
+ * @param {*} endIdx
+ * @returns
+ */
 function createKeyToOldIdx(children, beginIdx, endIdx) {
   let i, key
   const map = {}
@@ -84,6 +90,7 @@ function createKeyToOldIdx(children, beginIdx, endIdx) {
 
 export function createPatchFunction(backend) {
   let i, j
+  // attrs,class,dom-props,event,style,transition钩子函数
   const cbs = {}
   const { modules, nodeOps } = backend
 
@@ -137,13 +144,13 @@ export function createPatchFunction(backend) {
   let creatingElmInVPre = 0
 
   /**
-   * 通过vnode创建真实DOM
+   * 通过vnode创建真实DOM,插入父元素中
    */
   function createElm(
     vnode,
     insertedVnodeQueue,
-    parentElm,
-    refElm,
+    parentElm, // 父元素
+    refElm, // 参考位置
     nested,
     ownerArray,
     index
@@ -269,6 +276,13 @@ export function createPatchFunction(backend) {
     }
   }
 
+  /**
+   * vnode的activate
+   * @param {*} vnode
+   * @param {*} insertedVnodeQueue
+   * @param {*} parentElm
+   * @param {*} refElm
+   */
   function reactivateComponent(vnode, insertedVnodeQueue, parentElm, refElm) {
     let i
     // hack for #4339: a reactivated component with inner transition
@@ -323,6 +337,11 @@ export function createPatchFunction(backend) {
     return isDef(vnode.tag)
   }
 
+  /**
+   * vnode的create
+   * @param {*} vnode
+   * @param {*} insertedVnodeQueue
+   */
   function invokeCreateHooks(vnode, insertedVnodeQueue) {
     for (let i = 0; i < cbs.create.length; ++i) {
       cbs.create[i](emptyNode, vnode)
@@ -366,6 +385,10 @@ export function createPatchFunction(backend) {
     }
   }
 
+  /**
+   * vnode的destroy
+   * @param {*} vnode
+   */
   function invokeDestroyHook(vnode) {
     let i, j
     const data = vnode.data
@@ -394,6 +417,11 @@ export function createPatchFunction(backend) {
     }
   }
 
+  /**
+   * vnode的remove
+   * @param {*} vnode
+   * @param {*} rm
+   */
   function removeAndInvokeRemoveHook(vnode, rm) {
     if (isDef(rm) || isDef(vnode.data)) {
       let i
@@ -480,6 +508,7 @@ export function createPatchFunction(backend) {
         // oldVnode children 开始节点和 vnode children 结束节点
       } else if (sameVnode(oldStartVnode, newEndVnode)) { // Vnode moved right
         patchVnode(oldStartVnode, newEndVnode, insertedVnodeQueue, newCh, newEndIdx)
+        // old start vnode插入到old end vnode
         canMove && nodeOps.insertBefore(parentElm, oldStartVnode.elm, nodeOps.nextSibling(oldEndVnode.elm))
         oldStartVnode = oldCh[++oldStartIdx]
         newEndVnode = newCh[--newEndIdx]
@@ -560,6 +589,16 @@ export function createPatchFunction(backend) {
     }
   }
 
+  /**
+   * 在oldvnode与vnode相同时，对比oldVnode与vnode更新dom
+   * @param {*} oldVnode
+   * @param {*} vnode
+   * @param {*} insertedVnodeQueue
+   * @param {*} ownerArray vnode children
+   * @param {*} index vnode index
+   * @param {*} removeOnly
+   * @returns
+   */
   function patchVnode(
     oldVnode,
     vnode,
@@ -603,12 +642,14 @@ export function createPatchFunction(backend) {
 
     let i
     const data = vnode.data
+    // prepatch钩子对比之前
     if (isDef(data) && isDef(i = data.hook) && isDef(i = i.prepatch)) {
       i(oldVnode, vnode)
     }
 
     const oldCh = oldVnode.children
     const ch = vnode.children
+    // vnode的update
     if (isDef(data) && isPatchable(vnode)) {
       for (i = 0; i < cbs.update.length; ++i) cbs.update[i](oldVnode, vnode)
       if (isDef(i = data.hook) && isDef(i = i.update)) i(oldVnode, vnode)
@@ -642,11 +683,13 @@ export function createPatchFunction(backend) {
     } else if (oldVnode.text !== vnode.text) {
       nodeOps.setTextContent(elm, vnode.text)
     }
+    // postpatch钩子对比之后
     if (isDef(data)) {
       if (isDef(i = data.hook) && isDef(i = i.postpatch)) i(oldVnode, vnode)
     }
   }
 
+  // insert钩子
   function invokeInsertHook(vnode, queue, initial) {
     // delay insert hooks for component root nodes, invoke them after the
     // element is really inserted
@@ -684,6 +727,7 @@ export function createPatchFunction(backend) {
       }
     }
     if (isDef(data)) {
+      // init vnode钩子
       if (isDef(i = data.hook) && isDef(i = i.init)) i(vnode, true /* hydrating */)
       if (isDef(i = vnode.componentInstance)) {
         // child component. it should have hydrated its own tree.

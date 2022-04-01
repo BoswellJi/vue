@@ -35,8 +35,8 @@ const normalizeEvent = cached((name: string): {
 
 /**
  * 创建函数调用者
- * @param {*} fns 
- * @param {*} vm 
+ * @param {*} fns
+ * @param {*} vm
  */
 export function createFnInvoker (fns: Function | Array<Function>, vm: ?Component): Function {
   function invoker () {
@@ -52,7 +52,6 @@ export function createFnInvoker (fns: Function | Array<Function>, vm: ?Component
       return invokeWithErrorHandling(fns, null, arguments, vm, `v-on handler`)
     }
   }
-  // 添加fns属性
   invoker.fns = fns
   return invoker
 }

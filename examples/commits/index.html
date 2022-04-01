@@ -1,64 +1,38 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>Vue.js github commits example</title>
-    <script src="../../dist/vue.min.js"></script>
-  </head>
 
-  <body>
-    <div id="demo">
-      <!-- <div ref="dataId" data-id="1">{{age}}</div>
-      {{age}}
-      {{age}} -->
-      <!-- <button @click="clickHandle">按钮</button> -->
+<head>
+  <title>Vue.js github commits example</title>
+  <script src="../../dist/vue.min.js"></script>
+  <style>
+    .v-enter,
+    .v-leave-to {
+      opacity: 0;
+    }
 
-      <!-- <component2 :type="'2'" v-model="age">
-        <template v-slot:default>
-          <div>按钮slot1</div>
-        </template>
-        <template v-slot:header="scope">
-          <div>按钮 header{{scope.obj}}</div>
-        </template>
-        不在v-slot中的内容
-      </component2> -->
+    .v-enter-active,
+    .v-leave-active {
+      transition: opacity 1s;
+    }
 
-      <!-- <keep-alive>
-        <component3 v-if="index==1"></component3>
-        <component4 v-if="index==2"></component4>
-        <div>alive1</div>
-        <div>alive2</div>
-      </keep-alive> -->
-      <!-- <component :is="name"></component>-->
+    .v-leave,
+    .v-enter-to {
+      opacity: 1;
+    }
+  </style>
+</head>
 
-      <!-- <comp1></comp1>
-      <comp2></comp2> -->
-
-      <!-- <input type="text" v-model="index" /> -->
-
-      <div v-for="item of arr" :key="item">{{item}}</div>
-
-      <button @click="diffOldVnodeChildren">diffOldVnodeChildren</button>
-
-      <!-- <div>
-        <div key="3">1</div>
+<body>
+  <div id="demo">
+    <div>
+      <div v-for="item of arr" :key="item">
+        {{item}}
       </div>
-      <ul key="4">2</ul> -->
-
-      <!-- <keep-alive>
-        <comp1></comp1>
-        <div>{{name}}</div>
-        <div>{{test}}</div>
-      </keep-alive>
-
-      <component :is="name"></component>
-
-      <comp3></comp3>
-
-      <comp4></comp4>
-
-      <comp5></comp5> -->
     </div>
-    <script src="mock.js"></script>
-    <script src="app.js"></script>
-  </body>
+    <button @click="diffOldVnodeChildren">change</button>
+  </div>
+  <script src="mock.js"></script>
+  <script src="app.js"></script>
+</body>
+
 </html>

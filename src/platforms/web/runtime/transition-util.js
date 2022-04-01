@@ -208,7 +208,7 @@ function getTimeout (delays: Array<string>, durations: Array<string>): number {
     delays = delays.concat(delays)
   }
 
-  // 获取最大的：延迟时长和过渡时长之和 
+  // 获取最大的：延迟时长和过渡时长之和
   return Math.max.apply(null, durations.map((d, i) => {
     return toMs(d) + toMs(delays[i])
   }))

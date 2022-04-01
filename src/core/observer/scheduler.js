@@ -42,7 +42,7 @@ function resetSchedulerState () {
 export let currentFlushTimestamp = 0
 
 // Async edge case fix requires storing an event listener's attach timestamp.
-let getNow: () => number = Date.now 
+let getNow: () => number = Date.now
 
 // Determine what event timestamp the browser is using. Annoyingly, the
 // timestamp can either be hi-res (relative to page load) or low-res
@@ -69,8 +69,8 @@ if (inBrowser && !isIE) {
  * Flush both queues and run the watchers.
  */
 function flushSchedulerQueue () {
-  currentFlushTimestamp = getNow()  
-  flushing = true  
+  currentFlushTimestamp = getNow()
+  flushing = true
   let watcher, id
 
   // Sort queue before flush.
@@ -163,7 +163,7 @@ function callActivatedHooks (queue) {
  * pushed when the queue is being flushed.
  */
 /**
- * @param {*} watcher 
+ * @param {*} watcher
  */
 export function queueWatcher (watcher: Watcher) {
   const id = watcher.id

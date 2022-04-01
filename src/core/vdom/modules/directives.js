@@ -54,7 +54,7 @@ function _update (oldVnode, vnode) {
       }
     }
     if (isCreate) {
-       (vnode, 'insert', callInsert)
+      mergeVNodeHook(vnode, 'insert', callInsert)
     } else {
       callInsert()
     }
@@ -68,7 +68,6 @@ function _update (oldVnode, vnode) {
     })
   }
 
-  // 非第一次创建组件
   if (!isCreate) {
     for (key in oldDirs) {
       if (!newDirs[key]) {

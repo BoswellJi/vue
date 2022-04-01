@@ -20,8 +20,8 @@ export default {
 }
 
 /**
- * @param {*} vnode 
- * @param {*} isRemoval 
+ * @param {*} vnode
+ * @param {*} isRemoval
  */
 export function registerRef (vnode: VNodeWithData, isRemoval: ?boolean) {
   const key = vnode.data.ref
@@ -40,7 +40,7 @@ export function registerRef (vnode: VNodeWithData, isRemoval: ?boolean) {
     if (vnode.data.refInFor) {
       if (!Array.isArray(refs[key])) {
         refs[key] = [ref]
-      } else if (refs[key].indexOf(ref) < 0) { 
+      } else if (refs[key].indexOf(ref) < 0) {
         // $flow-disable-line
         refs[key].push(ref)
       }
