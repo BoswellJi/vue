@@ -174,7 +174,7 @@ export function createPatchFunction(backend) {
     const data = vnode.data
     const children = vnode.children
     const tag = vnode.tag
-    // 元素/组件，注释，文本
+    // 元素
     if (isDef(tag)) {
       if (process.env.NODE_ENV !== 'production') {
         if (data && data.pre) {
@@ -225,15 +225,27 @@ export function createPatchFunction(backend) {
       if (process.env.NODE_ENV !== 'production' && data && data.pre) {
         creatingElmInVPre--
       }
+
+      // 注释
     } else if (isTrue(vnode.isComment)) {
       vnode.elm = nodeOps.createComment(vnode.text)
       insert(parentElm, vnode.elm, refElm)
+
+      // 文本
     } else {
       vnode.elm = nodeOps.createTextNode(vnode.text)
       insert(parentElm, vnode.elm, refElm)
     }
   }
 
+  /**
+   * 创建组件
+   * @param {*} vnode 组件vnode
+   * @param {*} insertedVnodeQueue 
+   * @param {*} parentElm 
+   * @param {*} refElm 
+   * @returns 
+   */
   function  createComponent(vnode, insertedVnodeQueue, parentElm, refElm) {
     let i = vnode.data
     if (isDef(i)) {
@@ -258,6 +270,11 @@ export function createPatchFunction(backend) {
     }
   }
 
+  /**
+   * 初始化组件
+   * @param {*} vnode 组件vnode
+   * @param {*} insertedVnodeQueue  
+   */
   function initComponent(vnode, insertedVnodeQueue) {
     if (isDef(vnode.data.pendingInsert)) {
       insertedVnodeQueue.push.apply(insertedVnodeQueue, vnode.data.pendingInsert)
@@ -285,6 +302,7 @@ export function createPatchFunction(backend) {
    */
   function reactivateComponent(vnode, insertedVnodeQueue, parentElm, refElm) {
     let i
+    // 带有内部transition的重新激活组件不会触发，因为内部的节点创建钩子不会被再次调用。调用特定模块逻辑不是一个好主意，但是似乎没有更好的办法
     // hack for #4339: a reactivated component with inner transition
     // does not trigger because the inner node's created hooks are not called
     // again. It's not ideal to involve module-specific logic in here but
@@ -828,7 +846,7 @@ export function createPatchFunction(backend) {
 
     let isInitialPatch = false
     const insertedVnodeQueue = []
-
+    // 没有old vnode
     if (isUndef(oldVnode)) {
       // empty mount (likely as component), create new root element
       isInitialPatch = true

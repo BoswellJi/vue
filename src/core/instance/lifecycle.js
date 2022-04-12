@@ -197,7 +197,9 @@ export function mountComponent(
     }
   }
 
+  // 在Watcher的构造函数中，我们将Watcher的this赋值给vm._watcher
   // we set this to vm._watcher inside the watcher's constructor
+  // 一次Watcher的初始化补丁可以调用$forceUpdate(子组件的mounted钩子内部)，这依赖vm._watcher已经被定义
   // since the watcher's initial patch may call $forceUpdate (e.g. inside child
   // component's mounted hook), which relies on vm._watcher being already defined
   new Watcher(vm, updateComponent, noop, {
